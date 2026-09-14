@@ -12,8 +12,6 @@ export async function diagnoseDoubtWithGemini({
   imageMimeType
 }) {
   const apiKey = process.env.GEMINI_API_KEY;
-  const model = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
-
   const systemInstruction = buildSocraticSystemInstruction();
   const userPrompt = buildSocraticUserPrompt({
     exam,
@@ -26,100 +24,112 @@ export async function diagnoseDoubtWithGemini({
     hasImage: !!imageBuffer
   });
 
+  // Determine model list (ensuring deprecated 1.5-flash is replaced with 3.6-flash)
+  const candidateModels = [];
+  if (process.env.GEMINI_MODEL && process.env.GEMINI_MODEL !== 'gemini-1.5-flash') {
+    candidateModels.push(process.env.GEMINI_MODEL);
+  }
+  candidateModels.push('gemini-3.6-flash', 'gemini-flash-latest');
+
   // Check if API key is provided and not the placeholder
   const isKeyConfigured = apiKey && apiKey.trim() !== '' && !apiKey.includes('your_gemini_api_key_here');
 
   if (isKeyConfigured) {
-    try {
-      const parts = [];
+    for (const model of candidateModels) {
+      try {
+        const parts = [];
 
-      // Add image if attached
-      if (imageBuffer) {
-        parts.push({
-          inlineData: {
-            data: imageBuffer.toString('base64'),
-            mimeType: imageMimeType || 'image/jpeg'
-          }
-        });
-      }
-
-      // Add student text prompt
-      parts.push({
-        text: userPrompt
-      });
-
-      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-goog-api-key': apiKey
-        },
-        body: JSON.stringify({
-          systemInstruction: {
-            parts: [{ text: systemInstruction }]
-          },
-          contents: [
-            {
-              role: 'user',
-              parts: parts
+        // Add image if attached
+        if (imageBuffer) {
+          parts.push({
+            inlineData: {
+              data: imageBuffer.toString('base64'),
+              mimeType: imageMimeType || 'image/jpeg'
             }
-          ],
-          generationConfig: {
-            responseMimeType: 'application/json',
-            temperature: 0.3,
-            maxOutputTokens: 2048
-          }
-        })
-      });
-
-      if (!response.ok) {
-        const errorBody = await response.text();
-        console.warn(`[Gemini API] Request failed with status ${response.status}: ${errorBody}`);
-        throw new Error(`Gemini API returned status ${response.status}`);
-      }
-
-      const data = await response.json();
-      const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-      if (!rawText) {
-        throw new Error('Empty response from Gemini');
-      }
-
-      // Clean response in case markdown formatting wraps the JSON
-      const cleanedText = rawText.replace(/^```json\s*/i, '').replace(/\s*```$/i, '').trim();
-      const parsedData = JSON.parse(cleanedText);
-
-      return {
-        success: true,
-        aiEngine: `Google Gemini 1.5 Flash (Live Free Tier)`,
-        isLiveAI: true,
-        data: {
-          ticketId: parsedData.ticketId || `SOC-${Math.floor(100000 + Math.random() * 900000)}`,
-          exam: exam || "JEE Main",
-          subject: subject || "Mathematics",
-          chapter: chapter || "General",
-          subtopic: subtopic || "General Concepts",
-          errorTag: errorTag || "Conceptual Blindspot",
-          transcribedText: parsedData.transcribedText || doubtText || (imageBuffer ? "[Handwritten Notebook Working Processed]" : "Doubt Statement"),
-          problemAnalysis: parsedData.problemAnalysis || "Identified student hesitation at intermediate simplification stage.",
-          diagnosis: {
-            errorTitle: parsedData.diagnosis?.errorTitle || errorTag || "Conceptual Misapplication",
-            errorDescription: parsedData.diagnosis?.errorDescription || "Misapplication of core domain invariants.",
-            hints: parsedData.diagnosis?.hints || [
-              "Identify the boundary constraints for this problem.",
-              "Which fundamental theorem applies directly to this expression?",
-              "Substitute the boundary limits to simplify."
-            ]
-          },
-          xpGained: parsedData.xpGained || 160,
-          nextScaffoldingQuestion: parsedData.nextScaffoldingQuestion || "What is your next step?"
+          });
         }
-      };
-    } catch (err) {
-      console.error('[Gemini Service] Live API error, failing over to deterministic heuristic engine:', err.message);
-      // Failover to local fallback generator
+
+        // Add student text prompt
+        parts.push({
+          text: userPrompt
+        });
+
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-goog-api-key': apiKey
+          },
+          body: JSON.stringify({
+            systemInstruction: {
+              parts: [{ text: systemInstruction }]
+            },
+            contents: [
+              {
+                role: 'user',
+                parts: parts
+              }
+            ],
+            generationConfig: {
+              responseMimeType: 'application/json',
+              temperature: 0.2,
+              maxOutputTokens: 2048
+            }
+          })
+        });
+
+        if (!response.ok) {
+          const errorBody = await response.text();
+          console.warn(`[Gemini API] Model ${model} failed with status ${response.status}: ${errorBody}`);
+          continue; // Try next candidate model
+        }
+
+        const data = await response.json();
+        const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        if (!rawText) {
+          throw new Error('Empty response from Gemini');
+        }
+
+        // Clean response in case markdown formatting wraps the JSON
+        const cleanedText = rawText.replace(/^```json\s*/i, '').replace(/\s*```$/i, '').trim();
+        const parsedData = JSON.parse(cleanedText);
+
+        const detectedSubj = parsedData.detectedSubject || parsedData.subject || subject || "Physics";
+        const detectedChap = parsedData.detectedChapter || parsedData.chapter || chapter || "General";
+        const detectedSub = parsedData.detectedSubtopic || parsedData.subtopic || subtopic || "General Concepts";
+
+        return {
+          success: true,
+          aiEngine: `Google Gemini 3.6 Flash (Live Free Tier)`,
+          isLiveAI: true,
+          data: {
+            ticketId: parsedData.ticketId || `SOC-${Math.floor(100000 + Math.random() * 900000)}`,
+            exam: parsedData.exam || exam || "JEE Main",
+            subject: detectedSubj,
+            chapter: detectedChap,
+            subtopic: detectedSub,
+            errorTag: parsedData.diagnosis?.errorTitle || errorTag || "Conceptual Misapplication",
+            transcribedText: parsedData.transcribedText || doubtText || (imageBuffer ? "[Handwritten Notebook Working Processed]" : "Doubt Statement"),
+            problemAnalysis: parsedData.problemAnalysis || `Socratic deconstruction of ${detectedSubj} problem under ${detectedChap}.`,
+            diagnosis: {
+              errorTitle: parsedData.diagnosis?.errorTitle || errorTag || "Conceptual Misapplication",
+              errorDescription: parsedData.diagnosis?.errorDescription || "Misapplication of core domain invariants.",
+              hints: parsedData.diagnosis?.hints || [
+                "Identify the given parameters and boundary conditions for this problem.",
+                "Which fundamental relation or conservation law governs this system?",
+                "Substitute the boundary limits to simplify."
+              ]
+            },
+            xpGained: parsedData.xpGained || 160,
+            nextScaffoldingQuestion: parsedData.nextScaffoldingQuestion || "What is your next step?"
+          }
+        };
+      } catch (err) {
+        console.error(`[Gemini Service] Error with model ${model}:`, err.message);
+      }
     }
   }
 
