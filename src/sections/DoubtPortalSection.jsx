@@ -26,12 +26,15 @@ export default function DoubtPortalSection() {
 
   const fileInputRef = useRef(null);
 
+  // Resolves backend API URL (Localhost in dev, Render in production)
+  const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001').replace(/\/+$/, '');
+
   // Monitor Live Backend Status
   useEffect(() => {
     let isMounted = true;
     async function checkBackend() {
       try {
-        const res = await fetch('http://localhost:5001/api/v1/health');
+        const res = await fetch(`${API_BASE_URL}/api/v1/health`);
         if (res.ok) {
           const data = await res.json();
           if (isMounted) {
@@ -176,7 +179,7 @@ export default function DoubtPortalSection() {
         formData.append('image', imageFile);
       }
 
-      const res = await fetch('http://localhost:5001/api/v1/doubts/diagnose', {
+      const res = await fetch(`${API_BASE_URL}/api/v1/doubts/diagnose`, {
         method: 'POST',
         body: formData
       });

@@ -27,15 +27,19 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 } // 10 MB limit
 });
 
-// Load syllabus taxonomy from existing chaptersData.json
+// Load syllabus taxonomy from local backend data or parent src
 let taxonomyData = null;
 try {
-  const taxonomyPath = path.resolve(__dirname, '../src/data/chaptersData.json');
-  if (fs.existsSync(taxonomyPath)) {
-    taxonomyData = JSON.parse(fs.readFileSync(taxonomyPath, 'utf8'));
+  const localTaxonomyPath = path.resolve(__dirname, './data/chaptersData.json');
+  const parentTaxonomyPath = path.resolve(__dirname, '../src/data/chaptersData.json');
+  
+  if (fs.existsSync(localTaxonomyPath)) {
+    taxonomyData = JSON.parse(fs.readFileSync(localTaxonomyPath, 'utf8'));
+  } else if (fs.existsSync(parentTaxonomyPath)) {
+    taxonomyData = JSON.parse(fs.readFileSync(parentTaxonomyPath, 'utf8'));
   }
 } catch (err) {
-  console.warn('[Taxonomy] Warning: Could not load local chaptersData.json:', err.message);
+  console.warn('[Taxonomy] Warning: Could not load chaptersData.json:', err.message);
 }
 
 // 1. Healthcheck Route
@@ -106,7 +110,7 @@ app.post('/api/v1/doubts/diagnose', upload.single('image'), async (req, res) => 
 });
 
 // Start Server
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`====================================================`);
   console.log(`🚀 Socratic AI Backend Server running on port ${PORT}`);
   console.log(`📡 Health Check: http://localhost:${PORT}/api/v1/health`);
