@@ -42,9 +42,15 @@ try {
   console.warn('[Taxonomy] Warning: Could not load chaptersData.json:', err.message);
 }
 
+function getApiKey() {
+  const envKey = Object.keys(process.env).find(k => k.trim().toUpperCase() === 'GEMINI_API_KEY' || k.trim().toUpperCase() === 'GOOGLE_API_KEY');
+  const val = envKey ? process.env[envKey] : (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY);
+  return val ? val.trim().replace(/^["']|["']$/g, '') : null;
+}
+
 // 1. Healthcheck Route
 app.get('/api/v1/health', (req, res) => {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = getApiKey();
   const isKeyConfigured = Boolean(apiKey && apiKey.trim() !== '' && !apiKey.includes('your_gemini_api_key_here'));
 
   res.json({
@@ -53,11 +59,14 @@ app.get('/api/v1/health', (req, res) => {
     version: '1.0.0',
     gemini: {
       isKeyConfigured,
-      model: process.env.GEMINI_MODEL || 'gemini-1.5-flash',
-      mode: isKeyConfigured ? 'Live Google Gemini Multimodal' : 'Heuristic Fallback (Demo)'
+      model: process.env.GEMINI_MODEL || 'gemini-3.6-flash',
+      mode: isKeyConfigured ? 'Live Google Gemini Multimodal' : 'Heuristic Fallback (Demo)',
+      keyPrefix: apiKey ? `${apiKey.substring(0, 4)}...` : 'none',
+      keyLength: apiKey ? apiKey.length : 0
     },
     timestamp: new Date().toISOString()
   });
+});
 });
 
 // 2. Syllabus Taxonomy Route
