@@ -67,7 +67,6 @@ app.get('/api/v1/health', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
-});
 
 // 2. Syllabus Taxonomy Route
 app.get('/api/v1/taxonomy', (req, res) => {
