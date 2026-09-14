@@ -16,13 +16,48 @@ export default function DoubtPortalSection() {
   const [errorTag, setErrorTag] = useState('Conceptual Blindspot');
   const [questionText, setQuestionText] = useState('');
 
+  const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedResult, setSubmittedResult] = useState(null);
   const [activeHintStep, setActiveHintStep] = useState(1);
   const [showExportModal, setShowExportModal] = useState(false);
+  const [backendStatus, setBackendStatus] = useState({ online: false, model: '', isLiveAI: false });
 
   const fileInputRef = useRef(null);
+
+  // Resolves backend API URL (Localhost in dev, Render in production)
+  const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001').replace(/\/+$/, '');
+
+  // Monitor Live Backend Status
+  useEffect(() => {
+    let isMounted = true;
+    async function checkBackend() {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/v1/health`);
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted) {
+            setBackendStatus({
+              online: true,
+              model: data.gemini?.model || 'gemini-1.5-flash',
+              isLiveAI: Boolean(data.gemini?.isKeyConfigured)
+            });
+          }
+        }
+      } catch (err) {
+        if (isMounted) {
+          setBackendStatus({ online: false, model: '', isLiveAI: false });
+        }
+      }
+    }
+    checkBackend();
+    const interval = setInterval(checkBackend, 8000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   const taxonomy = chaptersData.JEE_NEET_Exhaustive_Syllabus_Taxonomy;
 
@@ -67,6 +102,7 @@ export default function DoubtPortalSection() {
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0];
     if (file) {
+      setImageFile(file);
       const reader = new FileReader();
       reader.onload = (event) => {
         setImagePreview(event.target.result);
@@ -126,33 +162,73 @@ export default function DoubtPortalSection() {
     };
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const diagnosis = generateDynamicSocraticDiagnosis(
-      questionText,
-      selectedSubject,
-      selectedChapter,
-      selectedSubtopic,
-      errorTag
-    );
+    try {
+      const formData = new FormData();
+      formData.append('exam', targetExam);
+      formData.append('subject', selectedSubject);
+      formData.append('class', selectedClass);
+      formData.append('chapter', selectedChapter);
+      formData.append('subtopic', selectedSubtopic);
+      formData.append('errorTag', errorTag);
+      formData.append('questionText', questionText);
+      if (imageFile) {
+        formData.append('image', imageFile);
+      }
 
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setActiveHintStep(1);
-      setSubmittedResult({
-        ticketId: `SOC-${Math.floor(100000 + Math.random() * 900000)}`,
-        xpGained: 165,
-        exam: targetExam,
-        subject: selectedSubject,
-        chapter: selectedChapter,
-        subtopic: selectedSubtopic,
-        errorTag: errorTag,
-        transcribedText: questionText || (imagePreview ? "[Image Notebook Snapshot Attached]" : "Problem Query Submitted"),
-        diagnosis: diagnosis
+      const res = await fetch(`${API_BASE_URL}/api/v1/doubts/diagnose`, {
+        method: 'POST',
+        body: formData
       });
-    }, 900);
+
+      if (!res.ok) {
+        throw new Error(`Backend responded with ${res.status}`);
+      }
+
+      const payload = await res.json();
+      if (payload.success && payload.data) {
+        setIsSubmitting(false);
+        setActiveHintStep(1);
+        setSubmittedResult({
+          ...payload.data,
+          aiEngine: payload.aiEngine,
+          isLiveAI: payload.isLiveAI
+        });
+        return;
+      }
+      throw new Error('Malformed backend response');
+    } catch (err) {
+      console.warn('Backend API connection unavailable, falling back to heuristic engine:', err);
+
+      const diagnosis = generateDynamicSocraticDiagnosis(
+        questionText,
+        selectedSubject,
+        selectedChapter,
+        selectedSubtopic,
+        errorTag
+      );
+
+      setTimeout(() => {
+        setIsSubmitting(false);
+        setActiveHintStep(1);
+        setSubmittedResult({
+          ticketId: `SOC-${Math.floor(100000 + Math.random() * 900000)}`,
+          xpGained: 165,
+          exam: targetExam,
+          subject: selectedSubject,
+          chapter: selectedChapter,
+          subtopic: selectedSubtopic,
+          errorTag: errorTag,
+          transcribedText: questionText || (imagePreview ? "[Image Notebook Snapshot Attached]" : "Problem Query Submitted"),
+          diagnosis: diagnosis,
+          aiEngine: "Socratic Heuristic Engine (Backend Offline)",
+          isLiveAI: false
+        });
+      }, 700);
+    }
   };
 
   const handleExportJSON = () => {
@@ -219,12 +295,23 @@ export default function DoubtPortalSection() {
           <TiltCard className="bg-[#08080E] border-brand-violet/30 p-6 md:p-10 shadow-2xl relative">
             
             {/* Top Action Bar */}
-            <div className="flex items-center justify-between pb-6 border-b border-white/10 mb-8">
-              <div className="flex items-center gap-2">
-                <span className="w-3.5 h-3.5 rounded-full bg-brand-cyan animate-pulse" />
-                <span className="text-xs font-mono font-bold text-white uppercase tracking-wider">
-                  Syllabus Taxonomy Connected
-                </span>
+            <div className="flex flex-wrap items-center justify-between pb-6 border-b border-white/10 mb-8 gap-3">
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <span className="w-3.5 h-3.5 rounded-full bg-brand-cyan animate-pulse" />
+                  <span className="text-xs font-mono font-bold text-white uppercase tracking-wider">
+                    Taxonomy Connected
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10">
+                  <span className={`w-2 h-2 rounded-full ${backendStatus.online ? (backendStatus.isLiveAI ? 'bg-emerald-400 animate-ping' : 'bg-brand-cyan') : 'bg-amber-400'}`} />
+                  <span className="text-[11px] font-mono text-slate-300">
+                    {backendStatus.online
+                      ? (backendStatus.isLiveAI ? `Live Gemini 1.5 Flash (Online)` : `Backend API (Demo Mode)`)
+                      : 'Autonomous Simulator (Backend Offline)'}
+                  </span>
+                </div>
               </div>
               
               <button
@@ -367,7 +454,7 @@ export default function DoubtPortalSection() {
                     </div>
                     <button
                       type="button"
-                      onClick={() => setImagePreview(null)}
+                      onClick={() => { setImagePreview(null); setImageFile(null); }}
                       className="p-2 rounded-xl bg-white/5 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 transition-colors"
                     >
                       <X className="w-4 h-4" />
@@ -454,7 +541,7 @@ export default function DoubtPortalSection() {
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-cyan via-brand-violet to-brand-purple" />
 
                   {/* Ticket Header */}
-                  <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
+                  <div className="flex flex-wrap items-center justify-between pb-4 border-b border-white/10 mb-6 gap-2">
                     <div className="flex items-center gap-2.5">
                       <CheckCircle2 className="w-5 h-5 text-brand-cyan" />
                       <h4 className="text-sm sm:text-base font-mono font-bold text-white tracking-wide">
@@ -463,12 +550,23 @@ export default function DoubtPortalSection() {
                       </h4>
                     </div>
 
-                    <button
-                      onClick={() => setSubmittedResult(null)}
-                      className="p-1 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
-                    >
-                      <X className="w-4.5 h-4.5" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      {submittedResult.aiEngine && (
+                        <span className={`text-[10px] font-mono px-2.5 py-0.5 rounded-full border ${
+                          submittedResult.isLiveAI
+                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                            : 'bg-brand-violet/10 text-brand-cyan border-brand-violet/20'
+                        }`}>
+                          {submittedResult.aiEngine}
+                        </span>
+                      )}
+                      <button
+                        onClick={() => setSubmittedResult(null)}
+                        className="p-1 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                      >
+                        <X className="w-4.5 h-4.5" />
+                      </button>
+                    </div>
                   </div>
 
                   {/* Context Specs Grid */}
