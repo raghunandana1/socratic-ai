@@ -73,7 +73,7 @@ export default function AdaptiveRLEngineSection() {
               <button
                 key={examKey}
                 onClick={() => setSelectedExam(examKey)}
-                className={`px-6 py-3 rounded-xl text-xs font-mono font-bold transition-all duration-300 ${
+                className={`px-6 py-3 rounded-xl text-xs font-semibold transition-all duration-300 ${
                   selectedExam === examKey
                     ? 'bg-brand-violet text-white shadow-glow-violet scale-[1.02]'
                     : 'text-slate-400 hover:text-white hover:bg-white/5'
@@ -93,20 +93,20 @@ export default function AdaptiveRLEngineSection() {
             <TiltCard className="h-full bg-[#08080E] border-brand-violet/30 p-6 md:p-8 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
-                  <span className="text-xs font-mono text-brand-cyan font-bold flex items-center gap-2">
+                  <span className="text-xs text-brand-cyan font-bold flex items-center gap-2">
                     <ShieldCheck className="w-4 h-4" />
                     {activeModelData.examName}
                   </span>
-                  <span className="text-[11px] font-mono text-brand-purple bg-brand-violet/10 px-2.5 py-0.5 rounded-full border border-brand-violet/20">
+                  <span className="text-[11px] font-semibold text-brand-purple bg-brand-violet/10 px-2.5 py-0.5 rounded-full border border-brand-violet/20">
                     Isolated Calculation
                   </span>
                 </div>
 
                 <div className="mb-6">
-                  <div className="text-xs font-mono text-slate-400 uppercase tracking-wider mb-1">
+                  <div className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">
                     Target Concept Accuracy
                   </div>
-                  <div className="text-4xl font-mono font-extrabold text-white mb-2">
+                  <div className="text-4xl font-extrabold text-white mb-2 tracking-tight">
                     {accuracyProgress}%
                   </div>
                   <div className="w-full h-3 bg-white/10 rounded-full overflow-hidden p-0.5 border border-white/5">
@@ -119,15 +119,15 @@ export default function AdaptiveRLEngineSection() {
 
                 <div className="space-y-4">
                   <div className="bg-[#050508] p-4 rounded-xl border border-white/5">
-                    <div className="text-[11px] font-mono text-slate-400">Predicted Benchmark Score</div>
-                    <div className="text-lg font-bold text-brand-cyan font-mono mt-0.5">
+                    <div className="text-[11px] text-slate-400 font-medium">Predicted Benchmark Score</div>
+                    <div className="text-lg font-bold text-brand-cyan mt-0.5">
                       {activeModelData.predictedScore}
                     </div>
                   </div>
 
                   <div className="bg-[#050508] p-4 rounded-xl border border-white/5">
-                    <div className="text-[11px] font-mono text-slate-400">Calibrated Question Difficulty</div>
-                    <div className="text-base font-bold text-white font-mono mt-0.5 flex items-center justify-between">
+                    <div className="text-[11px] text-slate-400 font-medium">Calibrated Question Difficulty</div>
+                    <div className="text-base font-bold text-white mt-0.5 flex items-center justify-between">
                       <span>{activeModelData.recommendedDifficulty}</span>
                       <ArrowUpRight className="w-4 h-4 text-brand-cyan" />
                     </div>
@@ -135,7 +135,7 @@ export default function AdaptiveRLEngineSection() {
                 </div>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-white/10 text-xs font-mono text-slate-400 flex items-center justify-between">
+              <div className="mt-6 pt-4 border-t border-white/10 text-xs text-slate-400 font-medium flex items-center justify-between">
                 <span>Model Engine: Standalone PPO</span>
                 <span className="text-emerald-400">100% Isolated Metrics</span>
               </div>
@@ -147,11 +147,11 @@ export default function AdaptiveRLEngineSection() {
             <TiltCard className="h-full bg-[#0A0A14] border-white/10 p-6 md:p-8 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
-                  <span className="text-xs font-mono text-slate-400 flex items-center gap-2">
+                  <span className="text-xs text-slate-400 flex items-center gap-2 font-medium">
                     <BarChart3 className="w-4 h-4 text-brand-cyan" />
                     {selectedExam} Subtopic Mastery Matrix
                   </span>
-                  <span className="text-[11px] font-mono text-slate-400">
+                  <span className="text-[11px] text-slate-400 font-medium">
                     Real-time Diagnostic
                   </span>
                 </div>
@@ -159,7 +159,7 @@ export default function AdaptiveRLEngineSection() {
                 <div className="space-y-4 mb-6">
                   {activeModelData.subtopics.map((topic) => (
                     <div key={topic.name} className="bg-[#050508] p-4 rounded-xl border border-white/5">
-                      <div className="flex justify-between items-center mb-1.5 text-xs font-mono">
+                      <div className="flex justify-between items-center mb-1.5 text-xs font-medium">
                         <span className="text-slate-200 font-bold">{topic.name}</span>
                         <span className="text-brand-cyan font-bold">{topic.score}%</span>
                       </div>
@@ -174,7 +174,7 @@ export default function AdaptiveRLEngineSection() {
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-white/10 text-xs text-slate-400 font-mono">
+              <div className="pt-4 border-t border-white/10 text-xs text-slate-400 font-medium">
                 Subtopic parameters are computed independently for {selectedExam} without mixing with other exams.
               </div>
             </TiltCard>

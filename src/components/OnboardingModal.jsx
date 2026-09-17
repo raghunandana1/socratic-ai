@@ -80,7 +80,7 @@ export default function OnboardingModal() {
                     <div className="p-3 rounded-xl bg-white/5 border border-white/10">
                       {opt.icon}
                     </div>
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-300 bg-white/5 px-2 py-0.5 rounded border border-white/10">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300 bg-white/5 px-2 py-0.5 rounded border border-white/10">
                       {opt.tagline}
                     </span>
                   </div>
@@ -94,7 +94,7 @@ export default function OnboardingModal() {
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs font-mono text-brand-cyan">
+                <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs font-semibold text-brand-cyan">
                   <span>{opt.badge}</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </div>
@@ -103,7 +103,7 @@ export default function OnboardingModal() {
           </div>
 
           {/* Bottom Note */}
-          <div className="text-center text-xs text-slate-400 font-mono relative z-10">
+          <div className="text-center text-xs text-slate-400 font-medium relative z-10">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 inline mr-1.5" />
             You can switch your target exam stream at any time from the top navigation bar.
           </div>

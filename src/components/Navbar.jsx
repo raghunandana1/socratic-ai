@@ -57,7 +57,7 @@ export default function Navbar() {
           >
             <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-brand-violet to-brand-cyan p-[1px] shadow-glow-violet group-hover:scale-105 transition-transform duration-300">
               <div className="w-full h-full bg-[#050507] rounded-[11px] flex items-center justify-center relative overflow-hidden">
-                <span className="font-mono font-extrabold text-sm text-transparent bg-clip-text bg-gradient-to-r from-brand-cyan to-brand-violet group-hover:rotate-12 transition-transform duration-300">
+                <span className="font-extrabold text-sm text-transparent bg-clip-text bg-gradient-to-r from-brand-cyan to-brand-violet group-hover:rotate-12 transition-transform duration-300">
                   ∑
                 </span>
               </div>
@@ -72,7 +72,7 @@ export default function Navbar() {
           <div className="relative hidden sm:block">
             <button
               onClick={() => setExamDropdownOpen(!examDropdownOpen)}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-violet/20 border border-brand-violet/40 text-brand-cyan text-xs font-mono font-bold hover:bg-brand-violet/30 transition-all shadow-glow-violet"
+              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-violet/20 border border-brand-violet/40 text-brand-cyan text-xs font-semibold hover:bg-brand-violet/30 transition-all shadow-glow-violet"
             >
               <span>{targetExam}</span>
               <ChevronDown className="w-3.5 h-3.5" />
@@ -87,7 +87,7 @@ export default function Navbar() {
                       setTargetExam(ex);
                       setExamDropdownOpen(false);
                     }}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-xs font-mono font-bold flex items-center justify-between transition-all ${
+                    className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between transition-all ${
                       targetExam === ex
                         ? 'bg-brand-violet text-white'
                         : 'text-slate-300 hover:bg-white/5 hover:text-white'
@@ -152,13 +152,13 @@ export default function Navbar() {
             className="md:hidden absolute top-20 left-4 right-4 glass-card rounded-2xl p-6 border border-white/10 bg-[#0A0A0F]/95 backdrop-blur-2xl shadow-2xl flex flex-col gap-4"
           >
             <div className="pb-3 border-b border-white/10 flex items-center justify-between">
-              <span className="text-xs font-mono text-slate-400">Target Exam:</span>
+              <span className="text-xs text-slate-400 font-medium">Target Exam:</span>
               <div className="flex gap-1.5">
                 {exams.map((ex) => (
                   <button
                     key={ex}
                     onClick={() => setTargetExam(ex)}
-                    className={`px-2.5 py-1 rounded text-xs font-mono font-bold ${
+                    className={`px-2.5 py-1 rounded text-xs font-semibold ${
                       targetExam === ex ? 'bg-brand-violet text-white' : 'bg-white/5 text-slate-400'
                     }`}
                   >

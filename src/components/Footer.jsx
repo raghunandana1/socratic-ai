@@ -12,7 +12,7 @@ export default function Footer() {
             <a href="#" className="flex items-center gap-3 mb-4">
               <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-violet to-brand-cyan p-[1px] shadow-glow-violet">
                 <div className="w-full h-full bg-[#050507] rounded-[11px] flex items-center justify-center">
-                  <span className="font-mono font-extrabold text-sm text-brand-cyan">∑</span>
+                  <span className="font-extrabold text-sm text-brand-cyan">∑</span>
                 </div>
               </div>
               <span className="text-xl font-bold text-white tracking-tight">
@@ -23,14 +23,14 @@ export default function Footer() {
               AI that teaches you to think. Autonomous multimodal diagnostic learning platform designed exclusively for JEE Main, JEE Advanced & NEET UG aspirants.
             </p>
           </div>
-          <div className="text-xs text-slate-400 font-mono">
+          <div className="text-xs text-slate-400 font-medium">
             © {new Date().getFullYear()} SocraticAI Technologies Inc. All rights reserved.
           </div>
         </div>
 
         {/* Links Column 1 */}
         <div className="md:col-span-3">
-          <h4 className="text-sm font-bold text-white uppercase tracking-wider font-mono mb-4">
+          <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">
             Platform
           </h4>
           <ul className="space-y-2.5 text-sm">
@@ -42,7 +42,7 @@ export default function Footer() {
 
         {/* Links Column 2 */}
         <div className="md:col-span-4">
-          <h4 className="text-sm font-bold text-white uppercase tracking-wider font-mono mb-4">
+          <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">
             Curriculum Standards
           </h4>
           <ul className="space-y-2.5 text-sm">

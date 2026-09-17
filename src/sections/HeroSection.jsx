@@ -145,9 +145,9 @@ export default function HeroSection() {
                 <span className="w-3 h-3 rounded-full bg-rose-500/80" />
                 <span className="w-3 h-3 rounded-full bg-amber-500/80" />
                 <span className="w-3 h-3 rounded-full bg-emerald-500/80" />
-                <span className="ml-2 text-xs font-mono text-slate-400">socratic-diagnostic-v4.2</span>
+                <span className="ml-2 text-xs text-slate-400 font-medium">socratic-diagnostic-v4.2</span>
               </div>
-              <div className="flex items-center gap-2 text-xs text-brand-cyan bg-brand-cyan/10 px-2.5 py-1 rounded-full border border-brand-cyan/20">
+              <div className="flex items-center gap-2 text-xs text-brand-cyan bg-brand-cyan/10 px-2.5 py-1 rounded-full border border-brand-cyan/20 font-medium">
                 <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan animate-pulse" />
                 <span>Live AI Analysis</span>
               </div>
@@ -156,11 +156,11 @@ export default function HeroSection() {
             {/* Input Problem Display */}
             <div className="bg-[#050507] rounded-xl p-5 border border-white/5 mb-6 relative overflow-hidden group">
               <div className="flex justify-between items-center text-xs text-slate-400 mb-2">
-                <span className="font-mono text-brand-violet">{heroProblem.topic}</span>
-                <span className="bg-white/5 px-2 py-0.5 rounded text-[10px] text-slate-300">STUDENT INPUT</span>
+                <span className="text-brand-violet font-semibold">{heroProblem.topic}</span>
+                <span className="bg-white/5 px-2 py-0.5 rounded text-[10px] text-slate-300 font-medium">STUDENT INPUT</span>
               </div>
               
-              <div className="font-mono text-xl sm:text-2xl font-bold text-white tracking-wide flex items-center justify-between">
+              <div className="text-xl sm:text-2xl font-bold text-white tracking-wide flex items-center justify-between">
                 <span>{heroProblem.equation}</span>
                 <Sparkles className="w-5 h-5 text-brand-violet animate-pulse" />
               </div>
@@ -181,7 +181,7 @@ export default function HeroSection() {
                   className="bg-brand-violet/10 border border-brand-violet/30 rounded-xl p-5 backdrop-blur-md relative"
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-mono font-bold text-brand-cyan uppercase tracking-wider">
+                    <span className="text-xs font-bold text-brand-cyan uppercase tracking-wider">
                       {heroProblem.steps[activeStepIndex]?.title}
                     </span>
                     <span className="text-[11px] font-medium bg-brand-violet/20 text-brand-purple border border-brand-violet/30 px-2.5 py-0.5 rounded-full">
@@ -189,7 +189,7 @@ export default function HeroSection() {
                     </span>
                   </div>
 
-                  <p className="text-sm md:text-base font-medium text-slate-100 leading-relaxed font-sans">
+                  <p className="text-sm md:text-base font-medium text-slate-100 leading-relaxed">
                     "{heroProblem.steps[activeStepIndex]?.hint}"
                   </p>
                 </motion.div>

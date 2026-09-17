@@ -53,7 +53,7 @@ export default function ProblemSection() {
                 <div>
                   {/* Top Badge & Number */}
                   <div className="flex items-center justify-between mb-8">
-                    <span className="text-3xl sm:text-4xl font-mono font-extrabold text-white tracking-wider">
+                    <span className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
                       {card.stat}
                     </span>
                     <div className="p-3 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md">
@@ -74,10 +74,10 @@ export default function ProblemSection() {
 
                 {/* Bottom Tag */}
                 <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs">
-                  <span className="font-mono text-slate-300 font-medium">
+                  <span className="text-slate-300 font-medium">
                     {card.tag}
                   </span>
-                  <span className="text-slate-400 font-mono">CRITICAL</span>
+                  <span className="text-slate-400 font-semibold tracking-wider">CRITICAL</span>
                 </div>
               </TiltCard>
             </motion.div>
