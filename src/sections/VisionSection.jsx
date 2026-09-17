@@ -56,7 +56,7 @@ export default function VisionSection() {
 
   return (
     <section id="how-it-works" className="scene min-h-[260svh] relative z-10 bg-bg-card/40 border-y border-white/5" data-scene>
-      <div className="scene-inner px-4 md:px-8">
+      <div className="scene__viewport scene-inner px-4 md:px-8">
         <div className="max-w-7xl mx-auto w-full my-auto py-6">
           
           {/* Section Header */}

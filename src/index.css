@@ -119,7 +119,8 @@
   width: 100%;
 }
 
-.scene-inner {
+.scene-inner,
+.scene__viewport {
   position: sticky;
   top: 0;
   height: 100svh;
@@ -132,10 +133,11 @@
 }
 
 /* Hero Independent Scrubbing */
-.hero-scrub {
+.hero-scrub,
+.hero-typography-scrub {
   will-change: transform, opacity;
-  transform: translate3d(0, var(--hero-y, 0px), 0) scale(var(--hero-scale, 1));
-  opacity: var(--hero-opacity, 1);
+  transform: translate3d(0, var(--hero-type-y, var(--hero-y, 0px)), 0) scale(var(--hero-type-scale, var(--hero-scale, 1)));
+  opacity: var(--hero-type-alpha, var(--hero-opacity, 1));
   transform-origin: center top;
 }
 
@@ -202,7 +204,8 @@
     height: auto !important;
     min-height: auto !important;
   }
-  .scene-inner {
+  .scene-inner,
+  .scene__viewport {
     position: relative !important;
     height: auto !important;
     min-height: auto !important;

@@ -29,6 +29,7 @@ function MainAppContent() {
       smoothWheel: true,
       wheelMultiplier: 1,
     });
+    window.__lenis = lenis;
 
     function raf(time) {
       lenis.raf(time);
@@ -37,6 +38,7 @@ function MainAppContent() {
     requestAnimationFrame(raf);
 
     return () => {
+      delete window.__lenis;
       lenis.destroy();
     };
   }, []);
