@@ -28,7 +28,6 @@ export default function Navbar() {
     { name: 'How it Works', href: '#how-it-works' },
     { name: 'Doubt Portal', href: '#doubt-portal' },
     { name: 'Adaptive AI', href: '#adaptive-ai' },
-    { name: 'Demo', href: '#demo' },
   ];
 
   const handleLinkClick = (href) => {

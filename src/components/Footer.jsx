@@ -37,7 +37,6 @@ export default function Footer() {
             <li><a href="#product" className="hover:text-brand-cyan transition-colors">Product Architecture</a></li>
             <li><a href="#how-it-works" className="hover:text-brand-cyan transition-colors">Multimodal Vision OCR</a></li>
             <li><a href="#adaptive-ai" className="hover:text-brand-cyan transition-colors">Adaptive RL Policy Engine</a></li>
-            <li><a href="#demo" className="hover:text-brand-cyan transition-colors">Interactive Demo</a></li>
           </ul>
         </div>
 
