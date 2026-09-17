@@ -34,7 +34,7 @@ export default function GuidanceSection() {
 
   return (
     <section className="scene min-h-[260svh] relative z-10" data-scene>
-      <div className="scene__viewport scene-inner px-4 md:px-8">
+      <div className="scene-inner px-4 md:px-8">
         <div className="max-w-7xl mx-auto w-full my-auto py-6">
           
           {/* Section Header */}

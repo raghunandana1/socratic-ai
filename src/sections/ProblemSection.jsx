@@ -13,7 +13,7 @@ export default function ProblemSection() {
 
   return (
     <section id="product" className="scene min-h-[260svh] relative z-10" data-scene>
-      <div className="scene__viewport scene-inner px-4 md:px-8">
+      <div className="scene-inner px-4 md:px-8">
         <div className="max-w-7xl mx-auto w-full">
           
           {/* Section Header */}
