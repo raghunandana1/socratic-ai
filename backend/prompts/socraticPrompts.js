@@ -6,6 +6,13 @@ YOUR CORE PEDAGOGICAL PHILOSOPHY:
 - Your goal is to guide the student to discover the solution on their own through progressive, graduated Socratic hints.
 - Zero Negative Penalty: Mistakes are valuable telemetry to identify the student's exact failure point.
 
+AUTONOMOUS SYLLABUS & TOPIC RECOGNITION:
+- You must automatically identify the exact Subject, Chapter, and Subtopic directly from the problem image or text.
+- Subject MUST be one of: "Physics", "Chemistry", "Mathematics", or "Biology".
+- Chapter MUST be the specific NCERT / JEE / NEET chapter (e.g. "Rotational Motion", "Thermodynamics", "Electrostatics", "Aldehydes, Ketones and Carboxylic Acids", "Definite Integrals", "Complex Numbers", "Ray Optics", "Chemical Kinetics", "Quadratic Equations", etc.).
+- Subtopic MUST be the specific focal concept (e.g. "Torque and Equilibrium", "Aldol Condensation Mechanism", "Integration by Parts", "Gauss's Law Applications").
+- Target Exam: Auto-detect whether this aligns with "JEE Main", "JEE Advanced", or "NEET UG".
+
 CRITICAL MATHEMATICAL NOTATION RULES (FOR HUMAN READABILITY):
 - DO NOT OUTPUT RAW LATEX CODE. NEVER use backslash commands like \\frac{a}{b}, \\implies, \\times, \\vec{p}, \\cdot, \\sqrt{x}, \\int, or dollar signs ($...$).
 - WRITE NATURAL, CLEAN, HUMAN-READABLE TEXT AND STANDARD MATHEMATICAL SYMBOLS:
@@ -41,6 +48,7 @@ TASK INSTRUCTIONS:
 {
   "hasAttempt": true,
   "isCorrect": false,
+  "detectedExam": "JEE Main",
   "detectedSubject": "Physics",
   "detectedChapter": "Rotational Mechanics",
   "detectedSubtopic": "Torque and Angular Acceleration",
@@ -57,20 +65,17 @@ TASK INSTRUCTIONS:
     "string (Hint 3: Explicit value, formula, or boundary condition nudge)",
     "string (Hint 4: Strong scaffolding nudge before final breakthrough)"
   ]
-}`;
+}
+`;
 }
 
 export function buildSocraticUserPrompt({
-  exam,
-  subject,
-  classLevel,
-  chapter,
-  subtopic,
-  errorTag,
   doubtText,
   hasImage,
+  errorTag,
   attemptNumber = 1,
-  priorAttempts = []
+  priorAttempts = [],
+  exam = null
 }) {
   let priorContext = "";
   if (priorAttempts && priorAttempts.length > 0) {
@@ -79,17 +84,18 @@ ${priorAttempts.map(a => `- Attempt ${a.attemptNumber}: "${a.doubtText || (a.has
 Current submission is Attempt #${attemptNumber}. Compare with previous attempts to evaluate if the student has resolved the error.`;
   }
 
-  return `STUDENT SESSION CONTEXT:
-- Target Exam: ${exam || "JEE Main"}
-- Selected Subject: ${subject || "General"}
-- Class Level: Class ${classLevel || "11"}
-- Chapter: ${chapter || "General"}
-- Subtopic: ${subtopic || "General Concepts"}
-- Suspected Error Category: ${errorTag || "Conceptual Blindspot"}
-- Student Submission: "${doubtText || (hasImage ? "Please analyze my notebook working in the attached photo." : "Here is my attempt.")}"
+  return `STUDENT SUBMISSION:
+- Student Query / Working Text: "${doubtText || (hasImage ? "Please inspect my notebook working in the attached photo." : "Here is my problem attempt.")}"
 - Notebook Image Attached: ${hasImage ? "YES" : "NO"}
+- Suspected Error Category (optional self-tag): ${errorTag || "Conceptual Blindspot"}
+- Target Exam Preference: ${exam || "Auto-detect"}
 - Attempt Number: #${attemptNumber}
 ${priorContext}
 
-IMPORTANT: Evaluate the attempt carefully. Determine if there is an actual student attempt (hasAttempt), break down the reasoning steps, identify the first incorrect step (if any), check if the solution is correct (isCorrect), and provide the 4 progressive hints in clean, human-readable math (NO raw LaTeX). Return valid JSON ONLY.`;
+AUTONOMOUS DETECTION INSTRUCTIONS:
+1. Auto-detect the exact Subject ("Physics", "Chemistry", "Mathematics", or "Biology"), Chapter name, and Subtopic from the problem / image.
+2. Check if the student provided their own attempt (hasAttempt).
+3. If attempt exists, verify each step and determine if it's correct (isCorrect).
+4. If incorrect, pinpoint the first incorrect step and generate the 4 progressive Socratic hints in human-readable notation (NO raw LaTeX).
+Return valid JSON ONLY matching the required schema.`;
 }

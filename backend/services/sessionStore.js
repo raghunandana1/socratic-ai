@@ -50,7 +50,10 @@ function cleanupOldSessions() {
 }
 
 // Run cleanup periodically every hour
-setInterval(cleanupOldSessions, 60 * 60 * 1000);
+const cleanupTimer = setInterval(cleanupOldSessions, 60 * 60 * 1000);
+if (cleanupTimer.unref) {
+  cleanupTimer.unref();
+}
 
 export function calculateExp(hintsUsed) {
   // XP SYSTEM:

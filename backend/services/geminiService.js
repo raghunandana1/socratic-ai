@@ -63,16 +63,12 @@ export async function diagnoseDoubtWithGemini({
 
   const systemInstruction = buildSocraticSystemInstruction();
   const userPrompt = buildSocraticUserPrompt({
-    exam: existingSession ? existingSession.exam : exam,
-    subject: existingSession ? existingSession.subject : subject,
-    classLevel,
-    chapter: existingSession ? existingSession.chapter : chapter,
-    subtopic: existingSession ? existingSession.subtopic : subtopic,
-    errorTag,
     doubtText,
     hasImage: !!imageBuffer,
+    errorTag,
     attemptNumber,
-    priorAttempts
+    priorAttempts,
+    exam: existingSession ? existingSession.exam : exam
   });
 
   const candidateModels = [];
@@ -175,6 +171,32 @@ export async function diagnoseDoubtWithGemini({
   });
 }
 
+function detectFallbackSyllabus(text) {
+  const t = (text || '').toLowerCase();
+  if (t.includes('torque') || t.includes('angular') || t.includes('inertia') || t.includes('rotat')) {
+    return { subject: 'Physics', chapter: 'Rotational Mechanics', subtopic: 'Torque and Angular Acceleration' };
+  }
+  if (t.includes('electric') || t.includes('gauss') || t.includes('flux') || t.includes('charge') || t.includes('field') || t.includes('potential')) {
+    return { subject: 'Physics', chapter: 'Electrostatics', subtopic: 'Electric Field & Potential' };
+  }
+  if (t.includes('projectile') || t.includes('velocity') || t.includes('acceleration') || t.includes('trajectory')) {
+    return { subject: 'Physics', chapter: 'Kinematics', subtopic: '2D Projectile Motion' };
+  }
+  if (t.includes('carbocation') || t.includes('electrophil') || t.includes('nucleophil') || t.includes('reaction') || t.includes('aldehyde') || t.includes('alkene')) {
+    return { subject: 'Chemistry', chapter: 'Organic Reaction Mechanisms', subtopic: 'Electrophilic Addition & Intermediates' };
+  }
+  if (t.includes('integral') || t.includes('calculus') || t.includes('dx') || t.includes('∫')) {
+    return { subject: 'Mathematics', chapter: 'Definite Integrals', subtopic: 'Integration by Parts & Substitution' };
+  }
+  if (t.includes('quadratic') || t.includes('roots') || t.includes('discriminant')) {
+    return { subject: 'Mathematics', chapter: 'Quadratic Equations', subtopic: 'Nature of Roots & Inequalities' };
+  }
+  if (t.includes('matrix') || t.includes('determinant')) {
+    return { subject: 'Mathematics', chapter: 'Matrices & Determinants', subtopic: 'Matrix Inversion & Properties' };
+  }
+  return { subject: 'Physics & Mathematics', chapter: 'Core Concept Analysis', subtopic: 'Analytical Problem Solving' };
+}
+
 function processDiagnosticPayload({
   parsedData,
   existingSession,
@@ -189,9 +211,10 @@ function processDiagnosticPayload({
   const hasAttempt = parsedData.hasAttempt !== false;
   const isCorrect = Boolean(parsedData.isCorrect);
 
-  const detectedSubj = parsedData.detectedSubject || subject || (existingSession?.subject) || "Mathematics";
-  const detectedChap = parsedData.detectedChapter || chapter || (existingSession?.chapter) || "General";
-  const detectedSub = parsedData.detectedSubtopic || subtopic || (existingSession?.subtopic) || "General Concepts";
+  const detectedExam = parsedData.detectedExam || exam || (existingSession?.exam) || "JEE Main";
+  const detectedSubj = parsedData.detectedSubject || subject || (existingSession?.subject) || "Physics";
+  const detectedChap = parsedData.detectedChapter || chapter || (existingSession?.chapter) || "Core Mechanics";
+  const detectedSub = parsedData.detectedSubtopic || subtopic || (existingSession?.subtopic) || "Foundational Principles";
   const questionStatement = cleanMathFormatting(parsedData.questionStatement || parsedData.transcribedText || doubtText || "Problem Statement");
 
   const rawHints = parsedData.hints && parsedData.hints.length >= 4 ? parsedData.hints : [
@@ -219,7 +242,7 @@ function processDiagnosticPayload({
     });
   } else {
     session = createSession({
-      exam: exam || "JEE Main",
+      exam: detectedExam,
       subject: detectedSubj,
       chapter: detectedChap,
       subtopic: detectedSub,
@@ -253,6 +276,10 @@ function processDiagnosticPayload({
       expAwarded: session.expAwarded
     },
     data: {
+      detectedExam: session.exam,
+      detectedSubject: session.subject,
+      detectedChapter: session.chapter,
+      detectedSubtopic: session.subtopic,
       hasAttempt,
       isCorrect: session.solved,
       firstIncorrectStep,
@@ -282,6 +309,12 @@ function getFallbackDiagnosticResponse({
   const cleanQuery = (doubtText || "").trim();
   const hasAttempt = Boolean(cleanQuery.length > 0 || hasImage);
   const isCorrect = /correct|eureka|solution verified/i.test(cleanQuery);
+  const fallbackSyllabus = detectFallbackSyllabus(doubtText);
+
+  const resolvedExam = exam || existingSession?.exam || "JEE Main";
+  const resolvedSubj = subject || existingSession?.subject || fallbackSyllabus.subject;
+  const resolvedChap = chapter || existingSession?.chapter || fallbackSyllabus.chapter;
+  const resolvedSub = subtopic || existingSession?.subtopic || fallbackSyllabus.subtopic;
 
   const fallbackHints = [
     "Identify the known physical/mathematical invariants and boundary conditions.",
@@ -300,14 +333,14 @@ function getFallbackDiagnosticResponse({
     });
   } else {
     session = createSession({
-      exam: exam || "JEE Main",
-      subject: subject || "Mathematics",
-      chapter: chapter || "General",
-      subtopic: subtopic || "General Concepts",
+      exam: resolvedExam,
+      subject: resolvedSubj,
+      chapter: resolvedChap,
+      subtopic: resolvedSub,
       questionText: cleanQuery || (hasImage ? "[Notebook Snapshot Problem Statement]" : "Target Problem"),
       allHints: fallbackHints,
-      errorTitle: "Conceptual Misapplication",
-      errorDescription: "Identified discrepancy between problem constraints and intermediate calculation.",
+      errorTitle: errorTag || "Conceptual Misapplication",
+      errorDescription: `Identified discrepancy in intermediate calculation within ${resolvedSub}.`,
       initialAttempt: {
         doubtText: cleanQuery,
         hasImage
@@ -333,6 +366,10 @@ function getFallbackDiagnosticResponse({
       expAwarded: session.expAwarded
     },
     data: {
+      detectedExam: session.exam,
+      detectedSubject: session.subject,
+      detectedChapter: session.chapter,
+      detectedSubtopic: session.subtopic,
       hasAttempt,
       isCorrect: session.solved,
       firstIncorrectStep: session.solved ? null : "Step 2: Misapplied constraint",

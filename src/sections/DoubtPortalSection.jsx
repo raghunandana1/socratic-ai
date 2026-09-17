@@ -4,15 +4,10 @@ import { Send, Camera, Upload, X, CheckCircle2, FileJson, Sparkles, BookOpen, La
 import TiltCard from '../components/TiltCard';
 import MagneticButton from '../components/MagneticButton';
 import { useExam } from '../context/ExamContext';
-import chaptersData from '../data/chaptersData.json';
 
 export default function DoubtPortalSection() {
   const { targetExam, setTargetExam } = useExam();
 
-  const [selectedSubject, setSelectedSubject] = useState('Mathematics');
-  const [selectedClass, setSelectedClass] = useState('11');
-  const [selectedChapter, setSelectedChapter] = useState('');
-  const [selectedSubtopic, setSelectedSubtopic] = useState('');
   const [errorTag, setErrorTag] = useState('Conceptual Blindspot');
   const [questionText, setQuestionText] = useState('');
 
@@ -67,46 +62,6 @@ export default function DoubtPortalSection() {
     };
   }, []);
 
-  const taxonomy = chaptersData.JEE_NEET_Exhaustive_Syllabus_Taxonomy;
-
-  // Filter available subjects based on target exam (Hide Math if NEET!)
-  const availableSubjects = targetExam.includes('NEET')
-    ? ['Physics', 'Chemistry', 'Biology']
-    : ['Physics', 'Chemistry', 'Mathematics'];
-
-  // Keep subject valid when exam changes
-  useEffect(() => {
-    if (targetExam.includes('NEET') && selectedSubject === 'Mathematics') {
-      setSelectedSubject('Physics');
-    }
-  }, [targetExam, selectedSubject]);
-
-  // Filter available chapters based on Subject and Class
-  const chaptersForSubjectAndClass = taxonomy[selectedSubject]
-    ? taxonomy[selectedSubject].filter(item => item.class === selectedClass)
-    : [];
-
-  // Reset chapter & subtopic when subject or class changes
-  useEffect(() => {
-    if (chaptersForSubjectAndClass.length > 0) {
-      setSelectedChapter(chaptersForSubjectAndClass[0].chapter);
-    } else {
-      setSelectedChapter('');
-    }
-  }, [selectedSubject, selectedClass, targetExam]);
-
-  // Find subtopics for selected chapter
-  const currentChapterObj = chaptersForSubjectAndClass.find(c => c.chapter === selectedChapter);
-  const availableSubtopics = currentChapterObj ? currentChapterObj.subtopics : [];
-
-  useEffect(() => {
-    if (availableSubtopics.length > 0) {
-      setSelectedSubtopic(availableSubtopics[0]);
-    } else {
-      setSelectedSubtopic('');
-    }
-  }, [selectedChapter]);
-
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -158,49 +113,82 @@ export default function DoubtPortalSection() {
     .trim();
 }
 
-  // Generate dynamic, context-aware Socratic Hints based on user's query and syllabus
-  const generateDynamicSocraticDiagnosis = (query, subject, chapter, subtopic, errorType) => {
-    const cleanQuery = (query || "").trim();
+  // Heuristic detector for fallback subject & chapter
+  const detectSubjectAndChapter = (text) => {
+    const t = (text || '').toLowerCase();
+    if (t.includes('torque') || t.includes('angular') || t.includes('inertia') || t.includes('rotat') || t.includes('force') || t.includes('momentum') || t.includes('velocity')) {
+      return {
+        subject: 'Physics',
+        chapter: (t.includes('torque') || t.includes('inertia') || t.includes('angular')) ? 'Rotational Mechanics' : 'Kinematics',
+        subtopic: (t.includes('torque') || t.includes('angular')) ? 'Torque & Angular Acceleration' : 'Conservation Laws'
+      };
+    }
+    if (t.includes('reaction') || t.includes('carbocation') || t.includes('acid') || t.includes('base') || t.includes('aldehyde') || t.includes('electrophil')) {
+      return {
+        subject: 'Chemistry',
+        chapter: 'Organic Chemistry',
+        subtopic: 'Reaction Mechanisms & Intermediates'
+      };
+    }
+    if (t.includes('integral') || t.includes('derivative') || t.includes('quadratic') || t.includes('roots') || t.includes('matrix') || t.includes('determinant')) {
+      return {
+        subject: 'Mathematics',
+        chapter: t.includes('integral') ? 'Definite Integrals' : t.includes('quadratic') ? 'Quadratic Equations' : 'Calculus',
+        subtopic: t.includes('integral') ? 'Integration by Parts' : 'Roots & Polynomial Constraints'
+      };
+    }
+    return {
+      subject: 'Physics & Mathematics',
+      chapter: 'Core Conceptual Analysis',
+      subtopic: 'Analytical Problem Solving'
+    };
+  };
 
-    let errorTitle = errorType;
-    let errorDescription = "";
+  // Generate dynamic Socratic Hints based on user's query and auto-detected context
+  const generateDynamicSocraticDiagnosis = (query, errorType) => {
+    const detected = detectSubjectAndChapter(query);
+    let errorTitle = errorType || "Conceptual Blindspot";
+    let errorDescription = `Identified discrepancy in fundamental principles within ${detected.subtopic}.`;
 
-    if (errorType === 'Conceptual Blindspot') {
-      errorTitle = "Conceptual Misapplication";
-      errorDescription = `Misinterpretation of core boundary conditions or fundamental definitions in ${subtopic || chapter}.`;
-    } else if (errorType === 'Calculation Slip') {
+    if (errorType === 'Calculation Slip') {
       errorTitle = "Algebraic / Arithmetic Slip";
-      errorDescription = `Sign error or incorrect coefficient expansion during intermediate simplification in ${subtopic || chapter}.`;
+      errorDescription = `Sign error or coefficient slip during intermediate calculation in ${detected.chapter}.`;
     } else if (errorType === 'Formula Amnesia') {
       errorTitle = "Formula Misapplication";
-      errorDescription = `Incomplete identity formulation or misapplied standard formula in ${subtopic || chapter}.`;
-    } else {
+      errorDescription = `Incomplete identity formulation or misapplied standard equation in ${detected.subtopic}.`;
+    } else if (errorType === 'Execution Bottleneck') {
       errorTitle = "Execution Bottleneck";
-      errorDescription = `Stalled progress during algebraic substitution or reduction step in ${subtopic || chapter}.`;
+      errorDescription = `Stalled progress during algebraic substitution or boundary reduction step in ${detected.chapter}.`;
     }
 
     let hints = [];
-    if (subject === 'Mathematics') {
+    if (detected.subject === 'Physics') {
       hints = [
-        `Write down the governing constraints and check whether the discriminant or domain restrictions limit your variables.`,
-        `Look for an algebraic restructuring: can you complete the square, group terms, or apply a known symmetry?`,
-        `Combine your inequality constraints to solve for the target parameter.`
+        "Identify the system's conserved quantities (energy, momentum, or charge) and state your chosen coordinate origin.",
+        "Apply the governing law relating the field, force, or torque to the distance parameter.",
+        "Recall that torque is r * F * sin(theta), where theta is the angle between the position vector and the force vector.",
+        "Equate the net torque to I * alpha and solve for the target angular acceleration."
       ];
-    } else if (subject === 'Physics') {
+    } else if (detected.subject === 'Chemistry') {
       hints = [
-        `Identify the system's conserved quantities (energy, momentum, or charge) and state your chosen reference coordinate origin.`,
-        `Apply the governing law relating the field, force, or potential to the distance parameter. Watch your inverse-square vs inverse-cube dependencies.`,
-        `Substitute the boundary constraints and check if your dimensional units match the expected physical quantity.`
+        "Identify which reactant acts as the electrophile and which bond possesses the highest electron density.",
+        "Examine intermediate carbocation / transition state stability (+I effect, hyperconjugation, or resonance).",
+        "Consider the attacking nucleophile and steric hindrance around the reactive center.",
+        "Direct the nucleophile to the most stable reactive center to form the major thermodynamic product."
       ];
     } else {
       hints = [
-        `Identify which reactant acts as the electrophile and which bond possesses the highest electron density.`,
-        `Examine intermediate carbocation / transition state stability (+I effect, hyperconjugation, or resonance).`,
-        `Direct the nucleophile to the most stable reactive center to yield the major thermodynamic product.`
+        "Write down the governing constraints and check whether domain restrictions or boundary values limit your variables.",
+        "Look for an algebraic restructuring: can you complete the square, group terms, or apply a known symmetry?",
+        "Recall the discriminant formula D = b^2 - 4*a*c and examine the sign requirements for real roots.",
+        "Combine your inequality constraints to isolate and solve for the target parameter."
       ];
     }
 
     return {
+      detectedSubject: detected.subject,
+      detectedChapter: detected.chapter,
+      detectedSubtopic: detected.subtopic,
       errorTitle,
       errorDescription,
       hints
@@ -221,15 +209,13 @@ export default function DoubtPortalSection() {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    if (!questionText.trim() && !imageFile) return;
+
     setIsSubmitting(true);
 
     try {
       const formData = new FormData();
       formData.append('exam', targetExam);
-      formData.append('subject', selectedSubject);
-      formData.append('class', selectedClass);
-      formData.append('chapter', selectedChapter);
-      formData.append('subtopic', selectedSubtopic);
       formData.append('errorTag', errorTag);
       formData.append('questionText', questionText);
       if (imageFile) {
@@ -253,6 +239,9 @@ export default function DoubtPortalSection() {
         setActiveHintStep(currentLevel > 0 ? currentLevel : 1);
         setSubmittedResult({
           ...payload.data,
+          detectedSubject: payload.data.detectedSubject || "Physics",
+          detectedChapter: payload.data.detectedChapter || "Rotational Mechanics",
+          detectedSubtopic: payload.data.detectedSubtopic || "Torque & Angular Acceleration",
           session: payload.session,
           questionText: questionText || (imageFile ? '[Notebook Snapshot Attached]' : 'Target Problem')
         });
@@ -262,13 +251,7 @@ export default function DoubtPortalSection() {
     } catch (err) {
       console.warn('Backend API connection unavailable, falling back to heuristic engine:', err);
 
-      const diagnosis = generateDynamicSocraticDiagnosis(
-        questionText,
-        selectedSubject,
-        selectedChapter,
-        selectedSubtopic,
-        errorTag
-      );
+      const diagnosis = generateDynamicSocraticDiagnosis(questionText, errorTag);
 
       setTimeout(() => {
         setIsSubmitting(false);
@@ -286,6 +269,9 @@ export default function DoubtPortalSection() {
         setSubmittedResult({
           hasAttempt: true,
           isCorrect: false,
+          detectedSubject: diagnosis.detectedSubject,
+          detectedChapter: diagnosis.detectedChapter,
+          detectedSubtopic: diagnosis.detectedSubtopic,
           firstIncorrectStep: "Step 1: Constraint interpretation",
           reasoningSteps: ["Step 1: Set up problem framework"],
           errorTitle: diagnosis.errorTitle,
@@ -313,7 +299,6 @@ export default function DoubtPortalSection() {
         formData.append('sessionId', activeSession.sessionId);
       }
       formData.append('exam', targetExam);
-      formData.append('subject', selectedSubject);
       formData.append('questionText', retryText);
       if (retryImageFile) {
         formData.append('image', retryImageFile);
@@ -334,11 +319,15 @@ export default function DoubtPortalSection() {
         setActiveSession(payload.session || null);
         const currentLevel = payload.session?.currentHintLevel || 1;
         setActiveHintStep(currentLevel > 0 ? currentLevel : 1);
-        setSubmittedResult({
+        setSubmittedResult(prev => ({
+          ...prev,
           ...payload.data,
+          detectedSubject: payload.data.detectedSubject || prev?.detectedSubject,
+          detectedChapter: payload.data.detectedChapter || prev?.detectedChapter,
+          detectedSubtopic: payload.data.detectedSubtopic || prev?.detectedSubtopic,
           session: payload.session,
           questionText: submittedResult?.questionText || payload.session?.question
-        });
+        }));
         setRetryText('');
         setRetryImageFile(null);
         setRetryImagePreview(null);
@@ -389,13 +378,13 @@ export default function DoubtPortalSection() {
       timestamp: new Date().toISOString(),
       studentSession: {
         exam: targetExam,
-        subject: selectedSubject,
-        class: selectedClass,
-        chapter: selectedChapter,
-        subtopic: selectedSubtopic,
+        detectedSubject: submittedResult?.detectedSubject || "Auto-detected",
+        detectedChapter: submittedResult?.detectedChapter || "Auto-detected",
+        detectedSubtopic: submittedResult?.detectedSubtopic || "Auto-detected",
         errorTag: errorTag,
         doubtText: questionText,
-        hasAttachment: !!imagePreview
+        hasAttachment: !!imagePreview,
+        session: activeSession
       }
     };
 
@@ -439,7 +428,7 @@ export default function DoubtPortalSection() {
             viewport={{ once: true }}
             className="text-base sm:text-lg text-slate-400"
           >
-            Select your syllabus chapter, attach notebook photos, and get instant interactive Socratic hints.
+            Snap your notebook working or type your doubt. Socratic AI automatically identifies the subject, chapter, and topic, diagnosing your exact slip point without giving away the answer.
           </motion.p>
         </div>
 
@@ -452,7 +441,7 @@ export default function DoubtPortalSection() {
               <div className="flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-brand-cyan animate-pulse" />
                 <span className="text-xs font-mono font-bold text-white uppercase tracking-wider">
-                  Taxonomy Connected
+                  Autonomous Vision OCR &amp; Syllabus Detection
                 </span>
               </div>
               
@@ -468,91 +457,11 @@ export default function DoubtPortalSection() {
             {/* Form */}
             <form onSubmit={handleFormSubmit} className="space-y-8">
               
-              {/* STEP 1: Syllabus Cascade Selectors */}
+              {/* STEP 1: Doubt Input & Notebook Capture */}
               <div>
                 <div className="text-xs font-mono font-bold text-brand-cyan uppercase tracking-wider mb-4 flex items-center gap-2">
                   <span className="w-5 h-5 rounded-full bg-brand-cyan/20 border border-brand-cyan/40 text-brand-cyan flex items-center justify-center text-[10px]">1</span>
-                  Select Syllabus & Chapter Context
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-                  {/* Exam Target */}
-                  <div>
-                    <label className="block text-xs font-mono text-slate-400 mb-1.5">Target Exam *</label>
-                    <select
-                      value={targetExam}
-                      onChange={(e) => setTargetExam(e.target.value)}
-                      className="w-full bg-[#050508] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white focus:outline-none focus:border-brand-cyan transition-colors"
-                    >
-                      <option value="JEE Main">JEE Main</option>
-                      <option value="JEE Advanced">JEE Advanced</option>
-                      <option value="NEET UG">NEET UG</option>
-                    </select>
-                  </div>
-
-                  {/* Subject */}
-                  <div>
-                    <label className="block text-xs font-mono text-slate-400 mb-1.5">Subject *</label>
-                    <select
-                      value={selectedSubject}
-                      onChange={(e) => setSelectedSubject(e.target.value)}
-                      className="w-full bg-[#050508] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white focus:outline-none focus:border-brand-cyan transition-colors"
-                    >
-                      {availableSubjects.map((sub) => (
-                        <option key={sub} value={sub}>{sub}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Class Level */}
-                  <div>
-                    <label className="block text-xs font-mono text-slate-400 mb-1.5">Class / Standard *</label>
-                    <select
-                      value={selectedClass}
-                      onChange={(e) => setSelectedClass(e.target.value)}
-                      className="w-full bg-[#050508] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white focus:outline-none focus:border-brand-cyan transition-colors"
-                    >
-                      <option value="11">Class 11 (Foundations)</option>
-                      <option value="12">Class 12 (Advanced & Boards)</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Chapter & Subtopic Cascade */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-mono text-slate-400 mb-1.5">Chapter *</label>
-                    <select
-                      value={selectedChapter}
-                      onChange={(e) => setSelectedChapter(e.target.value)}
-                      className="w-full bg-[#050508] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white focus:outline-none focus:border-brand-cyan transition-colors"
-                    >
-                      {chaptersForSubjectAndClass.map((c) => (
-                        <option key={c.chapter} value={c.chapter}>{c.chapter}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-mono text-slate-400 mb-1.5">Subtopic Focus *</label>
-                    <select
-                      value={selectedSubtopic}
-                      onChange={(e) => setSelectedSubtopic(e.target.value)}
-                      className="w-full bg-[#050508] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white focus:outline-none focus:border-brand-cyan transition-colors"
-                    >
-                      {availableSubtopics.map((st) => (
-                        <option key={st} value={st}>{st}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              {/* STEP 2: Doubt Input & Notebook Capture */}
-              <div>
-                <div className="text-xs font-mono font-bold text-brand-cyan uppercase tracking-wider mb-4 flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-brand-cyan/20 border border-brand-cyan/40 text-brand-cyan flex items-center justify-center text-[10px]">2</span>
-                  Transcribe or Upload Notebook Doubt
+                  Upload Working Photo or Transcribe Doubt
                 </div>
 
                 <div className="space-y-4">
@@ -591,7 +500,7 @@ export default function DoubtPortalSection() {
                           Upload or Snap Notebook Working Photo
                         </div>
                         <div className="text-xs text-slate-400 font-mono">
-                          Auto-detects subject and pinpoints where your working stalled (PNG, JPG, HEIC up to 10MB)
+                          Auto-detects subject, chapter &amp; subtopic from your handwriting (PNG, JPG, HEIC up to 10MB)
                         </div>
                       </div>
                     ) : (
@@ -626,11 +535,11 @@ export default function DoubtPortalSection() {
                 </div>
               </div>
 
-              {/* STEP 3: Misconception Tagging */}
+              {/* STEP 2: Misconception Tagging (Optional) */}
               <div>
                 <div className="text-xs font-mono font-bold text-brand-cyan uppercase tracking-wider mb-4 flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-brand-cyan/20 border border-brand-cyan/40 text-brand-cyan flex items-center justify-center text-[10px]">3</span>
-                  Self-Diagnosed Bottleneck Category
+                  <span className="w-5 h-5 rounded-full bg-brand-cyan/20 border border-brand-cyan/40 text-brand-cyan flex items-center justify-center text-[10px]">2</span>
+                  Self-Diagnosed Bottleneck Category (Optional)
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -711,6 +620,33 @@ export default function DoubtPortalSection() {
                     >
                       <X className="w-4.5 h-4.5" />
                     </button>
+                  </div>
+
+                  {/* AI Auto-Detected Concept Badge */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 mb-6 p-3.5 rounded-2xl bg-[#090915] border border-brand-violet/30">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-brand-cyan animate-pulse" />
+                      <span className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
+                        AI-Detected Concept:
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
+                      <span className="px-2.5 py-1 rounded-lg bg-brand-violet/20 border border-brand-violet/40 text-brand-purple font-bold">
+                        {submittedResult.detectedSubject || "Physics"}
+                      </span>
+                      <span className="text-slate-500 font-bold">➔</span>
+                      <span className="px-2.5 py-1 rounded-lg bg-brand-cyan/10 border border-brand-cyan/30 text-brand-cyan font-bold">
+                        {submittedResult.detectedChapter || "Rotational Mechanics"}
+                      </span>
+                      {submittedResult.detectedSubtopic && (
+                        <>
+                          <span className="text-slate-500 font-bold">➔</span>
+                          <span className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-200">
+                            {submittedResult.detectedSubtopic}
+                          </span>
+                        </>
+                      )}
+                    </div>
                   </div>
 
                   {/* Transcribed Problem Statement */}
@@ -954,10 +890,9 @@ export default function DoubtPortalSection() {
               <div className="bg-[#050508] rounded-xl p-4 font-mono text-xs text-brand-cyan overflow-x-auto max-h-60 mb-6 border border-white/10">
                 <pre>{JSON.stringify({
                   exam: targetExam,
-                  subject: selectedSubject,
-                  class: selectedClass,
-                  chapter: selectedChapter,
-                  subtopic: selectedSubtopic,
+                  detectedSubject: submittedResult?.detectedSubject || "Auto-detected by Vision OCR",
+                  detectedChapter: submittedResult?.detectedChapter || "Auto-detected by Vision OCR",
+                  detectedSubtopic: submittedResult?.detectedSubtopic || "Auto-detected by Vision OCR",
                   errorTag: errorTag,
                   questionText: questionText || "Sample question statement"
                 }, null, 2)}</pre>
