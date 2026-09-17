@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Sparkles, CheckCircle2, RefreshCw, BrainCircuit } from 'lucide-react';
 import MagneticButton from '../components/MagneticButton';
 import TiltCard from '../components/TiltCard';
-import WordReveal from '../components/WordReveal';
 import { HERO_PROBLEMS } from '../data/mockData';
 import { useExam } from '../context/ExamContext';
 
@@ -48,47 +47,50 @@ export default function HeroSection() {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-28 pb-16 px-4 md:px-8 overflow-hidden">
-      {/* Subtle Background Glowing Ambient Orbs with Parallax */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand-violet/10 rounded-full blur-[140px] pointer-events-none parallax-bg" />
-      <div className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-brand-cyan/10 rounded-full blur-[120px] pointer-events-none parallax-bg" />
+      {/* Subtle Background Glowing Ambient Orbs */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand-violet/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-brand-cyan/10 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center z-10 hero-scrub">
+      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center z-10">
         
         {/* Left Column — Text & CTAs */}
-        <div className="lg:col-span-7 flex flex-col items-start text-left">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="lg:col-span-7 flex flex-col items-start text-left"
+        >
           {/* Eyebrow */}
-          <div
-            data-rev
-            style={{ '--d': '40ms' }}
+          <motion.div
+            variants={itemVariants}
             className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-violet/10 border border-brand-violet/30 text-brand-cyan text-xs font-semibold tracking-wider uppercase mb-6 shadow-glow-violet backdrop-blur-md"
           >
             <BrainCircuit className="w-3.5 h-3.5 text-brand-cyan animate-pulse" />
             <span>Autonomous AI for {targetExam} Aspirants</span>
-          </div>
+          </motion.div>
 
           {/* Headline Word-by-Word Reveal */}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.08] mb-6">
-            <span className="block">
-              <WordReveal text="Don't get the answer." startIndex={0} />
+          <motion.h1
+            variants={itemVariants}
+            className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.08] mb-6"
+          >
+            <span className="block">Don't get the answer.</span>
+            <span className="block text-gradient-animated mt-1">
+              Discover it.
             </span>
-            <span className="block mt-1">
-              <WordReveal text="Discover it." className="text-gradient-animated" startIndex={4} />
-            </span>
-          </h1>
+          </motion.h1>
 
           {/* Subtitle */}
-          <p
-            data-rev
-            style={{ '--d': '120ms' }}
+          <motion.p
+            variants={itemVariants}
             className="text-base sm:text-lg lg:text-xl text-slate-400 font-normal leading-relaxed max-w-2xl mb-8"
           >
             SocraticAI doesn't dump solutions. It understands your mistake, adapts to your level, and guides you toward the answer through diagnostic reasoning.
-          </p>
+          </motion.p>
 
           {/* CTA Buttons */}
-          <div
-            data-rev
-            style={{ '--d': '180ms' }}
+          <motion.div
+            variants={itemVariants}
             className="flex flex-wrap items-center gap-4 w-full sm:w-auto"
           >
             <MagneticButton
@@ -111,12 +113,11 @@ export default function HeroSection() {
             >
               <span>See How It Works</span>
             </MagneticButton>
-          </div>
+          </motion.div>
 
           {/* Social Proof Metadata */}
-          <div
-            data-rev
-            style={{ '--d': '240ms' }}
+          <motion.div
+            variants={itemVariants}
             className="mt-10 flex flex-wrap items-center gap-6 text-xs sm:text-sm text-slate-400 border-t border-white/5 pt-6 w-full max-w-xl"
           >
             <div className="flex items-center gap-2">
@@ -127,13 +128,14 @@ export default function HeroSection() {
               <CheckCircle2 className="w-4 h-4 text-brand-cyan" />
               <span>Zero Answer-Dumping</span>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* Right Column — Floating Interactive AI Visual */}
-        <div
-          data-rev
-          style={{ '--d': '200ms' }}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 30 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
           className="lg:col-span-5 relative"
         >
           <TiltCard className="w-full bg-[#0A0A0F]/90 border-white/10 p-6 md:p-8 shadow-2xl relative">
@@ -223,7 +225,7 @@ export default function HeroSection() {
               </button>
             </div>
           </TiltCard>
-        </div>
+        </motion.div>
 
       </div>
     </section>
