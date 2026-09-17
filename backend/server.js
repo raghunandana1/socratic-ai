@@ -80,6 +80,7 @@ app.get('/api/v1/taxonomy', (req, res) => {
 app.post('/api/v1/doubts/diagnose', upload.single('image'), async (req, res) => {
   try {
     const {
+      sessionId,
       exam,
       subject,
       class: classLevel,
@@ -92,9 +93,10 @@ app.post('/api/v1/doubts/diagnose', upload.single('image'), async (req, res) => 
     const imageBuffer = req.file ? req.file.buffer : null;
     const imageMimeType = req.file ? req.file.mimetype : null;
 
-    console.log(`[Doubt Ingestion] Received request: ${exam || 'General'} | ${subject || 'General'} | Image Attached: ${Boolean(imageBuffer)}`);
+    console.log(`[Doubt Ingestion] Received request: Session=${sessionId || 'New'} | ${exam || 'General'} | ${subject || 'General'} | Image Attached: ${Boolean(imageBuffer)}`);
 
     const diagnosticResult = await diagnoseDoubtWithGemini({
+      sessionId,
       exam,
       subject,
       classLevel,

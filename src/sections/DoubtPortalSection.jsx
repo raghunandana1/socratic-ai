@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Camera, Upload, X, CheckCircle2, FileJson, Sparkles, BookOpen, Layers, HelpCircle, Download, Lightbulb, AlertTriangle, ArrowRight, RotateCcw, Zap } from 'lucide-react';
+import { Send, Camera, Upload, X, CheckCircle2, FileJson, Sparkles, BookOpen, Layers, HelpCircle, Download, Lightbulb, AlertTriangle, ArrowRight, RotateCcw, Zap, Lock } from 'lucide-react';
 import TiltCard from '../components/TiltCard';
 import MagneticButton from '../components/MagneticButton';
 import { useExam } from '../context/ExamContext';
@@ -24,7 +24,15 @@ export default function DoubtPortalSection() {
   const [showExportModal, setShowExportModal] = useState(false);
   const [backendStatus, setBackendStatus] = useState({ online: false, model: '', isLiveAI: false });
 
+  // Sequential Unlock & Retry Session State
+  const [activeSession, setActiveSession] = useState(null);
+  const [retryText, setRetryText] = useState('');
+  const [retryImageFile, setRetryImageFile] = useState(null);
+  const [retryImagePreview, setRetryImagePreview] = useState(null);
+  const [isSubmittingRetry, setIsSubmittingRetry] = useState(false);
+
   const fileInputRef = useRef(null);
+  const retryFileInputRef = useRef(null);
 
   // Resolves backend API URL (Localhost in dev, Render in production)
   const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001').replace(/\/+$/, '');
@@ -199,6 +207,18 @@ export default function DoubtPortalSection() {
     };
   };
 
+  const handleRetryImageUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setRetryImageFile(file);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setRetryImagePreview(event.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -228,11 +248,13 @@ export default function DoubtPortalSection() {
       const payload = await res.json();
       if (payload.success && payload.data) {
         setIsSubmitting(false);
-        setActiveHintStep(1);
+        setActiveSession(payload.session || null);
+        const currentLevel = payload.session?.currentHintLevel || 1;
+        setActiveHintStep(currentLevel > 0 ? currentLevel : 1);
         setSubmittedResult({
           ...payload.data,
-          aiEngine: payload.aiEngine,
-          isLiveAI: payload.isLiveAI
+          session: payload.session,
+          questionText: questionText || (imageFile ? '[Notebook Snapshot Attached]' : 'Target Problem')
         });
         return;
       }
@@ -251,18 +273,114 @@ export default function DoubtPortalSection() {
       setTimeout(() => {
         setIsSubmitting(false);
         setActiveHintStep(1);
+        const fallbackSession = {
+          sessionId: `SOC-SESS-${Math.floor(100000 + Math.random() * 900000)}`,
+          question: questionText || (imagePreview ? "[Notebook Snapshot Attached]" : "Problem Query Submitted"),
+          attemptsCount: 1,
+          currentHintLevel: 1,
+          hintsUsed: 1,
+          solved: false,
+          expAwarded: 0
+        };
+        setActiveSession(fallbackSession);
         setSubmittedResult({
-          ticketId: `SOC-${Math.floor(100000 + Math.random() * 900000)}`,
-          xpGained: 165,
-          exam: targetExam,
-          subject: selectedSubject,
-          chapter: selectedChapter,
-          subtopic: selectedSubtopic,
-          errorTag: errorTag,
-          transcribedText: questionText || (imagePreview ? "[Notebook Snapshot Attached]" : "Problem Query Submitted"),
-          diagnosis: diagnosis
+          hasAttempt: true,
+          isCorrect: false,
+          firstIncorrectStep: "Step 1: Constraint interpretation",
+          reasoningSteps: ["Step 1: Set up problem framework"],
+          errorTitle: diagnosis.errorTitle,
+          errorDescription: diagnosis.errorDescription,
+          feedbackForStudent: "Review your currently unlocked Socratic hint below, then submit your next attempt to unlock further guidance.",
+          unlockedHints: [diagnosis.hints[0]],
+          currentHint: diagnosis.hints[0],
+          totalHints: 4,
+          lockedCount: 3,
+          session: fallbackSession,
+          questionText: questionText || (imagePreview ? "[Notebook Snapshot Attached]" : "Problem Query Submitted")
         });
-      }, 600);
+      }, 500);
+    }
+  };
+
+  const handleRetrySubmit = async (e) => {
+    e.preventDefault();
+    if (!retryText.trim() && !retryImageFile) return;
+
+    setIsSubmittingRetry(true);
+    try {
+      const formData = new FormData();
+      if (activeSession?.sessionId) {
+        formData.append('sessionId', activeSession.sessionId);
+      }
+      formData.append('exam', targetExam);
+      formData.append('subject', selectedSubject);
+      formData.append('questionText', retryText);
+      if (retryImageFile) {
+        formData.append('image', retryImageFile);
+      }
+
+      const res = await fetch(`${API_BASE_URL}/api/v1/doubts/diagnose`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!res.ok) {
+        throw new Error(`Backend responded with ${res.status}`);
+      }
+
+      const payload = await res.json();
+      if (payload.success && payload.data) {
+        setIsSubmittingRetry(false);
+        setActiveSession(payload.session || null);
+        const currentLevel = payload.session?.currentHintLevel || 1;
+        setActiveHintStep(currentLevel > 0 ? currentLevel : 1);
+        setSubmittedResult({
+          ...payload.data,
+          session: payload.session,
+          questionText: submittedResult?.questionText || payload.session?.question
+        });
+        setRetryText('');
+        setRetryImageFile(null);
+        setRetryImagePreview(null);
+        return;
+      }
+      throw new Error('Malformed retry response');
+    } catch (err) {
+      console.warn('Retry backend unavailable, simulating fallback evaluation:', err);
+
+      setTimeout(() => {
+        setIsSubmittingRetry(false);
+        const nextLevel = Math.min(4, (activeSession?.currentHintLevel || 1) + 1);
+        const updatedSession = {
+          ...activeSession,
+          attemptsCount: (activeSession?.attemptsCount || 1) + 1,
+          currentHintLevel: nextLevel,
+          hintsUsed: nextLevel,
+          solved: false
+        };
+        setActiveSession(updatedSession);
+        setActiveHintStep(nextLevel);
+
+        const allFallbackHints = [
+          "Identify the known physical/mathematical invariants and boundary conditions.",
+          "Recall the governing formula or conservation relation for this system. What variable needs isolating?",
+          "Check your algebraic expansion for sign reversals or missing constants.",
+          "Carry out the final reduction and test extreme boundary limits to verify consistency."
+        ];
+
+        setSubmittedResult(prev => ({
+          ...prev,
+          session: updatedSession,
+          unlockedHints: allFallbackHints.slice(0, nextLevel),
+          currentHint: allFallbackHints[nextLevel - 1],
+          lockedCount: 4 - nextLevel,
+          feedbackForStudent: `Attempt #${updatedSession.attemptsCount} evaluated. A new Socratic Hint (Hint ${nextLevel}) has been unlocked to guide your next step.`
+        }));
+
+        setRetryText('');
+        setRetryImageFile(null);
+        setRetryImagePreview(null);
+      }, 500);
     }
   };
 
@@ -574,18 +692,20 @@ export default function DoubtPortalSection() {
                   {/* Glowing Top Ambient Bar */}
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-cyan via-brand-violet to-brand-purple" />
 
-                  {/* Ticket Header (Clean: No model tag) */}
+                  {/* Ticket Header */}
                   <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
                     <div className="flex items-center gap-2.5">
                       <CheckCircle2 className="w-5 h-5 text-brand-cyan" />
                       <h4 className="text-sm sm:text-base font-mono font-bold text-white tracking-wide">
-                        Socratic Diagnostic Ticket #{submittedResult.ticketId}{" "}
-                        <span className="text-brand-purple font-mono">({`+${submittedResult.xpGained} XP`})</span>
+                        Socratic Diagnostic Ticket #{activeSession?.sessionId || "ACTIVE-SESSION"}
                       </h4>
                     </div>
 
                     <button
-                      onClick={() => setSubmittedResult(null)}
+                      onClick={() => {
+                        setSubmittedResult(null);
+                        setActiveSession(null);
+                      }}
                       className="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
                       title="Close Ticket"
                     >
@@ -595,60 +715,209 @@ export default function DoubtPortalSection() {
 
                   {/* Transcribed Problem Statement */}
                   <div className="bg-[#07070E] p-4 rounded-2xl border border-white/10 mb-6 font-mono text-xs">
-                    <span className="text-slate-400 block mb-1">Identified Problem / Working:</span>
+                    <span className="text-slate-400 block mb-1">Target Problem Statement:</span>
                     <span className="text-white font-bold text-sm">
-                      "{cleanMathText(submittedResult.transcribedText)}"
+                      "{cleanMathText(submittedResult.questionText || activeSession?.question)}"
                     </span>
                   </div>
 
-                  {/* Exact Student Error Explanation */}
-                  <div className="bg-rose-950/40 border border-rose-500/40 rounded-2xl p-4.5 mb-6">
-                    <div className="text-xs font-mono font-bold text-rose-400 mb-1 flex items-center gap-2">
-                      <AlertTriangle className="w-4 h-4" />
-                      <span>Diagnosed Error: {submittedResult.diagnosis.errorTitle}</span>
-                    </div>
-                    <p className="text-xs sm:text-sm font-sans text-slate-200 leading-relaxed">
-                      {cleanMathText(submittedResult.diagnosis.errorDescription)}
-                    </p>
-                  </div>
-
-                  {/* Progressive Socratic Hints Container with Stepper Tabs */}
-                  <div className="bg-[#07070E] border border-brand-violet/30 rounded-2xl p-5">
-                    <div className="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
-                      <div className="flex items-center gap-2 text-xs font-mono font-bold text-brand-cyan">
-                        <Lightbulb className="w-4 h-4 text-brand-purple" />
-                        <span>Progressive Socratic Hints (Hint {activeHintStep} of {submittedResult.diagnosis.hints.length})</span>
+                  {/* SPECIAL CASE: Problem Uploaded with No Student Attempt */}
+                  {submittedResult.hasAttempt === false ? (
+                    <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-5 mb-6 text-center">
+                      <div className="w-10 h-10 rounded-full bg-amber-500/20 text-amber-400 mx-auto flex items-center justify-center mb-3">
+                        <HelpCircle className="w-5 h-5" />
                       </div>
-
-                      {/* Interactive Step Buttons */}
-                      <div className="flex items-center gap-1.5 font-mono text-xs">
-                        {submittedResult.diagnosis.hints.map((_, i) => (
-                          <button
-                            key={i}
-                            type="button"
-                            onClick={() => setActiveHintStep(i + 1)}
-                            className={`w-7 h-7 rounded-lg text-xs font-bold transition-all flex items-center justify-center ${
-                              activeHintStep === i + 1
-                                ? 'bg-brand-violet text-white shadow-glow-violet'
-                                : 'bg-white/5 text-slate-400 hover:text-white border border-white/10'
-                            }`}
-                          >
-                            {i + 1}
-                          </button>
-                        ))}
-                      </div>
+                      <h5 className="text-sm font-mono font-bold text-white mb-1.5">No Student Attempt Found</h5>
+                      <p className="text-xs sm:text-sm text-slate-300 max-w-lg mx-auto leading-relaxed mb-4">
+                        {cleanMathText(submittedResult.feedbackForStudent) || "We extracted your question statement, but couldn't detect your own handwritten work or solution attempt. Socratic AI guides you through your errors — please give it a try first!"}
+                      </p>
+                      
+                      {/* Immediate attempt input */}
+                      <form onSubmit={handleRetrySubmit} className="max-w-lg mx-auto text-left space-y-3">
+                        <textarea
+                          value={retryText}
+                          onChange={(e) => setRetryText(e.target.value)}
+                          placeholder="Type your initial reasoning or equations here to start diagnosis..."
+                          rows={2}
+                          className="w-full bg-[#050508] border border-white/10 rounded-xl p-3 text-xs font-mono text-white placeholder:text-slate-600 focus:outline-none focus:border-brand-cyan"
+                        />
+                        <button
+                          type="submit"
+                          disabled={isSubmittingRetry || !retryText.trim()}
+                          className="w-full py-2.5 rounded-xl bg-brand-violet text-white text-xs font-mono font-bold flex items-center justify-center gap-2 disabled:opacity-50"
+                        >
+                          <span>{isSubmittingRetry ? "Evaluating Attempt..." : "Submit Initial Attempt for Evaluation ➔"}</span>
+                        </button>
+                      </form>
                     </div>
-
-                    {/* Hint Content Text */}
+                  ) : submittedResult.isCorrect ? (
+                    /* CASE: Solved! Award EXP strictly calculated on backend */
                     <motion.div
-                      key={activeHintStep}
-                      initial={{ opacity: 0, y: 5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="bg-[#0F0F1A] p-4 rounded-xl border border-white/10 text-sm font-sans text-white leading-relaxed font-medium"
+                      initial={{ opacity: 0, scale: 0.96 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="bg-emerald-500/10 border border-emerald-500/40 rounded-2xl p-6 mb-6 text-center backdrop-blur-md"
                     >
-                      "{cleanMathText(submittedResult.diagnosis.hints[activeHintStep - 1])}"
+                      <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center mb-3">
+                        <CheckCircle2 className="w-6 h-6" />
+                      </div>
+                      <h4 className="text-xl font-bold text-white mb-1.5 font-mono">Cognitive Breakthrough Achieved!</h4>
+                      <p className="text-xs sm:text-sm text-slate-200 max-w-lg mx-auto mb-4 leading-relaxed font-sans">
+                        {cleanMathText(submittedResult.feedbackForStudent) || "Outstanding deduction! You mastered this problem through graduated diagnostic inquiry."}
+                      </p>
+                      <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-mono font-bold">
+                        <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                        <span>+{activeSession?.expAwarded || 50} EXP Awarded</span>
+                        <span className="text-emerald-500 font-normal">({activeSession?.hintsUsed || 0} hints used)</span>
+                      </div>
                     </motion.div>
-                  </div>
+                  ) : (
+                    /* CASE: Incorrect Attempt - Show Exact Error and Sequential Hint Ladder */
+                    <>
+                      {/* Diagnosed Error Banner */}
+                      <div className="bg-rose-950/40 border border-rose-500/40 rounded-2xl p-4.5 mb-6">
+                        <div className="text-xs font-mono font-bold text-rose-400 mb-1 flex items-center gap-2">
+                          <AlertTriangle className="w-4 h-4" />
+                          <span>Diagnosed Error: {submittedResult.errorTitle || "Reasoning Discrepancy"}</span>
+                          {submittedResult.firstIncorrectStep && (
+                            <span className="ml-auto text-[10px] font-mono bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded-md border border-rose-500/30">
+                              First slip: {cleanMathText(submittedResult.firstIncorrectStep)}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs sm:text-sm font-sans text-slate-200 leading-relaxed">
+                          {cleanMathText(submittedResult.errorDescription)}
+                        </p>
+                      </div>
+
+                      {/* SEQUENTIAL HINT LADDER (Hints 1 to 4 with Strict Lock States) */}
+                      <div className="bg-[#07070E] border border-brand-violet/30 rounded-2xl p-5 mb-6">
+                        <div className="flex flex-wrap items-center justify-between mb-4 border-b border-white/10 pb-3 gap-2">
+                          <div className="flex items-center gap-2 text-xs font-mono font-bold text-brand-cyan">
+                            <Lightbulb className="w-4 h-4 text-brand-purple" />
+                            <span>Sequential Socratic Ladder (Level {activeSession?.currentHintLevel || 1} of 4)</span>
+                          </div>
+
+                          <div className="text-[11px] font-mono text-slate-400">
+                            Attempts: <span className="text-white font-bold">{activeSession?.attemptsCount || 1}</span>
+                          </div>
+                        </div>
+
+                        {/* Hint Level Selector Chips */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+                          {[1, 2, 3, 4].map((level) => {
+                            const isUnlocked = level <= (activeSession?.currentHintLevel || 1);
+                            const isActive = activeHintStep === level;
+
+                            return (
+                              <button
+                                key={level}
+                                type="button"
+                                disabled={!isUnlocked}
+                                onClick={() => isUnlocked && setActiveHintStep(level)}
+                                className={`py-2 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center justify-between ${
+                                  isActive
+                                    ? 'bg-brand-violet text-white shadow-glow-violet border border-brand-violet'
+                                    : isUnlocked
+                                    ? 'bg-white/5 text-slate-300 hover:text-white border border-white/10 hover:border-brand-cyan/40'
+                                    : 'bg-[#050508] text-slate-600 border border-white/5 cursor-not-allowed'
+                                }`}
+                              >
+                                <span>HINT {level}</span>
+                                {isUnlocked ? (
+                                  <span className="text-[10px] text-emerald-400">AVAILABLE</span>
+                                ) : (
+                                  <span className="flex items-center gap-1 text-[10px] text-slate-500">
+                                    <Lock className="w-3 h-3 text-slate-500" />
+                                    <span>Locked</span>
+                                  </span>
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                        {/* Unlocked Hint Text Display */}
+                        <motion.div
+                          key={activeHintStep}
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="bg-[#0F0F1A] p-4 rounded-xl border border-white/10 text-sm font-sans text-white leading-relaxed font-medium"
+                        >
+                          <div className="text-xs font-mono text-brand-cyan mb-1 uppercase tracking-wider flex items-center gap-1.5">
+                            <Lightbulb className="w-3.5 h-3.5 text-brand-purple" />
+                            <span>Hint {activeHintStep}:</span>
+                          </div>
+                          "{cleanMathText(submittedResult.unlockedHints?.[activeHintStep - 1] || submittedResult.currentHint)}"
+                        </motion.div>
+                      </div>
+
+                      {/* MANDATORY RETRY DRAWER TO UNLOCK NEXT HINT */}
+                      <div className="bg-[#0A0A15] border border-brand-violet/20 rounded-2xl p-5">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="text-xs font-mono font-bold text-white flex items-center gap-2">
+                            <RotateCcw className="w-3.5 h-3.5 text-brand-cyan" />
+                            <span>Submit Attempt #{((activeSession?.attemptsCount || 1) + 1)} to Progress</span>
+                          </div>
+                          <span className="text-[11px] font-mono text-slate-400">
+                            Viewing a hint never unlocks the next. Retry required.
+                          </span>
+                        </div>
+
+                        <form onSubmit={handleRetrySubmit} className="space-y-3">
+                          <textarea
+                            value={retryText}
+                            onChange={(e) => setRetryText(e.target.value)}
+                            placeholder="Type your revised equation, step, or working (or upload a new notebook photo below)..."
+                            rows={2}
+                            className="w-full bg-[#050508] border border-white/10 rounded-xl p-3 text-xs font-mono text-white placeholder:text-slate-600 focus:outline-none focus:border-brand-cyan transition-colors"
+                          />
+
+                          <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+                            <div>
+                              <input
+                                type="file"
+                                ref={retryFileInputRef}
+                                onChange={handleRetryImageUpload}
+                                accept="image/*"
+                                className="hidden"
+                              />
+                              {!retryImagePreview ? (
+                                <button
+                                  type="button"
+                                  onClick={() => retryFileInputRef.current?.click()}
+                                  className="text-xs font-mono text-slate-400 hover:text-white flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:border-brand-cyan transition-all"
+                                >
+                                  <Camera className="w-3.5 h-3.5 text-brand-cyan" />
+                                  <span>Snap / Attach New Working Photo</span>
+                                </button>
+                              ) : (
+                                <div className="flex items-center gap-2 text-xs font-mono text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20">
+                                  <span>Photo Attached</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setRetryImageFile(null);
+                                      setRetryImagePreview(null);
+                                    }}
+                                    className="text-slate-400 hover:text-rose-400"
+                                  >
+                                    <X className="w-3 h-3" />
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+
+                            <MagneticButton
+                              variant="primary"
+                              className="px-6 py-2 ml-auto text-xs"
+                            >
+                              <span>{isSubmittingRetry ? "Evaluating Attempt..." : `Submit Attempt #${((activeSession?.attemptsCount || 1) + 1)} for Evaluation ➔`}</span>
+                            </MagneticButton>
+                          </div>
+                        </form>
+                      </div>
+                    </>
+                  )}
 
                 </motion.div>
               )}
