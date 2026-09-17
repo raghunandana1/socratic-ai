@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Camera, Upload, X, CheckCircle2, FileJson, Sparkles, BookOpen, Layers, HelpCircle, Download, Lightbulb, AlertTriangle, ArrowRight, RotateCcw, Zap, Lock, TrendingUp } from 'lucide-react';
 import TiltCard from '../components/TiltCard';
+import MagneticButton from '../components/MagneticButton';
+import { useExam } from '../context/ExamContext';
+
 function CognitiveMasteryCurveCard({
   metrics,
   hintsUsed = 0,
