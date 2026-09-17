@@ -94,13 +94,13 @@ export default function MasterySection() {
               {/* XP Counter Card */}
               <div className="bg-[#050508] rounded-2xl p-6 border border-brand-violet/30 flex items-center justify-between relative overflow-hidden group">
                 <div>
-                  <div className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">
+                  <div className="text-xs font-mono text-slate-400 uppercase tracking-wider mb-1">
                     Last Session Reward
                   </div>
-                  <div className="text-4xl font-extrabold text-brand-cyan tracking-tight">
+                  <div className="text-4xl font-mono font-extrabold text-brand-cyan tracking-tight">
                     +{xpCount} XP
                   </div>
-                  <div className="text-xs text-brand-purple font-medium mt-1">
+                  <div className="text-xs text-brand-purple font-mono mt-1">
                     Diagnostic Boost Applied
                   </div>
                 </div>
@@ -112,13 +112,13 @@ export default function MasterySection() {
               {/* Streak Card */}
               <div className="bg-[#050508] rounded-2xl p-6 border border-amber-500/30 flex items-center justify-between relative overflow-hidden">
                 <div>
-                  <div className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">
+                  <div className="text-xs font-mono text-slate-400 uppercase tracking-wider mb-1">
                     Cognitive Consistency
                   </div>
-                  <div className="text-3xl font-extrabold text-amber-400 tracking-tight flex items-center gap-2">
+                  <div className="text-3xl font-mono font-extrabold text-amber-400 tracking-tight flex items-center gap-2">
                     🔥 12 DAY STREAK
                   </div>
-                  <div className="text-xs text-slate-400 font-medium mt-1">
+                  <div className="text-xs text-slate-400 font-mono mt-1">
                     Top 2% Aspirant Momentum
                   </div>
                 </div>
@@ -131,7 +131,7 @@ export default function MasterySection() {
 
             {/* Separate Exam Category Tab Bar */}
             <div className="flex items-center justify-between mb-6">
-              <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold">
+              <span className="text-xs font-mono text-slate-400 uppercase tracking-wider">
                 Exam Calculation Target:
               </span>
               <div className="flex gap-2">
@@ -139,7 +139,7 @@ export default function MasterySection() {
                   <button
                     key={cat}
                     onClick={() => setActiveExamCategory(cat)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
                       activeExamCategory === cat
                         ? 'bg-brand-violet text-white shadow-glow-violet'
                         : 'bg-white/5 text-slate-400 hover:text-white'
@@ -158,11 +158,11 @@ export default function MasterySection() {
                   <div className="flex justify-between items-center mb-2">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-white text-base">{subject.name}</span>
-                      <span className="text-xs px-2 py-0.5 rounded bg-white/5 text-slate-300 border border-white/5 font-medium">
+                      <span className="text-xs font-mono px-2 py-0.5 rounded bg-white/5 text-slate-300 border border-white/5">
                         {subject.level}
                       </span>
                     </div>
-                    <span className="text-lg font-extrabold" style={{ color: subject.color }}>
+                    <span className="text-lg font-mono font-extrabold" style={{ color: subject.color }}>
                       {isInView ? subject.accuracy : 0}%
                     </span>
                   </div>
@@ -181,7 +181,7 @@ export default function MasterySection() {
             </div>
 
             {/* Bottom Verification Note */}
-            <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400 font-medium">
+            <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400 font-mono">
               <span className="flex items-center gap-1.5 text-emerald-400">
                 <CheckCircle className="w-4 h-4" />
                 {activeExamCategory} Isolated Score Vector: Active

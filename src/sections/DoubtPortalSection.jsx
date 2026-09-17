@@ -86,10 +86,10 @@ function CognitiveMasteryCurveCard({
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="font-black text-xl text-white leading-none">
+              <span className="font-mono font-black text-xl text-white leading-none">
                 {percentage}%
               </span>
-              <span className="text-[8px] text-emerald-400 font-bold uppercase tracking-wider mt-0.5">
+              <span className="text-[8px] font-mono text-emerald-400 font-bold uppercase tracking-wider mt-0.5">
                 Mastery
               </span>
             </div>
@@ -97,25 +97,25 @@ function CognitiveMasteryCurveCard({
 
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-1.5">
-              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center gap-1.5">
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-mono text-xs font-bold flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                 Cognitive Breakthrough
               </span>
-              <span className="px-2.5 py-0.5 rounded-full bg-brand-violet/20 border border-brand-violet/40 text-brand-cyan text-xs font-semibold">
+              <span className="px-2.5 py-0.5 rounded-full bg-brand-violet/20 border border-brand-violet/40 text-brand-cyan font-mono text-xs font-semibold">
                 {percentile}
               </span>
             </div>
-            <h4 className="text-lg sm:text-xl font-bold text-white leading-tight">
+            <h4 className="text-lg sm:text-xl font-bold text-white font-mono leading-tight">
               {status}
             </h4>
-            <p className="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-300 font-sans mt-1 leading-relaxed">
               {feedbackForStudent || "Outstanding deduction! You mastered this problem through graduated diagnostic inquiry."}
             </p>
           </div>
         </div>
 
         {/* Retention Tier Badge */}
-        <div className="px-4 py-2.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.15)] self-stretch sm:self-auto justify-center">
+        <div className="px-4 py-2.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-mono text-xs font-bold flex items-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.15)] self-stretch sm:self-auto justify-center">
           <Sparkles className="w-4 h-4 text-emerald-400" />
           <div className="text-left">
             <div className="text-emerald-200 leading-none">{retention}% 72h Retention</div>
@@ -129,11 +129,11 @@ function CognitiveMasteryCurveCard({
         <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
           <div className="flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-brand-cyan" />
-            <span className="text-xs font-bold text-white uppercase tracking-wider">
+            <span className="text-xs font-mono font-bold text-white uppercase tracking-wider">
               Cognitive Retention Curve vs Passive Decay (72h Horizon)
             </span>
           </div>
-          <div className="flex items-center gap-4 text-[11px]">
+          <div className="flex items-center gap-4 text-[11px] font-mono">
             <span className="flex items-center gap-1.5 text-brand-cyan font-bold">
               <span className="w-2.5 h-2.5 rounded-full bg-brand-cyan shadow-[0_0_8px_#06B6D4]" />
               Socratic Active Recall ({retention}%)
@@ -209,16 +209,16 @@ function CognitiveMasteryCurveCard({
             <circle cx="440" cy={yEnd} r="4.5" fill="#10B981" stroke="#06060E" strokeWidth="2" />
 
             {/* Timeline X Labels */}
-            <text x="40" y="145" fill="#94A3B8" fontSize="9" fontFamily="'Plus Jakarta Sans', sans-serif">Breakthrough (0h)</text>
-            <text x="170" y="145" fill="#94A3B8" fontSize="9" fontFamily="'Plus Jakarta Sans', sans-serif">24h</text>
-            <text x="300" y="145" fill="#94A3B8" fontSize="9" fontFamily="'Plus Jakarta Sans', sans-serif">48h</text>
-            <text x="440" y="145" fill="#10B981" fontSize="9" fontFamily="'Plus Jakarta Sans', sans-serif" fontWeight="bold" textAnchor="end">72h ({retention}% Recall)</text>
+            <text x="40" y="145" fill="#94A3B8" fontSize="9" fontFamily="monospace">Breakthrough (0h)</text>
+            <text x="170" y="145" fill="#94A3B8" fontSize="9" fontFamily="monospace">24h</text>
+            <text x="300" y="145" fill="#94A3B8" fontSize="9" fontFamily="monospace">48h</text>
+            <text x="440" y="145" fill="#10B981" fontSize="9" fontFamily="monospace" fontWeight="bold" textAnchor="end">72h ({retention}% Recall)</text>
           </svg>
         </div>
       </div>
 
       {/* Multi-Dimensional Competency Breakdown */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 py-5 border-b border-white/10 relative z-10 text-xs font-medium">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 py-5 border-b border-white/10 relative z-10 font-mono text-xs">
         <div className="bg-[#05050A] p-3.5 rounded-2xl border border-white/5">
           <div className="flex justify-between text-slate-300 mb-1.5">
             <span>Conceptual Grasp</span>
@@ -252,8 +252,8 @@ function CognitiveMasteryCurveCard({
 
       {/* Diagnostic Mastery Summary & Retention Horizon */}
       <div className="pt-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
-        <div className="text-xs text-slate-300">
-          <div className="font-bold text-white flex items-center gap-2 mb-1">
+        <div className="text-xs font-sans text-slate-300">
+          <div className="font-mono font-bold text-white flex items-center gap-2 mb-1">
             <span className="text-emerald-400 font-bold">{percentage}% Cognitive Mastery Confirmed</span>
             <span className="text-slate-600">•</span>
             <span className="text-brand-cyan">{targetExam} Syllabus Standard</span>
@@ -269,7 +269,7 @@ function CognitiveMasteryCurveCard({
             const el = document.querySelector('#doubt-portal');
             if (el) el.scrollIntoView({ behavior: 'smooth' });
           }}
-          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-violet to-brand-cyan text-white text-xs font-bold flex items-center gap-2 transition-all shadow-glow-violet hover:opacity-95 self-stretch sm:self-auto justify-center"
+          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-violet to-brand-cyan text-white text-xs font-mono font-bold flex items-center gap-2 transition-all shadow-glow-violet hover:opacity-95 self-stretch sm:self-auto justify-center"
         >
           <span>Diagnose Another Problem</span>
           <ArrowRight className="w-4 h-4" />
@@ -799,14 +799,14 @@ export default function DoubtPortalSection() {
             <div className="flex flex-wrap items-center justify-between pb-6 border-b border-white/10 mb-8 gap-3">
               <div className="flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-brand-cyan animate-pulse" />
-                <span className="text-xs font-bold text-white uppercase tracking-wider">
+                <span className="text-xs font-mono font-bold text-white uppercase tracking-wider">
                   Autonomous Vision OCR &amp; Syllabus Detection
                 </span>
               </div>
               
               <button
                 onClick={() => setShowExportModal(true)}
-                className="text-xs text-slate-300 hover:text-white flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 hover:border-brand-cyan transition-all font-medium"
+                className="text-xs font-mono text-slate-300 hover:text-white flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 hover:border-brand-cyan transition-all"
               >
                 <FileJson className="w-3.5 h-3.5 text-brand-cyan" />
                 <span>Export Data Specs</span>
@@ -818,14 +818,14 @@ export default function DoubtPortalSection() {
               
               {/* STEP 1: Doubt Input & Notebook Capture */}
               <div>
-                <div className="text-xs font-bold text-brand-cyan uppercase tracking-wider mb-4 flex items-center gap-2">
+                <div className="text-xs font-mono font-bold text-brand-cyan uppercase tracking-wider mb-4 flex items-center gap-2">
                   <span className="w-5 h-5 rounded-full bg-brand-cyan/20 border border-brand-cyan/40 text-brand-cyan flex items-center justify-center text-[10px]">1</span>
                   Upload Working Photo or Transcribe Doubt
                 </div>
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs text-slate-400 mb-1.5 font-medium">
+                    <label className="block text-xs font-mono text-slate-400 mb-1.5">
                       Describe what you are stuck on (or leave blank if uploading notebook photo)
                     </label>
                     <textarea
@@ -833,7 +833,7 @@ export default function DoubtPortalSection() {
                       onChange={(e) => setQuestionText(e.target.value)}
                       placeholder="e.g. I worked through the problem up to step 3, but my discriminant gives no real roots. Where is my algebraic sign slipping?"
                       rows={3}
-                      className="w-full bg-[#050508] border border-white/10 rounded-2xl p-4 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-brand-cyan transition-colors resize-none"
+                      className="w-full bg-[#050508] border border-white/10 rounded-2xl p-4 text-sm font-mono text-white placeholder:text-slate-600 focus:outline-none focus:border-brand-cyan transition-colors resize-none"
                     />
                   </div>
 
@@ -855,10 +855,10 @@ export default function DoubtPortalSection() {
                         <div className="w-12 h-12 rounded-full bg-brand-violet/10 border border-brand-violet/20 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
                           <Camera className="w-5 h-5 text-brand-cyan" />
                         </div>
-                        <div className="text-sm font-semibold text-white mb-1">
+                        <div className="text-sm font-mono font-medium text-white mb-1">
                           Upload or Snap Notebook Working Photo
                         </div>
-                        <div className="text-xs text-slate-400 font-medium">
+                        <div className="text-xs text-slate-400 font-mono">
                           Auto-detects subject, chapter &amp; subtopic from your handwriting (PNG, JPG, HEIC up to 10MB)
                         </div>
                       </div>
@@ -870,10 +870,10 @@ export default function DoubtPortalSection() {
                           className="w-20 h-20 object-cover rounded-xl border border-white/10"
                         />
                         <div className="flex-1 min-w-0">
-                          <div className="text-xs font-bold text-white truncate">
+                          <div className="text-xs font-mono font-bold text-white truncate">
                             {imageFile?.name || "Notebook Snapshot"}
                           </div>
-                          <div className="text-[11px] font-semibold text-emerald-400 flex items-center gap-1 mt-1">
+                          <div className="text-[11px] font-mono text-emerald-400 flex items-center gap-1 mt-1">
                             <CheckCircle2 className="w-3 h-3" />
                             <span>Ready for Vision OCR &amp; Diagnostic</span>
                           </div>
@@ -896,7 +896,7 @@ export default function DoubtPortalSection() {
 
               {/* STEP 2: Misconception Tagging (Optional) */}
               <div>
-                <div className="text-xs font-bold text-brand-cyan uppercase tracking-wider mb-4 flex items-center gap-2">
+                <div className="text-xs font-mono font-bold text-brand-cyan uppercase tracking-wider mb-4 flex items-center gap-2">
                   <span className="w-5 h-5 rounded-full bg-brand-cyan/20 border border-brand-cyan/40 text-brand-cyan flex items-center justify-center text-[10px]">2</span>
                   Self-Diagnosed Bottleneck Category (Optional)
                 </div>
@@ -912,7 +912,7 @@ export default function DoubtPortalSection() {
                       type="button"
                       key={tag}
                       onClick={() => setErrorTag(tag)}
-                      className={`py-2 px-3 rounded-xl text-xs font-semibold transition-all ${
+                      className={`py-2 px-3 rounded-xl text-xs font-mono font-bold transition-all ${
                         errorTag === tag
                           ? 'bg-brand-violet text-white shadow-glow-violet'
                           : 'bg-[#050508] text-slate-400 border border-white/10 hover:text-white'
@@ -930,7 +930,7 @@ export default function DoubtPortalSection() {
                   <button
                     type="button"
                     onClick={() => setSubmittedResult(null)}
-                    className="text-xs text-brand-cyan hover:underline flex items-center gap-1.5 font-medium"
+                    className="text-xs font-mono text-brand-cyan hover:underline flex items-center gap-1.5"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
                     <span>Ask Another Doubt</span>
@@ -964,7 +964,7 @@ export default function DoubtPortalSection() {
                   <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
                     <div className="flex items-center gap-2.5">
                       <CheckCircle2 className="w-5 h-5 text-brand-cyan" />
-                      <h4 className="text-sm sm:text-base font-bold text-white tracking-wide">
+                      <h4 className="text-sm sm:text-base font-mono font-bold text-white tracking-wide">
                         Socratic Diagnostic Ticket #{activeSession?.sessionId || "ACTIVE-SESSION"}
                       </h4>
                     </div>
@@ -985,11 +985,11 @@ export default function DoubtPortalSection() {
                   <div className="flex flex-wrap items-center justify-between gap-3 mb-6 p-3.5 rounded-2xl bg-[#090915] border border-brand-violet/30">
                     <div className="flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-brand-cyan animate-pulse" />
-                      <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                      <span className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
                         AI-Detected Concept:
                       </span>
                     </div>
-                    <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
+                    <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
                       <span className="px-2.5 py-1 rounded-lg bg-brand-violet/20 border border-brand-violet/40 text-brand-purple font-bold">
                         {submittedResult.detectedSubject || "Physics"}
                       </span>
@@ -1009,8 +1009,8 @@ export default function DoubtPortalSection() {
                   </div>
 
                   {/* Transcribed Problem Statement */}
-                  <div className="bg-[#07070E] p-4 rounded-2xl border border-white/10 mb-6 text-xs">
-                    <span className="text-slate-400 block mb-1 font-medium">Target Problem Statement:</span>
+                  <div className="bg-[#07070E] p-4 rounded-2xl border border-white/10 mb-6 font-mono text-xs">
+                    <span className="text-slate-400 block mb-1">Target Problem Statement:</span>
                     <span className="text-white font-bold text-sm">
                       "{cleanMathText(submittedResult.questionText || activeSession?.question)}"
                     </span>
@@ -1022,7 +1022,7 @@ export default function DoubtPortalSection() {
                       <div className="w-10 h-10 rounded-full bg-amber-500/20 text-amber-400 mx-auto flex items-center justify-center mb-3">
                         <HelpCircle className="w-5 h-5" />
                       </div>
-                      <h5 className="text-sm font-bold text-white mb-1.5">No Student Attempt Found</h5>
+                      <h5 className="text-sm font-mono font-bold text-white mb-1.5">No Student Attempt Found</h5>
                       <p className="text-xs sm:text-sm text-slate-300 max-w-lg mx-auto leading-relaxed mb-4">
                         {cleanMathText(submittedResult.feedbackForStudent) || "We extracted your question statement, but couldn't detect your own handwritten work or solution attempt. Socratic AI guides you through your errors — please give it a try first!"}
                       </p>
@@ -1034,12 +1034,12 @@ export default function DoubtPortalSection() {
                           onChange={(e) => setRetryText(e.target.value)}
                           placeholder="Type your initial reasoning or equations here to start diagnosis..."
                           rows={2}
-                          className="w-full bg-[#050508] border border-white/10 rounded-xl p-3 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-brand-cyan"
+                          className="w-full bg-[#050508] border border-white/10 rounded-xl p-3 text-xs font-mono text-white placeholder:text-slate-600 focus:outline-none focus:border-brand-cyan"
                         />
                         <button
                           type="submit"
                           disabled={isSubmittingRetry || !retryText.trim()}
-                          className="w-full py-2.5 rounded-xl bg-brand-violet text-white text-xs font-bold flex items-center justify-center gap-2 disabled:opacity-50"
+                          className="w-full py-2.5 rounded-xl bg-brand-violet text-white text-xs font-mono font-bold flex items-center justify-center gap-2 disabled:opacity-50"
                         >
                           <span>{isSubmittingRetry ? "Evaluating Attempt..." : "Submit Initial Attempt for Evaluation ➔"}</span>
                         </button>
@@ -1063,7 +1063,7 @@ export default function DoubtPortalSection() {
                             <TrendingUp className="w-5 h-5" />
                           </div>
                           <div>
-                            <div className="text-xs font-bold text-white flex items-center gap-2">
+                            <div className="text-xs font-mono font-bold text-white flex items-center gap-2">
                               <span>Diagnostic Mastery Index:</span>
                               <span className="text-brand-cyan">
                                 {submittedResult.masteryMetrics?.percentage || Math.max(45, 98 - (activeSession?.currentHintLevel || 1) * 12)}% Projected
@@ -1073,7 +1073,7 @@ export default function DoubtPortalSection() {
                                 {submittedResult.masteryMetrics?.percentile || "Top 45% Iteration Rate"}
                               </span>
                             </div>
-                            <div className="text-xs text-slate-300 mt-0.5">
+                            <div className="text-xs font-sans text-slate-300 mt-0.5">
                               Solve on Attempt #{activeSession?.attemptsCount || 1} to achieve cognitive breakthrough and unlock your full retention curve!
                             </div>
                           </div>
@@ -1090,7 +1090,7 @@ export default function DoubtPortalSection() {
                               feedbackForStudent: "Outstanding deduction! You applied the sequential hints and deduced the correct solution independently."
                             }));
                           }}
-                          className="px-3.5 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center gap-1.5 transition-all self-stretch sm:self-auto justify-center"
+                          className="px-3.5 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-mono font-bold flex items-center gap-1.5 transition-all self-stretch sm:self-auto justify-center"
                         >
                           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                           <span>I Got It! Mark Solved & Unlock Curve</span>
@@ -1098,16 +1098,16 @@ export default function DoubtPortalSection() {
                       </div>
                       {/* Diagnosed Error Banner */}
                       <div className="bg-rose-950/40 border border-rose-500/40 rounded-2xl p-4.5 mb-6">
-                        <div className="text-xs font-bold text-rose-400 mb-1 flex items-center gap-2">
+                        <div className="text-xs font-mono font-bold text-rose-400 mb-1 flex items-center gap-2">
                           <AlertTriangle className="w-4 h-4" />
                           <span>Diagnosed Error: {submittedResult.errorTitle || "Reasoning Discrepancy"}</span>
                           {submittedResult.firstIncorrectStep && (
-                            <span className="ml-auto text-[10px] bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded-md border border-rose-500/30 font-semibold">
+                            <span className="ml-auto text-[10px] font-mono bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded-md border border-rose-500/30">
                               First slip: {cleanMathText(submittedResult.firstIncorrectStep)}
                             </span>
                           )}
                         </div>
-                        <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                        <p className="text-xs sm:text-sm font-sans text-slate-200 leading-relaxed">
                           {cleanMathText(submittedResult.errorDescription)}
                         </p>
                       </div>
@@ -1115,12 +1115,12 @@ export default function DoubtPortalSection() {
                       {/* SEQUENTIAL HINT LADDER (Hints 1 to 4 with Strict Lock States) */}
                       <div className="bg-[#07070E] border border-brand-violet/30 rounded-2xl p-5 mb-6">
                         <div className="flex flex-wrap items-center justify-between mb-4 border-b border-white/10 pb-3 gap-2">
-                          <div className="flex items-center gap-2 text-xs font-bold text-brand-cyan">
+                          <div className="flex items-center gap-2 text-xs font-mono font-bold text-brand-cyan">
                             <Lightbulb className="w-4 h-4 text-brand-purple" />
                             <span>Sequential Socratic Ladder (Level {activeSession?.currentHintLevel || 1} of 4)</span>
                           </div>
 
-                          <div className="text-[11px] text-slate-400 font-medium">
+                          <div className="text-[11px] font-mono text-slate-400">
                             Attempts: <span className="text-white font-bold">{activeSession?.attemptsCount || 1}</span>
                           </div>
                         </div>
@@ -1137,7 +1137,7 @@ export default function DoubtPortalSection() {
                                 type="button"
                                 disabled={!isUnlocked}
                                 onClick={() => isUnlocked && setActiveHintStep(level)}
-                                className={`py-2 px-3 rounded-xl text-xs font-semibold transition-all flex items-center justify-between ${
+                                className={`py-2 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center justify-between ${
                                   isActive
                                     ? 'bg-brand-violet text-white shadow-glow-violet border border-brand-violet'
                                     : isUnlocked
@@ -1164,9 +1164,9 @@ export default function DoubtPortalSection() {
                           key={activeHintStep}
                           initial={{ opacity: 0, y: 5 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="bg-[#0F0F1A] p-4 rounded-xl border border-white/10 text-sm text-white leading-relaxed font-medium"
+                          className="bg-[#0F0F1A] p-4 rounded-xl border border-white/10 text-sm font-sans text-white leading-relaxed font-medium"
                         >
-                          <div className="text-xs text-brand-cyan mb-1 uppercase tracking-wider font-semibold flex items-center gap-1.5">
+                          <div className="text-xs font-mono text-brand-cyan mb-1 uppercase tracking-wider flex items-center gap-1.5">
                             <Lightbulb className="w-3.5 h-3.5 text-brand-purple" />
                             <span>Hint {activeHintStep}:</span>
                           </div>
@@ -1177,11 +1177,11 @@ export default function DoubtPortalSection() {
                       {/* MANDATORY RETRY DRAWER TO UNLOCK NEXT HINT */}
                       <div className="bg-[#0A0A15] border border-brand-violet/20 rounded-2xl p-5">
                         <div className="flex items-center justify-between mb-3">
-                          <div className="text-xs font-bold text-white flex items-center gap-2">
+                          <div className="text-xs font-mono font-bold text-white flex items-center gap-2">
                             <RotateCcw className="w-3.5 h-3.5 text-brand-cyan" />
                             <span>Submit Attempt #{((activeSession?.attemptsCount || 1) + 1)} to Progress</span>
                           </div>
-                          <span className="text-[11px] text-slate-400 font-medium">
+                          <span className="text-[11px] font-mono text-slate-400">
                             Viewing a hint never unlocks the next. Retry required.
                           </span>
                         </div>
@@ -1192,7 +1192,7 @@ export default function DoubtPortalSection() {
                             onChange={(e) => setRetryText(e.target.value)}
                             placeholder="Type your revised equation, step, or working (or upload a new notebook photo below)..."
                             rows={2}
-                            className="w-full bg-[#050508] border border-white/10 rounded-xl p-3 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-brand-cyan transition-colors"
+                            className="w-full bg-[#050508] border border-white/10 rounded-xl p-3 text-xs font-mono text-white placeholder:text-slate-600 focus:outline-none focus:border-brand-cyan transition-colors"
                           />
 
                           <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
@@ -1208,13 +1208,13 @@ export default function DoubtPortalSection() {
                                 <button
                                   type="button"
                                   onClick={() => retryFileInputRef.current?.click()}
-                                  className="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:border-brand-cyan transition-all font-medium"
+                                  className="text-xs font-mono text-slate-400 hover:text-white flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:border-brand-cyan transition-all"
                                 >
                                   <Camera className="w-3.5 h-3.5 text-brand-cyan" />
                                   <span>Snap / Attach New Working Photo</span>
                                 </button>
                               ) : (
-                                <div className="flex items-center gap-2 text-xs text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20 font-medium">
+                                <div className="flex items-center gap-2 text-xs font-mono text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20">
                                   <span>Photo Attached</span>
                                   <button
                                     type="button"
@@ -1254,7 +1254,7 @@ export default function DoubtPortalSection() {
       {/* Export Data Specs Modal */}
       <AnimatePresence>
         {showExportModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md font-sans">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -1262,7 +1262,7 @@ export default function DoubtPortalSection() {
               className="max-w-xl w-full bg-[#0A0A12] border border-brand-violet/40 rounded-3xl p-6 shadow-2xl relative"
             >
               <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
-                <span className="text-sm font-bold text-white flex items-center gap-2">
+                <span className="text-sm font-mono font-bold text-white flex items-center gap-2">
                   <FileJson className="w-4 h-4 text-brand-cyan" />
                   Backend Export Data Schema
                 </span>
@@ -1274,7 +1274,7 @@ export default function DoubtPortalSection() {
                 </button>
               </div>
 
-              <div className="bg-[#050508] rounded-xl p-4 text-xs text-brand-cyan overflow-x-auto max-h-60 mb-6 border border-white/10 font-medium">
+              <div className="bg-[#050508] rounded-xl p-4 font-mono text-xs text-brand-cyan overflow-x-auto max-h-60 mb-6 border border-white/10">
                 <pre>{JSON.stringify({
                   exam: targetExam,
                   detectedSubject: submittedResult?.detectedSubject || "Auto-detected by Vision OCR",
@@ -1288,7 +1288,7 @@ export default function DoubtPortalSection() {
               <div className="flex justify-end gap-3">
                 <button
                   onClick={handleExportJSON}
-                  className="px-4 py-2 rounded-xl bg-brand-violet text-white text-xs font-bold flex items-center gap-2 shadow-glow-violet"
+                  className="px-4 py-2 rounded-xl bg-brand-violet text-white text-xs font-mono font-bold flex items-center gap-2 shadow-glow-violet"
                 >
                   <Download className="w-4 h-4" />
                   <span>Download JSON Payload</span>

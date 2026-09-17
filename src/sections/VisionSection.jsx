@@ -96,7 +96,7 @@ export default function VisionSection() {
           
           {/* Left: Dropdown Selector for Sample Notebook Pictures */}
           <div className="w-full md:w-auto flex-1 flex flex-col sm:flex-row items-start sm:items-center gap-3">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 whitespace-nowrap">
+            <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 whitespace-nowrap">
               <ImageIcon className="w-4 h-4 text-brand-cyan" />
               Select Notebook Sample:
             </span>
@@ -104,7 +104,7 @@ export default function VisionSection() {
             <select
               value={selectedPresetId}
               onChange={(e) => handleSelectPreset(e.target.value)}
-              className="w-full sm:w-auto bg-[#050508] border border-white/15 text-white text-xs font-medium rounded-xl px-4 py-2.5 focus:outline-none focus:border-brand-cyan transition-colors"
+              className="w-full sm:w-auto bg-[#050508] border border-white/15 text-white text-xs font-mono rounded-xl px-4 py-2.5 focus:outline-none focus:border-brand-cyan transition-colors"
             >
               {VISION_PRESETS.map((preset) => (
                 <option key={preset.id} value={preset.id}>
@@ -126,7 +126,7 @@ export default function VisionSection() {
 
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/15 hover:border-brand-cyan hover:text-brand-cyan text-slate-200 text-xs font-semibold transition-all"
+              className="flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/15 hover:border-brand-cyan hover:text-brand-cyan text-slate-200 text-xs font-mono font-semibold transition-all"
             >
               <Upload className="w-4 h-4" />
               <span>Upload Gallery Pic</span>
@@ -137,7 +137,7 @@ export default function VisionSection() {
                 setActiveInputMode("camera");
                 triggerScanAnimation();
               }}
-              className="flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-brand-violet text-white text-xs font-semibold shadow-glow-violet hover:bg-brand-purple transition-all"
+              className="flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-brand-violet text-white text-xs font-mono font-semibold shadow-glow-violet hover:bg-brand-purple transition-all"
             >
               <Camera className="w-4 h-4" />
               <span>Click Picture</span>
@@ -160,17 +160,17 @@ export default function VisionSection() {
             <TiltCard className="h-full bg-[#07070A] border-white/10 p-6 relative overflow-hidden flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
-                  <span className="text-xs text-slate-400 flex items-center gap-2 font-medium">
+                  <span className="text-xs font-mono text-slate-400 flex items-center gap-2">
                     <Camera className="w-4 h-4 text-brand-violet" />
                     Input Stream Mode: <strong className="text-brand-cyan uppercase">{activeInputMode}</strong>
                   </span>
-                  <span className="text-[11px] text-slate-400 bg-white/5 px-2 py-0.5 rounded font-medium">
+                  <span className="text-[11px] font-mono text-slate-400 bg-white/5 px-2 py-0.5 rounded">
                     {currentPreset.stream}
                   </span>
                 </div>
 
                 {/* Notebook / Camera Canvas Container */}
-                <div className="relative rounded-xl p-6 bg-[#0E0E14] border border-white/5 text-xl sm:text-2xl text-amber-200/90 font-medium leading-relaxed shadow-inner min-h-[260px] flex flex-col justify-center overflow-hidden">
+                <div className="relative rounded-xl p-6 bg-[#0E0E14] border border-white/5 font-handwritten text-xl sm:text-2xl text-amber-200/90 leading-relaxed shadow-inner min-h-[260px] flex flex-col justify-center overflow-hidden">
                   
                   {activeInputMode === "upload" && customImage ? (
                     <div className="relative w-full h-48 flex items-center justify-center">
@@ -181,8 +181,8 @@ export default function VisionSection() {
                       <div className="w-12 h-12 rounded-full bg-brand-cyan/20 text-brand-cyan flex items-center justify-center mb-2 animate-pulse">
                         <Camera className="w-6 h-6" />
                       </div>
-                      <span className="text-sm text-white font-bold">Camera Snapshot Captured!</span>
-                      <span className="text-xs text-slate-400 font-medium mt-1">{currentPreset.handwrittenText}</span>
+                      <span className="text-sm font-mono text-white font-bold">Camera Snapshot Captured!</span>
+                      <span className="text-xs font-mono text-slate-400 mt-1">{currentPreset.handwrittenText}</span>
                     </div>
                   ) : (
                     <div>
@@ -212,7 +212,7 @@ export default function VisionSection() {
                 </div>
               </div>
 
-              <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400 font-medium">
+              <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400 font-mono">
                 <span className="flex items-center gap-1.5 text-brand-cyan">
                   <ScanLine className={`w-4 h-4 ${isScanning ? 'animate-spin' : ''}`} />
                   {isScanning ? 'Processing image parameters...' : 'Multimodal spatial grid ready'}
@@ -234,11 +234,11 @@ export default function VisionSection() {
               <div>
                 {/* Header */}
                 <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
-                  <span className="text-xs text-brand-cyan font-bold flex items-center gap-2">
+                  <span className="text-xs font-mono text-brand-cyan font-bold flex items-center gap-2">
                     <Zap className="w-4 h-4" />
                     Structured AI Vision Result
                   </span>
-                  <span className="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                  <span className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1">
                     <CheckCircle className="w-3 h-3" />
                     Student Verification ✓
                   </span>
@@ -246,13 +246,13 @@ export default function VisionSection() {
 
                 {/* Formatted Math Formula Block */}
                 <div className="bg-[#050508] rounded-2xl p-6 border border-brand-violet/40 mb-6 text-center shadow-inner relative overflow-hidden">
-                  <div className="text-xs text-brand-purple font-semibold uppercase tracking-wider mb-3 flex items-center justify-center gap-1.5">
+                  <div className="text-xs text-brand-purple font-mono uppercase tracking-wider mb-3 flex items-center justify-center gap-1.5">
                     <BookOpen className="w-3.5 h-3.5" />
                     <span>Formatted Concept Equation</span>
                   </div>
 
                   {/* Beautiful Clean Fractional Formula Rendering */}
-                  <div className="flex items-center justify-center gap-3 text-white text-xl sm:text-2xl py-2">
+                  <div className="flex items-center justify-center gap-3 font-mono text-white text-xl sm:text-2xl py-2">
                     <span className="font-bold text-brand-cyan">{currentPreset.displayFormula.left}</span>
                     <span className="text-slate-400 font-bold">=</span>
                     <div className="inline-flex flex-col items-center justify-center text-center">
@@ -268,7 +268,7 @@ export default function VisionSection() {
 
                 {/* Student-Friendly Variable Explanation Breakdown Table */}
                 <div className="mb-6">
-                  <div className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-3 flex items-center gap-1.5">
+                  <div className="text-xs font-mono text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
                     <Info className="w-3.5 h-3.5 text-brand-cyan" />
                     <span>What Every Part Means (Student Guide):</span>
                   </div>
@@ -276,10 +276,10 @@ export default function VisionSection() {
                   <div className="space-y-2">
                     {currentPreset.variableBreakdown.map((item, idx) => (
                       <div key={idx} className="bg-white/5 rounded-xl p-3 border border-white/5 flex items-center gap-3 text-xs">
-                        <span className="font-bold text-brand-cyan bg-brand-cyan/10 border border-brand-cyan/20 px-2.5 py-1 rounded min-w-[75px] text-center">
+                        <span className="font-mono font-bold text-brand-cyan bg-brand-cyan/10 border border-brand-cyan/20 px-2.5 py-1 rounded min-w-[75px] text-center">
                           {item.symbol}
                         </span>
-                        <span className="text-slate-300 leading-snug">
+                        <span className="text-slate-300 font-sans leading-snug">
                           {item.meaning || item.symbolDesc}
                         </span>
                       </div>
@@ -292,13 +292,13 @@ export default function VisionSection() {
                   <div className="text-xs font-bold text-white mb-1">
                     Student Physics Intuition:
                   </div>
-                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
                     {currentPreset.studentExplanation}
                   </p>
                 </div>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400 font-medium">
+              <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-slate-400">
                 <span>OCR Latency: 140ms</span>
                 <span className="text-brand-purple">Socratic Diagnostic Active</span>
               </div>

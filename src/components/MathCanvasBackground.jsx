@@ -87,7 +87,7 @@ export default function MathCanvasBackground() {
           currentOpacity = Math.min(0.6, p.opacity + factor * 0.4);
         }
 
-        ctx.font = `${p.size}px "JetBrains Mono", monospace`;
+        ctx.font = `${p.size}px "Plus Jakarta Sans", sans-serif`;
         ctx.fillStyle = p.color;
         ctx.globalAlpha = currentOpacity;
         ctx.fillText(p.symbol, p.x, p.y);

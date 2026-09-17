@@ -23,7 +23,7 @@ export default function Footer() {
               AI that teaches you to think. Autonomous multimodal diagnostic learning platform designed exclusively for JEE Main, JEE Advanced & NEET UG aspirants.
             </p>
           </div>
-          <div className="text-xs text-slate-400 font-medium">
+          <div className="text-xs text-slate-400">
             © {new Date().getFullYear()} SocraticAI Technologies Inc. All rights reserved.
           </div>
         </div>
