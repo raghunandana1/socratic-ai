@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Camera, Upload, X, CheckCircle2, FileJson, Sparkles, BookOpen, Layers, HelpCircle, Download, Lightbulb, AlertTriangle, ArrowRight, RotateCcw, Zap, Lock, TrendingUp } from 'lucide-react';
 import TiltCard from '../components/TiltCard';
 import MagneticButton from '../components/MagneticButton';
+import WordReveal from '../components/WordReveal';
 import { useExam } from '../context/ExamContext';
 
 function CognitiveMasteryCurveCard({
@@ -757,42 +758,40 @@ export default function DoubtPortalSection() {
   };
 
   return (
-    <section id="doubt-portal" className="py-24 px-4 md:px-8 relative z-10 bg-bg-card/40 border-y border-white/5 font-sans">
+    <section id="doubt-portal" className="py-24 px-4 md:px-8 relative z-10 bg-bg-card/40 border-y border-white/5 font-sans scene-transition-overlap">
       <div className="max-w-7xl mx-auto">
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+          <div
+            data-rev
+            style={{ '--d': '40ms' }}
             className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-brand-violet/10 border border-brand-violet/30 text-brand-cyan text-xs font-semibold tracking-wider uppercase mb-4 shadow-glow-violet"
           >
             <Layers className="w-3.5 h-3.5 text-brand-cyan" />
             <span>Autonomous Socratic AI Doubt Portal</span>
-          </motion.div>
+          </div>
 
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight mb-6"
-          >
-            Submit a Doubt & <span className="text-gradient-animated">Get Socratic Diagnosis.</span>
-          </motion.h2>
+          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight mb-6">
+            <WordReveal text="Submit a Doubt &" startIndex={0} />{' '}
+            <WordReveal text="Get Socratic Diagnosis." className="text-gradient-animated" startIndex={4} />
+          </h2>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+          <p
+            data-rev
+            style={{ '--d': '80ms' }}
             className="text-base sm:text-lg text-slate-400"
           >
             Snap your notebook working or type your doubt. Socratic AI automatically identifies the subject, chapter, and topic, diagnosing your exact slip point without giving away the answer.
-          </motion.p>
+          </p>
         </div>
 
         {/* Main Portal Container */}
-        <div className="max-w-4xl mx-auto">
+        <div
+          data-rev
+          style={{ '--d': '140ms' }}
+          className="max-w-4xl mx-auto"
+        >
           <TiltCard className="bg-[#08080E] border-brand-violet/30 p-6 md:p-10 shadow-2xl relative">
             
             {/* Top Action Bar */}

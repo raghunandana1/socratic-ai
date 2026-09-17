@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-10">
         
         {/* Brand Column */}
-        <div className="md:col-span-5 flex flex-col justify-between">
+        <div data-rev style={{ '--d': '40ms' }} className="md:col-span-5 flex flex-col justify-between">
           <div>
             <a href="#" className="flex items-center gap-3 mb-4">
               <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-violet to-brand-cyan p-[1px] shadow-glow-violet">
@@ -29,7 +29,7 @@ export default function Footer() {
         </div>
 
         {/* Links Column 1 */}
-        <div className="md:col-span-3">
+        <div data-rev style={{ '--d': '100ms' }} className="md:col-span-3">
           <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">
             Platform
           </h4>
@@ -41,7 +41,7 @@ export default function Footer() {
         </div>
 
         {/* Links Column 2 */}
-        <div className="md:col-span-4">
+        <div data-rev style={{ '--d': '160ms' }} className="md:col-span-4">
           <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">
             Curriculum Standards
           </h4>

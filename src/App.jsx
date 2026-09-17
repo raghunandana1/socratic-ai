@@ -15,8 +15,12 @@ import AdaptiveRLEngineSection from './sections/AdaptiveRLEngineSection';
 import MasterySection from './sections/MasterySection';
 import FinalCTASection from './sections/FinalCTASection';
 import Footer from './components/Footer';
+import useScrollChoreography from './hooks/useScrollChoreography';
 
 function MainAppContent() {
+  // Initialize unified cinematic scroll choreography loop
+  useScrollChoreography();
+
   useEffect(() => {
     // Initialize Lenis smooth kinetic scroll
     const lenis = new Lenis({
