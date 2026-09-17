@@ -1,54 +1,54 @@
 // Exam-Specific Hero Problems
 export const HERO_PROBLEMS = {
   "JEE Main": {
-    equation: "x² + 5x + 6 = 0",
-    topic: "Algebra — Quadratic Equations (JEE Main)",
+    equation: "x² - 2kx + (k² + k - 5) = 0  (roots < 5)",
+    topic: "Algebra — Location of Roots (JEE Main)",
     steps: [
       {
         id: 1,
         title: "Socratic Hint 01",
-        hint: "What two numbers multiply to 6 and add up to 5?",
-        badge: "Pattern Recognition",
+        hint: "For both roots to be real, what inequality must the discriminant D = b² - 4ac satisfy?",
+        badge: "Real Roots Condition",
         type: "guided_question"
       },
       {
         id: 2,
         title: "Socratic Hint 02",
-        hint: "Rewrite the middle term 5x as (2x + 3x) and group terms.",
-        badge: "Algebraic Restructuring",
+        hint: "Since both roots lie strictly to the left of 5, where must the parabola's vertex x_v = -b / (2a) be positioned?",
+        badge: "Vertex Boundary",
         type: "guided_question"
       },
       {
         id: 3,
         title: "Breakthrough",
-        hint: "(x + 2)(x + 3) = 0 ⟹ Roots are x = -2 and x = -3",
+        hint: "Combining D ≥ 0 (k ≤ 5), vertex k < 5, and boundary f(5) > 0 (k < 4) ⟹ Range is k ∈ (-∞, 4)",
         badge: "Mastery Achieved",
         type: "solution_reveal"
       }
     ]
   },
   "JEE Advanced": {
-    equation: "∫₀^(π/2) (sinⁿ x) / (sinⁿ x + cosⁿ x) dx",
+    equation: "∫[0 to π/2] (sinⁿ x) / (sinⁿ x + cosⁿ x) dx",
     topic: "Definite Calculus — King's Property (JEE Advanced)",
     steps: [
       {
         id: 1,
         title: "Socratic Hint 01",
-        hint: "Apply King's property f(x) ➔ f(a + b - x). What does sin(π/2 - x) become?",
+        hint: "Apply King's property f(x) ➔ f(a + b - x). What does sin(π/2 - x) simplify to?",
         badge: "Calculus Transformation",
         type: "guided_question"
       },
       {
         id: 2,
         title: "Socratic Hint 02",
-        hint: "Notice that swapping sin and cos leaves the denominator unchanged.",
+        hint: "Notice that swapping sin and cos leaves the denominator completely invariant.",
         badge: "Symmetry Exploitation",
         type: "guided_question"
       },
       {
         id: 3,
         title: "Breakthrough",
-        hint: "Add original and transformed integrals ⟹ 2I = ∫₀^(π/2) 1 dx ⟹ I = π/4",
+        hint: "Add original and transformed integrals ⟹ 2I = ∫[0 to π/2] 1 dx = π/2 ⟹ I = π/4",
         badge: "Mastery Achieved",
         type: "solution_reveal"
       }
@@ -56,26 +56,26 @@ export const HERO_PROBLEMS = {
   },
   "NEET UG": {
     equation: "CH₃-CH=CH₂ + HBr ➔ ?",
-    topic: "Organic Chemistry — Markovnikov Reaction (NEET UG)",
+    topic: "Organic Chemistry — Markovnikov Addition (NEET UG)",
     steps: [
       {
         id: 1,
         title: "Socratic Hint 01",
-        hint: "Where will electrophile H⁺ attack to form the more stable carbocation?",
+        hint: "Where will electrophile H⁺ attack first to generate the more stable carbocation intermediate?",
         badge: "Carbocation Stability",
         type: "guided_question"
       },
       {
         id: 2,
         title: "Socratic Hint 02",
-        hint: "Is a 2° carbocation (CH₃-CH⁺-CH₃) more stable than a 1° carbocation?",
+        hint: "Why is a 2° carbocation (CH₃-CH⁺-CH₃) significantly more stable than a 1° carbocation?",
         badge: "Hyperconjugation",
         type: "guided_question"
       },
       {
         id: 3,
         title: "Breakthrough",
-        hint: "Nucleophilic Br⁻ attacks C2 ⟹ Major Product is 2-Bromopropane!",
+        hint: "Nucleophilic Br⁻ attacks C2 carbocation ⟹ Major Product is 2-Bromopropane!",
         badge: "Mastery Achieved",
         type: "solution_reveal"
       }
@@ -86,36 +86,36 @@ export const HERO_PROBLEMS = {
 // Exam-Specific Guidance Engine Scenarios
 export const GUIDANCE_SCENARIOS = {
   "JEE Main": {
-    subject: "Algebra — Quadratic Roots",
-    problemText: "Find the roots of: x² + 5x + 6 = 0",
+    subject: "Algebra — Location of Roots",
+    problemText: "For what values of k are both roots of x² - 2kx + (k² + k - 5) = 0 less than 5?",
     badge: "JEE Main Target",
     hints: [
       {
         level: 1,
-        title: "Socratic Hint 01 — Structural Breakdown",
-        question: "What operation could help you rewrite this quadratic x² + 5x + 6 = 0?",
-        thought: "Identify if factoring or the quadratic formula is easier here.",
-        chip: "Factoring Method"
+        title: "Socratic Hint 01 — Discriminant Constraint",
+        question: "For real roots to exist, the discriminant D must be non-negative. What range of k does D = (-2k)² - 4(1)(k² + k - 5) ≥ 0 give?",
+        thought: "Expanding gives 4k² - 4k² - 4k + 20 ≥ 0 ⟹ -4k + 20 ≥ 0 ⟹ k ≤ 5.",
+        chip: "Condition 1: D ≥ 0"
       },
       {
         level: 2,
-        title: "Socratic Hint 02 — Product Condition",
-        question: "Can you find two numbers whose product is 6?",
-        thought: "Possible pairs: (1, 6) or (2, 3) or (-1, -6) or (-2, -3).",
-        chip: "Product Check"
+        title: "Socratic Hint 02 — Vertex Position",
+        question: "Since both roots are less than 5 and the parabola opens upward (a = 1 > 0), where must the vertex x = -b / (2a) lie relative to 5?",
+        thought: "Vertex is at x = 2k / 2 = k. Therefore, we must have k < 5.",
+        chip: "Condition 2: Vertex < 5"
       },
       {
         level: 3,
-        title: "Socratic Hint 03 — Sum Condition",
-        question: "Those two numbers also need to add up to 5.",
-        thought: "2 × 3 = 6 AND 2 + 3 = 5!",
-        chip: "Sum Check"
+        title: "Socratic Hint 03 — Boundary Value Test",
+        question: "For both roots to stay to the left of 5, what sign must f(5) have if a > 0?",
+        thought: "f(5) = 25 - 10k + k² + k - 5 = k² - 9k + 20 > 0 ⟹ (k - 4)(k - 5) > 0 ⟹ k < 4 or k > 5.",
+        chip: "Condition 3: f(5) > 0"
       }
     ],
     breakthrough: {
       title: "Cognitive Breakthrough Achieved!",
-      mathResult: "(x + 2)(x + 3) = 0 ⟹ Roots are x = -2 and x = -3",
-      reward: "+120 Diagnostic XP Earned"
+      mathResult: "Intersection of (k ≤ 5), (k < 5), and (k < 4 or k > 5) ⟹ k ∈ (-∞, 4)",
+      reward: "+150 Diagnostic XP Earned"
     }
   },
   "JEE Advanced": {

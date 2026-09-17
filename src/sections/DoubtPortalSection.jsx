@@ -111,47 +111,84 @@ export default function DoubtPortalSection() {
     }
   };
 
+// Helper to convert any raw LaTeX or formula syntax into natural, human-readable text
+  function cleanMathText(text) {
+  if (!text || typeof text !== 'string') return text || '';
+  return text
+    .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1) / ($2)')
+    .replace(/\\dfrac\{([^}]+)\}\{([^}]+)\}/g, '($1) / ($2)')
+    .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
+    .replace(/\\sqrt\[([^\]]+)\]\{([^}]+)\}/g, '$1√($2)')
+    .replace(/\\implies/g, '➔')
+    .replace(/\\iff/g, '⟺')
+    .replace(/\\to/g, '→')
+    .replace(/\\rightarrow/g, '→')
+    .replace(/\\leftarrow/g, '←')
+    .replace(/\\le/g, '≤')
+    .replace(/\\ge/g, '≥')
+    .replace(/\\leq/g, '≤')
+    .replace(/\\geq/g, '≥')
+    .replace(/\\neq/g, '≠')
+    .replace(/\\times/g, '×')
+    .replace(/\\cdot/g, '·')
+    .replace(/\\pm/g, '±')
+    .replace(/\\infty/g, '∞')
+    .replace(/\\pi/g, 'π')
+    .replace(/\\theta/g, 'θ')
+    .replace(/\\alpha/g, 'α')
+    .replace(/\\beta/g, 'β')
+    .replace(/\\vec\{([^}]+)\}/g, '$1_vector')
+    .replace(/\\hat\{([^}]+)\}/g, '$1_unit')
+    .replace(/\\mathbf\{([^}]+)\}/g, '$1')
+    .replace(/\\text\{([^}]+)\}/g, '$1')
+    .replace(/\\mathrm\{([^}]+)\}/g, '$1')
+    .replace(/\$+/g, '')
+    .replace(/\\int_\{?([^}^_]+)\}?\^\{?([^}]+)\}?/g, '∫[$1 to $2]')
+    .replace(/\\int/g, '∫')
+    .replace(/\\sum_\{?([^}^_]+)\}?\^\{?([^}]+)\}?/g, '∑[$1 to $2]')
+    .replace(/\\sum/g, '∑')
+    .trim();
+}
+
   // Generate dynamic, context-aware Socratic Hints based on user's query and syllabus
   const generateDynamicSocraticDiagnosis = (query, subject, chapter, subtopic, errorType) => {
     const cleanQuery = (query || "").trim();
-    const isMetaQuery = /what to do next|how to start|help|what next|where to begin/i.test(cleanQuery);
 
     let errorTitle = errorType;
     let errorDescription = "";
 
     if (errorType === 'Conceptual Blindspot') {
       errorTitle = "Conceptual Misapplication";
-      errorDescription = `Identified difficulty in mapping foundational principles of ${chapter} to problem constraints.`;
+      errorDescription = `Misinterpretation of core boundary conditions or fundamental definitions in ${subtopic || chapter}.`;
     } else if (errorType === 'Calculation Slip') {
       errorTitle = "Algebraic / Arithmetic Slip";
-      errorDescription = `Calculations deviate during intermediate simplification steps in ${subtopic}.`;
+      errorDescription = `Sign error or incorrect coefficient expansion during intermediate simplification in ${subtopic || chapter}.`;
     } else if (errorType === 'Formula Amnesia') {
       errorTitle = "Formula Misapplication";
-      errorDescription = `Analyzed solution steps for formula application, base case conditions, or identity substitution.`;
+      errorDescription = `Incomplete identity formulation or misapplied standard formula in ${subtopic || chapter}.`;
     } else {
       errorTitle = "Execution Bottleneck";
-      errorDescription = `Pacing bottleneck detected while transitioning between problem setup and computation.`;
+      errorDescription = `Stalled progress during algebraic substitution or reduction step in ${subtopic || chapter}.`;
     }
 
-    // Dynamic Socratic hints stream
     let hints = [];
-    if (isMetaQuery) {
+    if (subject === 'Mathematics') {
       hints = [
-        `First, identify the given parameters and boundary conditions in ${subtopic}.`,
-        `Recall the key governing relation for ${subtopic} under ${chapter}. What variable needs isolating?`,
-        `Substitute boundary values or test extreme cases to isolate candidate options.`
+        `Write down the governing constraints and check whether the discriminant or domain restrictions limit your variables.`,
+        `Look for an algebraic restructuring: can you complete the square, group terms, or apply a known symmetry?`,
+        `Combine your inequality constraints to solve for the target parameter.`
       ];
-    } else if (cleanQuery.length > 0) {
+    } else if (subject === 'Physics') {
       hints = [
-        `Deconstruct "${cleanQuery.slice(0, 40)}${cleanQuery.length > 40 ? '...' : ''}" into core mathematical invariants.`,
-        `Apply standard theorem for ${subtopic} in ${chapter}. Look for symmetry or cancellation opportunities.`,
-        `Verify your result against physical/mathematical boundary constraints before finalizing.`
+        `Identify the system's conserved quantities (energy, momentum, or charge) and state your chosen reference coordinate origin.`,
+        `Apply the governing law relating the field, force, or potential to the distance parameter. Watch your inverse-square vs inverse-cube dependencies.`,
+        `Substitute the boundary constraints and check if your dimensional units match the expected physical quantity.`
       ];
     } else {
       hints = [
-        `Analyze the attached notebook snapshot for formula setup in ${chapter}.`,
-        `Verify intermediate steps in ${subtopic} for sign errors or missing constants.`,
-        `Substitute test values or boundary limits to confirm consistency.`
+        `Identify which reactant acts as the electrophile and which bond possesses the highest electron density.`,
+        `Examine intermediate carbocation / transition state stability (+I effect, hyperconjugation, or resonance).`,
+        `Direct the nucleophile to the most stable reactive center to yield the major thermodynamic product.`
       ];
     }
 
@@ -222,12 +259,10 @@ export default function DoubtPortalSection() {
           chapter: selectedChapter,
           subtopic: selectedSubtopic,
           errorTag: errorTag,
-          transcribedText: questionText || (imagePreview ? "[Image Notebook Snapshot Attached]" : "Problem Query Submitted"),
-          diagnosis: diagnosis,
-          aiEngine: "Socratic Heuristic Engine (Backend Offline)",
-          isLiveAI: false
+          transcribedText: questionText || (imagePreview ? "[Notebook Snapshot Attached]" : "Problem Query Submitted"),
+          diagnosis: diagnosis
         });
-      }, 700);
+      }, 600);
     }
   };
 
@@ -296,22 +331,11 @@ export default function DoubtPortalSection() {
             
             {/* Top Action Bar */}
             <div className="flex flex-wrap items-center justify-between pb-6 border-b border-white/10 mb-8 gap-3">
-              <div className="flex flex-wrap items-center gap-3">
-                <div className="flex items-center gap-2">
-                  <span className="w-3.5 h-3.5 rounded-full bg-brand-cyan animate-pulse" />
-                  <span className="text-xs font-mono font-bold text-white uppercase tracking-wider">
-                    Taxonomy Connected
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10">
-                  <span className={`w-2 h-2 rounded-full ${backendStatus.online ? (backendStatus.isLiveAI ? 'bg-emerald-400 animate-ping' : 'bg-brand-cyan') : 'bg-amber-400'}`} />
-                  <span className="text-[11px] font-mono text-slate-300">
-                    {backendStatus.online
-                      ? (backendStatus.isLiveAI ? `Live Gemini 1.5 Flash (Online)` : `Backend API (Demo Mode)`)
-                      : 'Autonomous Simulator (Backend Offline)'}
-                  </span>
-                </div>
+              <div className="flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full bg-brand-cyan animate-pulse" />
+                <span className="text-xs font-mono font-bold text-white uppercase tracking-wider">
+                  Taxonomy Connected
+                </span>
               </div>
               
               <button
@@ -340,7 +364,7 @@ export default function DoubtPortalSection() {
                     <select
                       value={targetExam}
                       onChange={(e) => setTargetExam(e.target.value)}
-                      className="w-full bg-[#050508] border border-white/15 text-white text-xs font-mono rounded-xl p-3 focus:outline-none focus:border-brand-cyan"
+                      className="w-full bg-[#050508] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white focus:outline-none focus:border-brand-cyan transition-colors"
                     >
                       <option value="JEE Main">JEE Main</option>
                       <option value="JEE Advanced">JEE Advanced</option>
@@ -354,153 +378,163 @@ export default function DoubtPortalSection() {
                     <select
                       value={selectedSubject}
                       onChange={(e) => setSelectedSubject(e.target.value)}
-                      className="w-full bg-[#050508] border border-white/15 text-white text-xs font-mono rounded-xl p-3 focus:outline-none focus:border-brand-cyan"
+                      className="w-full bg-[#050508] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white focus:outline-none focus:border-brand-cyan transition-colors"
                     >
-                      {availableSubjects.map(subj => (
-                        <option key={subj} value={subj}>{subj}</option>
+                      {availableSubjects.map((sub) => (
+                        <option key={sub} value={sub}>{sub}</option>
                       ))}
                     </select>
                   </div>
 
-                  {/* Class */}
+                  {/* Class Level */}
                   <div>
-                    <label className="block text-xs font-mono text-slate-400 mb-1.5">Class Level *</label>
+                    <label className="block text-xs font-mono text-slate-400 mb-1.5">Class / Standard *</label>
                     <select
                       value={selectedClass}
                       onChange={(e) => setSelectedClass(e.target.value)}
-                      className="w-full bg-[#050508] border border-white/15 text-white text-xs font-mono rounded-xl p-3 focus:outline-none focus:border-brand-cyan"
+                      className="w-full bg-[#050508] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white focus:outline-none focus:border-brand-cyan transition-colors"
                     >
-                      <option value="11">Class 11</option>
-                      <option value="12">Class 12</option>
+                      <option value="11">Class 11 (Foundations)</option>
+                      <option value="12">Class 12 (Advanced & Boards)</option>
                     </select>
                   </div>
                 </div>
 
-                {/* Chapter & Subtopic Selectors */}
+                {/* Chapter & Subtopic Cascade */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-mono text-slate-400 mb-1.5">Chapter *</label>
                     <select
                       value={selectedChapter}
                       onChange={(e) => setSelectedChapter(e.target.value)}
-                      className="w-full bg-[#050508] border border-white/15 text-white text-xs font-mono rounded-xl p-3 focus:outline-none focus:border-brand-cyan"
+                      className="w-full bg-[#050508] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white focus:outline-none focus:border-brand-cyan transition-colors"
                     >
-                      {chaptersForSubjectAndClass.map(ch => (
-                        <option key={ch.chapter} value={ch.chapter}>{ch.chapter}</option>
+                      {chaptersForSubjectAndClass.map((c) => (
+                        <option key={c.chapter} value={c.chapter}>{c.chapter}</option>
                       ))}
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-mono text-slate-400 mb-1.5">Subtopic *</label>
+                    <label className="block text-xs font-mono text-slate-400 mb-1.5">Subtopic Focus *</label>
                     <select
                       value={selectedSubtopic}
                       onChange={(e) => setSelectedSubtopic(e.target.value)}
-                      className="w-full bg-[#050508] border border-white/15 text-white text-xs font-mono rounded-xl p-3 focus:outline-none focus:border-brand-cyan"
+                      className="w-full bg-[#050508] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white focus:outline-none focus:border-brand-cyan transition-colors"
                     >
-                      {availableSubtopics.map(sub => (
-                        <option key={sub} value={sub}>{sub}</option>
+                      {availableSubtopics.map((st) => (
+                        <option key={st} value={st}>{st}</option>
                       ))}
                     </select>
                   </div>
                 </div>
               </div>
 
-              {/* STEP 2: Camera & Notebook Attachment */}
+              {/* STEP 2: Doubt Input & Notebook Capture */}
               <div>
                 <div className="text-xs font-mono font-bold text-brand-cyan uppercase tracking-wider mb-4 flex items-center gap-2">
                   <span className="w-5 h-5 rounded-full bg-brand-cyan/20 border border-brand-cyan/40 text-brand-cyan flex items-center justify-center text-[10px]">2</span>
-                  Attach Notebook Photo / Camera Snapshot
-                </div>
-
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleImageUpload}
-                  accept="image/*"
-                  className="hidden"
-                />
-
-                {!imagePreview ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      className="p-6 rounded-2xl bg-[#050508] border border-dashed border-white/20 hover:border-brand-cyan text-center flex flex-col items-center justify-center gap-2 transition-all group"
-                    >
-                      <Upload className="w-6 h-6 text-slate-400 group-hover:text-brand-cyan transition-colors" />
-                      <span className="text-xs font-mono font-bold text-slate-300">Upload Image File</span>
-                      <span className="text-[10px] text-slate-500">PNG, JPG up to 10MB</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      className="p-6 rounded-2xl bg-[#050508] border border-dashed border-white/20 hover:border-brand-violet text-center flex flex-col items-center justify-center gap-2 transition-all group"
-                    >
-                      <Camera className="w-6 h-6 text-slate-400 group-hover:text-brand-purple transition-colors" />
-                      <span className="text-xs font-mono font-bold text-slate-300">Use Camera Snapshot</span>
-                      <span className="text-[10px] text-slate-500">Click to snap photo</span>
-                    </button>
-                  </div>
-                ) : (
-                  <div className="relative bg-[#050508] border border-white/10 rounded-2xl p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <img src={imagePreview} alt="Doubt notebook attachment" className="w-16 h-16 object-cover rounded-xl border border-white/10" />
-                      <div>
-                        <div className="text-xs font-mono font-bold text-white">Notebook Photo Attached</div>
-                        <div className="text-[10px] font-mono text-emerald-400">Ready for Multimodal Vision OCR</div>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => { setImagePreview(null); setImageFile(null); }}
-                      className="p-2 rounded-xl bg-white/5 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 transition-colors"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* STEP 3: Question Text & Error Tag */}
-              <div>
-                <div className="text-xs font-mono font-bold text-brand-cyan uppercase tracking-wider mb-4 flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-brand-cyan/20 border border-brand-cyan/40 text-brand-cyan flex items-center justify-center text-[10px]">3</span>
-                  Doubt Statement & Error Classification
+                  Transcribe or Upload Notebook Doubt
                 </div>
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs font-mono text-slate-400 mb-1.5">Question / Doubt Description</label>
+                    <label className="block text-xs font-mono text-slate-400 mb-1.5">
+                      Describe what you are stuck on (or leave blank if uploading notebook photo)
+                    </label>
                     <textarea
-                      rows={3}
                       value={questionText}
                       onChange={(e) => setQuestionText(e.target.value)}
-                      placeholder="Type your question (e.g. 'what to do next?' or specific math equation)..."
-                      className="w-full bg-[#050508] border border-white/15 text-white text-xs font-sans rounded-xl p-3.5 focus:outline-none focus:border-brand-cyan"
+                      placeholder="e.g. I worked through the problem up to step 3, but my discriminant gives no real roots. Where is my algebraic sign slipping?"
+                      rows={3}
+                      className="w-full bg-[#050508] border border-white/10 rounded-2xl p-4 text-sm font-mono text-white placeholder:text-slate-600 focus:outline-none focus:border-brand-cyan transition-colors resize-none"
                     />
                   </div>
 
+                  {/* Notebook Image Upload Area */}
                   <div>
-                    <label className="block text-xs font-mono text-slate-400 mb-1.5">Suspected Error Type</label>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                      {['Conceptual Blindspot', 'Calculation Slip', 'Speed Bottleneck', 'Formula Amnesia'].map(tag => (
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleImageUpload}
+                      accept="image/*"
+                      className="hidden"
+                    />
+
+                    {!imagePreview ? (
+                      <div
+                        onClick={() => fileInputRef.current?.click()}
+                        className="border-2 border-dashed border-white/15 hover:border-brand-cyan/50 rounded-2xl p-6 text-center cursor-pointer transition-colors group bg-white/[0.02]"
+                      >
+                        <div className="w-12 h-12 rounded-full bg-brand-violet/10 border border-brand-violet/20 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                          <Camera className="w-5 h-5 text-brand-cyan" />
+                        </div>
+                        <div className="text-sm font-mono font-medium text-white mb-1">
+                          Upload or Snap Notebook Working Photo
+                        </div>
+                        <div className="text-xs text-slate-400 font-mono">
+                          Auto-detects subject and pinpoints where your working stalled (PNG, JPG, HEIC up to 10MB)
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="relative rounded-2xl overflow-hidden border border-brand-violet/40 bg-[#050508] p-3 flex items-center gap-4">
+                        <img
+                          src={imagePreview}
+                          alt="Uploaded Doubt"
+                          className="w-20 h-20 object-cover rounded-xl border border-white/10"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs font-mono font-bold text-white truncate">
+                            {imageFile?.name || "Notebook Snapshot"}
+                          </div>
+                          <div className="text-[11px] font-mono text-emerald-400 flex items-center gap-1 mt-1">
+                            <CheckCircle2 className="w-3 h-3" />
+                            <span>Ready for Vision OCR &amp; Diagnostic</span>
+                          </div>
+                        </div>
                         <button
                           type="button"
-                          key={tag}
-                          onClick={() => setErrorTag(tag)}
-                          className={`py-2 px-3 rounded-xl text-xs font-mono font-bold transition-all ${
-                            errorTag === tag
-                              ? 'bg-brand-violet text-white shadow-glow-violet'
-                              : 'bg-[#050508] text-slate-400 border border-white/10 hover:text-white'
-                          }`}
+                          onClick={() => {
+                            setImageFile(null);
+                            setImagePreview(null);
+                          }}
+                          className="p-2 rounded-xl bg-white/5 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 transition-colors"
                         >
-                          {tag}
+                          <X className="w-4 h-4" />
                         </button>
-                      ))}
-                    </div>
+                      </div>
+                    )}
                   </div>
+                </div>
+              </div>
+
+              {/* STEP 3: Misconception Tagging */}
+              <div>
+                <div className="text-xs font-mono font-bold text-brand-cyan uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <span className="w-5 h-5 rounded-full bg-brand-cyan/20 border border-brand-cyan/40 text-brand-cyan flex items-center justify-center text-[10px]">3</span>
+                  Self-Diagnosed Bottleneck Category
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {[
+                    'Conceptual Blindspot',
+                    'Calculation Slip',
+                    'Formula Amnesia',
+                    'Execution Bottleneck'
+                  ].map((tag) => (
+                    <button
+                      type="button"
+                      key={tag}
+                      onClick={() => setErrorTag(tag)}
+                      className={`py-2 px-3 rounded-xl text-xs font-mono font-bold transition-all ${
+                        errorTag === tag
+                          ? 'bg-brand-violet text-white shadow-glow-violet'
+                          : 'bg-[#050508] text-slate-400 border border-white/10 hover:text-white'
+                      }`}
+                    >
+                      {tag}
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -527,7 +561,7 @@ export default function DoubtPortalSection() {
 
             </form>
 
-            {/* SOCRATIC DIAGNOSTIC TICKET CARD (MATCHING USER SCREENSHOT AESTHETIC) */}
+            {/* SOCRATIC DIAGNOSTIC TICKET CARD */}
             <AnimatePresence>
               {submittedResult && (
                 <motion.div
@@ -540,8 +574,8 @@ export default function DoubtPortalSection() {
                   {/* Glowing Top Ambient Bar */}
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-cyan via-brand-violet to-brand-purple" />
 
-                  {/* Ticket Header */}
-                  <div className="flex flex-wrap items-center justify-between pb-4 border-b border-white/10 mb-6 gap-2">
+                  {/* Ticket Header (Clean: No model tag) */}
+                  <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
                     <div className="flex items-center gap-2.5">
                       <CheckCircle2 className="w-5 h-5 text-brand-cyan" />
                       <h4 className="text-sm sm:text-base font-mono font-bold text-white tracking-wide">
@@ -550,51 +584,31 @@ export default function DoubtPortalSection() {
                       </h4>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      {submittedResult.aiEngine && (
-                        <span className={`text-[10px] font-mono px-2.5 py-0.5 rounded-full border ${
-                          submittedResult.isLiveAI
-                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                            : 'bg-brand-violet/10 text-brand-cyan border-brand-violet/20'
-                        }`}>
-                          {submittedResult.aiEngine}
-                        </span>
-                      )}
-                      <button
-                        onClick={() => setSubmittedResult(null)}
-                        className="p-1 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
-                      >
-                        <X className="w-4.5 h-4.5" />
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => setSubmittedResult(null)}
+                      className="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                      title="Close Ticket"
+                    >
+                      <X className="w-4.5 h-4.5" />
+                    </button>
                   </div>
 
-                  {/* Context Specs Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[#07070E] p-4 rounded-2xl border border-white/10 mb-6 font-mono text-xs">
-                    <div>
-                      <span className="text-slate-400 block mb-1">Exam &amp; Subject Context:</span>
-                      <span className="text-white font-bold">{submittedResult.exam} — {submittedResult.subject}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 block mb-1">AI Extracted Chapter &amp; Subtopic:</span>
-                      <span className="text-brand-cyan font-bold">{submittedResult.subject} – {submittedResult.chapter} ({submittedResult.subtopic})</span>
-                    </div>
-                  </div>
-
-                  {/* Transcribed Question Statement Box */}
+                  {/* Transcribed Problem Statement */}
                   <div className="bg-[#07070E] p-4 rounded-2xl border border-white/10 mb-6 font-mono text-xs">
-                    <span className="text-slate-400 block mb-1">Transcribed Question Statement:</span>
-                    <span className="text-white font-bold text-sm italic">"{submittedResult.transcribedText}"</span>
+                    <span className="text-slate-400 block mb-1">Identified Problem / Working:</span>
+                    <span className="text-white font-bold text-sm">
+                      "{cleanMathText(submittedResult.transcribedText)}"
+                    </span>
                   </div>
 
-                  {/* AI Diagnosed Error Banner */}
+                  {/* Exact Student Error Explanation */}
                   <div className="bg-rose-950/40 border border-rose-500/40 rounded-2xl p-4.5 mb-6">
                     <div className="text-xs font-mono font-bold text-rose-400 mb-1 flex items-center gap-2">
                       <AlertTriangle className="w-4 h-4" />
-                      <span>AI Diagnosed Error: {submittedResult.diagnosis.errorTitle}</span>
+                      <span>Diagnosed Error: {submittedResult.diagnosis.errorTitle}</span>
                     </div>
-                    <p className="text-xs font-sans text-slate-300">
-                      {submittedResult.diagnosis.errorDescription}
+                    <p className="text-xs sm:text-sm font-sans text-slate-200 leading-relaxed">
+                      {cleanMathText(submittedResult.diagnosis.errorDescription)}
                     </p>
                   </div>
 
@@ -632,7 +646,7 @@ export default function DoubtPortalSection() {
                       animate={{ opacity: 1, y: 0 }}
                       className="bg-[#0F0F1A] p-4 rounded-xl border border-white/10 text-sm font-sans text-white leading-relaxed font-medium"
                     >
-                      "{submittedResult.diagnosis.hints[activeHintStep - 1]}"
+                      "{cleanMathText(submittedResult.diagnosis.hints[activeHintStep - 1])}"
                     </motion.div>
                   </div>
 

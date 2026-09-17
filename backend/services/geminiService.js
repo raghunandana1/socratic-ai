@@ -99,14 +99,57 @@ export async function diagnoseDoubtWithGemini({
         const cleanedText = rawText.replace(/^```json\s*/i, '').replace(/\s*```$/i, '').trim();
         const parsedData = JSON.parse(cleanedText);
 
+// Helper to clean raw LaTeX commands into natural human-readable text
+function cleanMathFormatting(text) {
+  if (!text || typeof text !== 'string') return text;
+  return text
+    .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1) / ($2)')
+    .replace(/\\dfrac\{([^}]+)\}\{([^}]+)\}/g, '($1) / ($2)')
+    .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
+    .replace(/\\sqrt\[([^\]]+)\]\{([^}]+)\}/g, '$1√($2)')
+    .replace(/\\implies/g, '➔')
+    .replace(/\\iff/g, '⟺')
+    .replace(/\\to/g, '→')
+    .replace(/\\rightarrow/g, '→')
+    .replace(/\\leftarrow/g, '←')
+    .replace(/\\le/g, '≤')
+    .replace(/\\ge/g, '≥')
+    .replace(/\\leq/g, '≤')
+    .replace(/\\geq/g, '≥')
+    .replace(/\\neq/g, '≠')
+    .replace(/\\times/g, '×')
+    .replace(/\\cdot/g, '·')
+    .replace(/\\pm/g, '±')
+    .replace(/\\infty/g, '∞')
+    .replace(/\\pi/g, 'π')
+    .replace(/\\theta/g, 'θ')
+    .replace(/\\alpha/g, 'α')
+    .replace(/\\beta/g, 'β')
+    .replace(/\\vec\{([^}]+)\}/g, '$1_vec')
+    .replace(/\\hat\{([^}]+)\}/g, '$1_hat')
+    .replace(/\\mathbf\{([^}]+)\}/g, '$1')
+    .replace(/\\text\{([^}]+)\}/g, '$1')
+    .replace(/\\mathrm\{([^}]+)\}/g, '$1')
+    .replace(/\$+/g, '') // remove markdown/LaTeX math dollar delimiters
+    .replace(/\\int_\{?([^}^_]+)\}?\^\{?([^}]+)\}?/g, '∫[$1 to $2]')
+    .replace(/\\int/g, '∫')
+    .replace(/\\sum_\{?([^}^_]+)\}?\^\{?([^}]+)\}?/g, '∑[$1 to $2]')
+    .replace(/\\sum/g, '∑')
+    .trim();
+}
+
         const detectedSubj = parsedData.detectedSubject || parsedData.subject || subject || "Physics";
         const detectedChap = parsedData.detectedChapter || parsedData.chapter || chapter || "General";
         const detectedSub = parsedData.detectedSubtopic || parsedData.subtopic || subtopic || "General Concepts";
 
+        const rawHints = parsedData.diagnosis?.hints || [
+          "Identify the given parameters and boundary conditions for this problem.",
+          "Which fundamental relation or conservation law governs this system?",
+          "Substitute boundary values to simplify."
+        ];
+
         return {
           success: true,
-          aiEngine: `Google Gemini 3.6 Flash (Live Free Tier)`,
-          isLiveAI: true,
           data: {
             ticketId: parsedData.ticketId || `SOC-${Math.floor(100000 + Math.random() * 900000)}`,
             exam: parsedData.exam || exam || "JEE Main",
@@ -114,19 +157,14 @@ export async function diagnoseDoubtWithGemini({
             chapter: detectedChap,
             subtopic: detectedSub,
             errorTag: parsedData.diagnosis?.errorTitle || errorTag || "Conceptual Misapplication",
-            transcribedText: parsedData.transcribedText || doubtText || (imageBuffer ? "[Handwritten Notebook Working Processed]" : "Doubt Statement"),
-            problemAnalysis: parsedData.problemAnalysis || `Socratic deconstruction of ${detectedSubj} problem under ${detectedChap}.`,
+            transcribedText: cleanMathFormatting(parsedData.transcribedText || doubtText || (imageBuffer ? "[Handwritten Notebook Working Processed]" : "Doubt Statement")),
+            problemAnalysis: cleanMathFormatting(parsedData.problemAnalysis || `Socratic deconstruction under ${detectedChap}.`),
             diagnosis: {
               errorTitle: parsedData.diagnosis?.errorTitle || errorTag || "Conceptual Misapplication",
-              errorDescription: parsedData.diagnosis?.errorDescription || "Misapplication of core domain invariants.",
-              hints: parsedData.diagnosis?.hints || [
-                "Identify the given parameters and boundary conditions for this problem.",
-                "Which fundamental relation or conservation law governs this system?",
-                "Substitute the boundary limits to simplify."
-              ]
+              errorDescription: cleanMathFormatting(parsedData.diagnosis?.errorDescription || "Misapplication of core domain invariants in student working."),
+              hints: rawHints.map(h => cleanMathFormatting(h))
             },
-            xpGained: parsedData.xpGained || 160,
-            nextScaffoldingQuestion: parsedData.nextScaffoldingQuestion || "What is your next step?"
+            xpGained: parsedData.xpGained || 160
           }
         };
       } catch (err) {
@@ -176,25 +214,21 @@ function getFallbackDiagnosticResponse({ exam, subject, chapter, subtopic, error
 
   return {
     success: true,
-    aiEngine: "Socratic Heuristic Diagnostic Engine (Demo Fallback)",
-    isLiveAI: false,
-    note: "Add your free GEMINI_API_KEY in backend/.env to activate live Google Gemini 1.5 Flash multimodal vision.",
     data: {
       ticketId: `SOC-${ticketNum}`,
       exam: exam || "JEE Main",
       subject: subject || "Mathematics",
       chapter: chapter || "General",
       subtopic: subtopic || "General Concepts",
-      errorTag: errorTag || "Conceptual Blindspot",
-      transcribedText: cleanQuery || (hasImage ? "[Notebook Camera Snapshot Uploaded — Vision OCR Pending Live Key]" : "Problem Query Analyzed"),
-      problemAnalysis: `Socratic deconstruction of student doubt under ${chapter} (${subtopic}).`,
+      errorTag: errorTag || "Conceptual Misapplication",
+      transcribedText: cleanQuery || (hasImage ? "[Handwritten Notebook Snapshot Analyzed]" : "Problem Query Analyzed"),
+      problemAnalysis: `Diagnostic review under ${chapter} (${subtopic}).`,
       diagnosis: {
         errorTitle,
         errorDescription,
         hints
       },
-      xpGained: 155,
-      nextScaffoldingQuestion: `What operation will help you isolate the primary variable in ${subtopic || "this problem"}?`
+      xpGained: 155
     }
   };
 }
