@@ -6,6 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { diagnoseDoubtWithGemini } from './services/geminiService.js';
+import { initialLeaderboards } from './services/sessionStore.js';
 
 dotenv.config();
 
@@ -19,6 +20,9 @@ const PORT = process.env.PORT || 5001;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// In-memory leaderboards state (categorized by JEE Main, JEE Advanced, NEET UG)
+let leaderboardState = JSON.parse(JSON.stringify(initialLeaderboards));
 
 // Configure Multer for In-Memory File Uploads (up to 10MB)
 const storage = multer.memoryStorage();
@@ -76,7 +80,58 @@ app.get('/api/v1/taxonomy', (req, res) => {
   res.json(taxonomyData);
 });
 
-// 3. Main Socratic Doubt Diagnostic Route
+// 3. Leaderboard Routes (Strictly JEE Main, JEE Advanced, NEET UG)
+app.get('/api/v1/leaderboard', (req, res) => {
+  const category = req.query.category || 'JEE Main';
+  const data = leaderboardState[category] || leaderboardState['JEE Main'];
+  res.json({
+    success: true,
+    category,
+    categories: ['JEE Main', 'JEE Advanced', 'NEET UG'],
+    leaderboard: data
+  });
+});
+
+app.post('/api/v1/leaderboard/score', (req, res) => {
+  const { name, handle, exp, exam, solved } = req.body;
+  const category = ['JEE Main', 'JEE Advanced', 'NEET UG'].includes(exam) ? exam : 'JEE Main';
+
+  if (!leaderboardState[category]) {
+    leaderboardState[category] = [];
+  }
+
+  const existingIdx = leaderboardState[category].findIndex(u => u.handle === handle || u.name === name);
+  if (existingIdx >= 0) {
+    leaderboardState[category][existingIdx].exp = exp;
+    if (solved) leaderboardState[category][existingIdx].solved = solved;
+  } else {
+    leaderboardState[category].push({
+      rank: 0,
+      name: name || 'You (Aspirant)',
+      handle: handle || 'you_aspirant',
+      exp: exp || 0,
+      solved: solved || 1,
+      streak: 12,
+      avatar: '⚡',
+      accuracy: 92,
+      isCurrentUser: true
+    });
+  }
+
+  // Sort descending by EXP
+  leaderboardState[category].sort((a, b) => b.exp - a.exp);
+  leaderboardState[category].forEach((item, idx) => {
+    item.rank = idx + 1;
+  });
+
+  res.json({
+    success: true,
+    category,
+    leaderboard: leaderboardState[category]
+  });
+});
+
+// 4. Main Socratic Doubt Diagnostic Route
 app.post('/api/v1/doubts/diagnose', upload.single('image'), async (req, res) => {
   try {
     const {

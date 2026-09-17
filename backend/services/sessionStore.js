@@ -69,6 +69,83 @@ export function calculateExp(hintsUsed) {
   return 10;
 }
 
+export function calculateMasteryMetrics(hintsUsed, attemptsCount, isSolved) {
+  if (!isSolved) {
+    const inProgressPercentage = Math.min(65, 35 + (attemptsCount - 1) * 15);
+    return {
+      percentage: inProgressPercentage,
+      status: "In Progress — Guided Refinement",
+      percentile: "Top 45% Iteration Rate",
+      conceptGrasp: Math.min(75, 45 + attemptsCount * 10),
+      executionPrecision: 55,
+      socraticAutonomy: Math.max(30, 85 - hintsUsed * 12),
+      retentionScore: 68
+    };
+  }
+
+  // When solved:
+  let percentage = 98;
+  let percentile = "Top 2% Percentile (Mastery Tier)";
+  let status = "Exceptional First-Principle Breakthrough";
+  let retention = 96;
+
+  if (hintsUsed === 1) {
+    percentage = 88;
+    percentile = "Top 8% Percentile (Advanced Tier)";
+    status = "Rapid Guided Adaptation";
+    retention = 91;
+  } else if (hintsUsed === 2) {
+    percentage = 76;
+    percentile = "Top 18% Percentile (Proficient Tier)";
+    status = "Solid Concept Retrieval";
+    retention = 84;
+  } else if (hintsUsed === 3) {
+    percentage = 64;
+    percentile = "Top 35% Percentile (Progressing)";
+    status = "Scaffolded Progression";
+    retention = 75;
+  } else if (hintsUsed >= 4) {
+    percentage = 52;
+    percentile = "Top 55% Percentile (Foundational)";
+    status = "Full Step-by-Step Scaffolding";
+    retention = 68;
+  }
+
+  return {
+    percentage,
+    percentile,
+    status,
+    conceptGrasp: Math.min(99, percentage + 2),
+    executionPrecision: Math.min(98, percentage - 3),
+    socraticAutonomy: Math.max(25, 100 - hintsUsed * 16),
+    retentionScore: retention
+  };
+}
+
+export const initialLeaderboards = {
+  "JEE Main": [
+    { rank: 1, name: "Ananya Sharma", handle: "ananya_jee", exp: 520, solved: 12, streak: 15, avatar: "👩‍🔬", accuracy: 94 },
+    { rank: 2, name: "Rohan Verma", handle: "rohan_v", exp: 460, solved: 10, streak: 9, avatar: "👨‍💻", accuracy: 89 },
+    { rank: 3, name: "Aarav Patel", handle: "aarav_p", exp: 390, solved: 9, streak: 12, avatar: "⚡", accuracy: 85 },
+    { rank: 4, name: "Devansh Mehta", handle: "devansh_m", exp: 310, solved: 7, streak: 6, avatar: "🎯", accuracy: 81 },
+    { rank: 5, name: "Tanvi Kulkarni", handle: "tanvi_k", exp: 260, solved: 6, streak: 8, avatar: "🧠", accuracy: 78 }
+  ],
+  "JEE Advanced": [
+    { rank: 1, name: "Siddharth Rao", handle: "sid_adv", exp: 580, solved: 13, streak: 18, avatar: "🚀", accuracy: 96 },
+    { rank: 2, name: "Kavya Nambiar", handle: "kavya_n", exp: 510, solved: 11, streak: 14, avatar: "🧬", accuracy: 92 },
+    { rank: 3, name: "Aditya Roy", handle: "aditya_r", exp: 440, solved: 10, streak: 10, avatar: "⚛️", accuracy: 88 },
+    { rank: 4, name: "Meera Sen", handle: "meera_s", exp: 360, solved: 8, streak: 7, avatar: "📐", accuracy: 83 },
+    { rank: 5, name: "Vikram Malhotra", handle: "vikram_m", exp: 290, solved: 6, streak: 5, avatar: "🔭", accuracy: 79 }
+  ],
+  "NEET UG": [
+    { rank: 1, name: "Dr. Isha Singhal", handle: "isha_neet", exp: 540, solved: 12, streak: 16, avatar: "🩺", accuracy: 95 },
+    { rank: 2, name: "Farhan Qureshi", handle: "farhan_q", exp: 480, solved: 11, streak: 12, avatar: "🔬", accuracy: 91 },
+    { rank: 3, name: "Ritika Das", handle: "ritika_d", exp: 410, solved: 9, streak: 11, avatar: "🌿", accuracy: 87 },
+    { rank: 4, name: "Nikhil Joshi", handle: "nikhil_j", exp: 340, solved: 8, streak: 8, avatar: "🧪", accuracy: 82 },
+    { rank: 5, name: "Ananya Pillai", handle: "ananya_p", exp: 270, solved: 6, streak: 6, avatar: "💡", accuracy: 77 }
+  ]
+};
+
 export function getSession(sessionId) {
   if (!sessionId) return null;
   const session = sessions.get(sessionId);
@@ -136,7 +213,8 @@ export function createSession({
     identifiedError: {
       errorTitle,
       errorDescription
-    }
+    },
+    masteryMetrics: calculateMasteryMetrics(hintsUsed, attempts.length || 1, solved)
   };
 
   sessions.set(sessionId, session);
@@ -176,6 +254,8 @@ export function recordNewAttempt(sessionId, { doubtText, hasImage, isCorrect, fe
     isCorrect,
     feedback: feedback || ''
   });
+
+  session.masteryMetrics = calculateMasteryMetrics(session.hintsUsed, attemptNumber, session.solved);
 
   return session;
 }

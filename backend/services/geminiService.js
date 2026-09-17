@@ -273,13 +273,15 @@ function processDiagnosticPayload({
       currentHintLevel: session.currentHintLevel,
       hintsUsed: session.hintsUsed,
       solved: session.solved,
-      expAwarded: session.expAwarded
+      expAwarded: session.expAwarded,
+      masteryMetrics: session.masteryMetrics
     },
     data: {
       detectedExam: session.exam,
       detectedSubject: session.subject,
       detectedChapter: session.chapter,
       detectedSubtopic: session.subtopic,
+      masteryMetrics: session.masteryMetrics,
       hasAttempt,
       isCorrect: session.solved,
       firstIncorrectStep,
@@ -363,13 +365,15 @@ function getFallbackDiagnosticResponse({
       currentHintLevel: session.currentHintLevel,
       hintsUsed: session.hintsUsed,
       solved: session.solved,
-      expAwarded: session.expAwarded
+      expAwarded: session.expAwarded,
+      masteryMetrics: session.masteryMetrics
     },
     data: {
       detectedExam: session.exam,
       detectedSubject: session.subject,
       detectedChapter: session.chapter,
       detectedSubtopic: session.subtopic,
+      masteryMetrics: session.masteryMetrics,
       hasAttempt,
       isCorrect: session.solved,
       firstIncorrectStep: session.solved ? null : "Step 2: Misapplied constraint",

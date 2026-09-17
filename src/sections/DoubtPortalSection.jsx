@@ -1,12 +1,300 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Camera, Upload, X, CheckCircle2, FileJson, Sparkles, BookOpen, Layers, HelpCircle, Download, Lightbulb, AlertTriangle, ArrowRight, RotateCcw, Zap, Lock } from 'lucide-react';
+import { Send, Camera, Upload, X, CheckCircle2, FileJson, Sparkles, BookOpen, Layers, HelpCircle, Download, Lightbulb, AlertTriangle, ArrowRight, RotateCcw, Zap, Lock, TrendingUp } from 'lucide-react';
 import TiltCard from '../components/TiltCard';
-import MagneticButton from '../components/MagneticButton';
-import { useExam } from '../context/ExamContext';
+function CognitiveMasteryCurveCard({
+  metrics,
+  hintsUsed = 0,
+  expAwarded = 50,
+  feedbackForStudent,
+  targetExam = 'JEE Main',
+  currentUserRank = 4,
+  userAhead,
+  userExp = 260
+}) {
+  const percentage = metrics?.percentage || (hintsUsed === 0 ? 98 : hintsUsed === 1 ? 88 : hintsUsed === 2 ? 76 : hintsUsed === 3 ? 64 : 52);
+  const percentile = metrics?.percentile || (hintsUsed === 0 ? "Top 2% Percentile (Mastery Tier)" : hintsUsed === 1 ? "Top 8% Percentile (Advanced Tier)" : "Top 18% Percentile (Proficient Tier)");
+  const status = metrics?.status || (hintsUsed === 0 ? "Exceptional First-Principle Breakthrough" : hintsUsed === 1 ? "Rapid Guided Adaptation" : "Solid Concept Retrieval");
+  const retention = metrics?.retentionScore || (hintsUsed === 0 ? 96 : hintsUsed === 1 ? 91 : hintsUsed === 2 ? 84 : 75);
+  const conceptGrasp = metrics?.conceptGrasp || Math.min(99, percentage + 2);
+  const executionPrecision = metrics?.executionPrecision || Math.min(98, percentage - 3);
+  const socraticAutonomy = metrics?.socraticAutonomy || Math.max(25, 100 - hintsUsed * 16);
+
+  // SVG Geometry for 72h Retention Curve
+  // Width: 480, Height: 150
+  // Y coordinate mapping: 100% -> Y=20, 0% -> Y=130
+  const getY = (val) => 130 - (val / 100) * 110;
+  const yStart = getY(percentage);
+  const yMid1 = getY(Math.max(percentage - 4, retention + 2));
+  const yMid2 = getY(retention + 1);
+  const yEnd = getY(retention);
+
+  // Socratic path: starts at yStart, remains high over 72h
+  const socraticPath = `M 40 ${yStart} C 120 ${yStart}, 180 ${yMid1}, 260 ${yMid1} C 330 ${yMid2}, 380 ${yEnd}, 440 ${yEnd}`;
+  const socraticArea = `${socraticPath} L 440 130 L 40 130 Z`;
+
+  // Passive forgetting curve: starts at 100% (Y=20), drops to 33% at 24h, 20% at 48h, 15% at 72h
+  const passivePath = `M 40 20 C 100 20, 160 93, 240 102 C 320 110, 380 112, 440 113.5`;
+
+  // Circular gauge calculations (r=30, circ=188.5)
+  const radius = 30;
+  const circ = 2 * Math.PI * radius;
+  const strokeOffset = circ - (percentage / 100) * circ;
+
+  const scrollToLeaderboard = () => {
+    const el = document.querySelector('#leaderboard');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.96 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="bg-[#090915] border border-emerald-500/30 rounded-3xl p-5 sm:p-7 mb-6 shadow-2xl relative overflow-hidden backdrop-blur-xl"
+    >
+      {/* Ambient background glow */}
+      <div className="absolute top-0 right-0 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-64 h-64 bg-brand-cyan/10 rounded-full blur-3xl pointer-events-none" />
+
+      {/* Breakthrough Badge & Title */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-white/10 relative z-10">
+        <div className="flex items-center gap-4">
+          {/* Circular Percentage Meter */}
+          <div className="relative w-20 h-20 flex-shrink-0 flex items-center justify-center">
+            <svg className="w-full h-full -rotate-90" viewBox="0 0 76 76">
+              <circle
+                cx="38"
+                cy="38"
+                r={radius}
+                className="stroke-white/10"
+                strokeWidth="6"
+                fill="none"
+              />
+              <motion.circle
+                cx="38"
+                cy="38"
+                r={radius}
+                className="stroke-emerald-400"
+                strokeWidth="6"
+                strokeLinecap="round"
+                fill="none"
+                initial={{ strokeDashoffset: circ }}
+                animate={{ strokeDashoffset: strokeOffset }}
+                transition={{ duration: 1.2, ease: "easeOut" }}
+                style={{ strokeDasharray: circ }}
+              />
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span className="font-mono font-black text-xl text-white leading-none">
+                {percentage}%
+              </span>
+              <span className="text-[8px] font-mono text-emerald-400 font-bold uppercase tracking-wider mt-0.5">
+                Mastery
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <div className="flex flex-wrap items-center gap-2 mb-1.5">
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-mono text-xs font-bold flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                Cognitive Breakthrough
+              </span>
+              <span className="px-2.5 py-0.5 rounded-full bg-brand-violet/20 border border-brand-violet/40 text-brand-cyan font-mono text-xs font-semibold">
+                {percentile}
+              </span>
+            </div>
+            <h4 className="text-lg sm:text-xl font-bold text-white font-mono leading-tight">
+              {status}
+            </h4>
+            <p className="text-xs sm:text-sm text-slate-300 font-sans mt-1 leading-relaxed">
+              {feedbackForStudent || "Outstanding deduction! You mastered this problem through graduated diagnostic inquiry."}
+            </p>
+          </div>
+        </div>
+
+        {/* EXP Reward Badge */}
+        <div className="px-4 py-2.5 rounded-2xl bg-amber-500/15 border border-amber-500/40 text-amber-300 font-mono text-xs font-bold flex items-center gap-2 shadow-[0_0_20px_rgba(245,158,11,0.2)] self-stretch sm:self-auto justify-center">
+          <Zap className="w-4 h-4 fill-amber-400 text-amber-400" />
+          <div className="text-left">
+            <div className="text-amber-200 leading-none">+{expAwarded} EXP Awarded</div>
+            <div className="text-[10px] text-amber-400/80 font-normal mt-0.5">({hintsUsed} hints used)</div>
+          </div>
+        </div>
+      </div>
+
+      {/* SVG Cognitive Retention Curve Visual */}
+      <div className="py-6 border-b border-white/10 relative z-10">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-brand-cyan" />
+            <span className="text-xs font-mono font-bold text-white uppercase tracking-wider">
+              Cognitive Retention Curve vs Passive Decay (72h Horizon)
+            </span>
+          </div>
+          <div className="flex items-center gap-4 text-[11px] font-mono">
+            <span className="flex items-center gap-1.5 text-brand-cyan font-bold">
+              <span className="w-2.5 h-2.5 rounded-full bg-brand-cyan shadow-[0_0_8px_#06B6D4]" />
+              Socratic Active Recall ({retention}%)
+            </span>
+            <span className="flex items-center gap-1.5 text-rose-400 font-bold">
+              <span className="w-3 h-0.5 bg-rose-400" />
+              Passive Answer Dumping (15%)
+            </span>
+          </div>
+        </div>
+
+        <div className="relative w-full h-40 bg-[#06060E]/90 rounded-2xl border border-white/10 p-2 overflow-hidden shadow-inner">
+          <svg className="w-full h-full" viewBox="0 0 480 150" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="socraticCurveGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#06B6D4" stopOpacity="0.4" />
+                <stop offset="100%" stopColor="#059669" stopOpacity="0.0" />
+              </linearGradient>
+            </defs>
+
+            {/* Horizontal Grid lines */}
+            {[20, 56, 93, 130].map((y, idx) => (
+              <line
+                key={idx}
+                x1="40"
+                y1={y}
+                x2="460"
+                y2={y}
+                stroke="rgba(255,255,255,0.07)"
+                strokeDasharray="3 4"
+              />
+            ))}
+
+            {/* Y Axis percentage markers */}
+            <text x="32" y="24" fill="#64748B" fontSize="9" fontFamily="monospace" textAnchor="end">100%</text>
+            <text x="32" y="60" fill="#64748B" fontSize="9" fontFamily="monospace" textAnchor="end">70%</text>
+            <text x="32" y="97" fill="#64748B" fontSize="9" fontFamily="monospace" textAnchor="end">40%</text>
+            <text x="32" y="133" fill="#64748B" fontSize="9" fontFamily="monospace" textAnchor="end">10%</text>
+
+            {/* Passive Forgetting Curve (Ebbinghaus Decay) */}
+            <path
+              d={passivePath}
+              fill="none"
+              stroke="#F43F5E"
+              strokeWidth="2"
+              strokeDasharray="4 4"
+              opacity="0.8"
+            />
+
+            {/* Socratic Area Fill */}
+            <motion.path
+              d={socraticArea}
+              fill="url(#socraticCurveGrad)"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8 }}
+            />
+
+            {/* Socratic Curve Line */}
+            <motion.path
+              d={socraticPath}
+              fill="none"
+              stroke="#06B6D4"
+              strokeWidth="3"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 1.2, ease: "easeOut" }}
+            />
+
+            {/* Socratic Node Markers */}
+            <circle cx="40" cy={yStart} r="4" fill="#06B6D4" stroke="#06060E" strokeWidth="2" />
+            <circle cx="260" cy={yMid1} r="4" fill="#06B6D4" stroke="#06060E" strokeWidth="2" />
+            <circle cx="440" cy={yEnd} r="4.5" fill="#10B981" stroke="#06060E" strokeWidth="2" />
+
+            {/* Timeline X Labels */}
+            <text x="40" y="145" fill="#94A3B8" fontSize="9" fontFamily="monospace">Breakthrough (0h)</text>
+            <text x="170" y="145" fill="#94A3B8" fontSize="9" fontFamily="monospace">24h</text>
+            <text x="300" y="145" fill="#94A3B8" fontSize="9" fontFamily="monospace">48h</text>
+            <text x="440" y="145" fill="#10B981" fontSize="9" fontFamily="monospace" fontWeight="bold" textAnchor="end">72h ({retention}% Recall)</text>
+          </svg>
+        </div>
+      </div>
+
+      {/* Multi-Dimensional Competency Breakdown */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 py-5 border-b border-white/10 relative z-10 font-mono text-xs">
+        <div className="bg-[#05050A] p-3.5 rounded-2xl border border-white/5">
+          <div className="flex justify-between text-slate-300 mb-1.5">
+            <span>Conceptual Grasp</span>
+            <span className="text-brand-cyan font-bold">{conceptGrasp}%</span>
+          </div>
+          <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+            <div className="h-full bg-brand-cyan rounded-full transition-all duration-1000" style={{ width: `${conceptGrasp}%` }} />
+          </div>
+        </div>
+
+        <div className="bg-[#05050A] p-3.5 rounded-2xl border border-white/5">
+          <div className="flex justify-between text-slate-300 mb-1.5">
+            <span>Execution Precision</span>
+            <span className="text-purple-400 font-bold">{executionPrecision}%</span>
+          </div>
+          <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+            <div className="h-full bg-purple-400 rounded-full transition-all duration-1000" style={{ width: `${executionPrecision}%` }} />
+          </div>
+        </div>
+
+        <div className="bg-[#05050A] p-3.5 rounded-2xl border border-white/5">
+          <div className="flex justify-between text-slate-300 mb-1.5">
+            <span>Socratic Autonomy</span>
+            <span className="text-emerald-400 font-bold">{socraticAutonomy}%</span>
+          </div>
+          <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+            <div className="h-full bg-emerald-400 rounded-full transition-all duration-1000" style={{ width: `${socraticAutonomy}%` }} />
+          </div>
+        </div>
+      </div>
+
+      {/* Leaderboard Standing & Proximity to Peer Ahead */}
+      <div className="pt-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
+        <div className="text-xs font-sans text-slate-300">
+          <div className="font-mono font-bold text-white flex items-center gap-2 mb-1">
+            <span>Rank #{currentUserRank} in {targetExam} Division</span>
+            <span className="text-slate-600">•</span>
+            <span className="text-amber-400">{userExp} Total EXP</span>
+          </div>
+          <div className="text-xs text-slate-400">
+            {userAhead ? (
+              <span>
+                Direct Competitor in front: <strong className="text-white">@{userAhead.handle}</strong> ({userAhead.exp} EXP) is <strong className="text-amber-400">{userAhead.exp - userExp} EXP</strong> ahead.
+              </span>
+            ) : (
+              <span className="text-emerald-400 font-semibold">
+                You currently hold Rank #1 in the {targetExam} arena!
+              </span>
+            )}
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={scrollToLeaderboard}
+          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-violet to-brand-cyan text-white text-xs font-mono font-bold flex items-center gap-2 transition-all shadow-glow-violet hover:opacity-95 self-stretch sm:self-auto justify-center"
+        >
+          <span>View Standing on Leaderboard</span>
+          <ArrowRight className="w-4 h-4" />
+        </button>
+      </div>
+    </motion.div>
+  );
+}
 
 export default function DoubtPortalSection() {
-  const { targetExam, setTargetExam } = useExam();
+  const { 
+    targetExam, 
+    setTargetExam,
+    userExp,
+    solvedCount,
+    currentUserRank,
+    userAhead,
+    addExp 
+  } = useExam();
 
   const [errorTag, setErrorTag] = useState('Conceptual Blindspot');
   const [questionText, setQuestionText] = useState('');
@@ -28,6 +316,7 @@ export default function DoubtPortalSection() {
 
   const fileInputRef = useRef(null);
   const retryFileInputRef = useRef(null);
+  const awardedSessionsRef = useRef(new Set());
 
   // Resolves backend API URL (Localhost in dev, Render in production)
   const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001').replace(/\/+$/, '');
@@ -195,6 +484,59 @@ export default function DoubtPortalSection() {
     };
   };
 
+  // Compute Cognitive Performance Metrics & Retention Curve parameters
+  const computeMasteryMetrics = (hintsUsed = 0, attemptsCount = 1, isSolved = false) => {
+    if (!isSolved) {
+      const inProgressPercentage = Math.min(65, 35 + (attemptsCount - 1) * 15);
+      return {
+        percentage: inProgressPercentage,
+        status: "In Progress — Guided Refinement",
+        percentile: "Top 45% Iteration Rate",
+        conceptGrasp: Math.min(75, 45 + attemptsCount * 10),
+        executionPrecision: 55,
+        socraticAutonomy: Math.max(30, 85 - hintsUsed * 12),
+        retentionScore: 68
+      };
+    }
+
+    let percentage = 98;
+    let percentile = "Top 2% Percentile (Mastery Tier)";
+    let status = "Exceptional First-Principle Breakthrough";
+    let retention = 96;
+
+    if (hintsUsed === 1) {
+      percentage = 88;
+      percentile = "Top 8% Percentile (Advanced Tier)";
+      status = "Rapid Guided Adaptation";
+      retention = 91;
+    } else if (hintsUsed === 2) {
+      percentage = 76;
+      percentile = "Top 18% Percentile (Proficient Tier)";
+      status = "Solid Concept Retrieval";
+      retention = 84;
+    } else if (hintsUsed === 3) {
+      percentage = 64;
+      percentile = "Top 35% Percentile (Progressing Tier)";
+      status = "Scaffolded Progression";
+      retention = 75;
+    } else if (hintsUsed >= 4) {
+      percentage = 52;
+      percentile = "Top 55% Percentile (Foundational Tier)";
+      status = "Full Step-by-Step Scaffolding";
+      retention = 68;
+    }
+
+    return {
+      percentage,
+      percentile,
+      status,
+      conceptGrasp: Math.min(99, percentage + 2),
+      executionPrecision: Math.min(98, percentage - 3),
+      socraticAutonomy: Math.max(25, 100 - hintsUsed * 16),
+      retentionScore: retention
+    };
+  };
+
   const handleRetryImageUpload = (e) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -237,12 +579,24 @@ export default function DoubtPortalSection() {
         setActiveSession(payload.session || null);
         const currentLevel = payload.session?.currentHintLevel || 1;
         setActiveHintStep(currentLevel > 0 ? currentLevel : 1);
+
+        const metrics = payload.session?.masteryMetrics || payload.data?.masteryMetrics || computeMasteryMetrics(payload.session?.hintsUsed || 0, payload.session?.attemptsCount || 1, payload.data.isCorrect);
+
+        if (payload.data.isCorrect) {
+          const sessId = payload.session?.sessionId;
+          if (sessId && !awardedSessionsRef.current.has(sessId)) {
+            awardedSessionsRef.current.add(sessId);
+            addExp(payload.session?.expAwarded || (payload.session?.hintsUsed === 0 ? 50 : 40));
+          }
+        }
+
         setSubmittedResult({
           ...payload.data,
           detectedSubject: payload.data.detectedSubject || "Physics",
           detectedChapter: payload.data.detectedChapter || "Rotational Mechanics",
           detectedSubtopic: payload.data.detectedSubtopic || "Torque & Angular Acceleration",
           session: payload.session,
+          masteryMetrics: metrics,
           questionText: questionText || (imageFile ? '[Notebook Snapshot Attached]' : 'Target Problem')
         });
         return;
@@ -265,6 +619,7 @@ export default function DoubtPortalSection() {
           solved: false,
           expAwarded: 0
         };
+        const fallbackMetrics = computeMasteryMetrics(1, 1, false);
         setActiveSession(fallbackSession);
         setSubmittedResult({
           hasAttempt: true,
@@ -282,6 +637,7 @@ export default function DoubtPortalSection() {
           totalHints: 4,
           lockedCount: 3,
           session: fallbackSession,
+          masteryMetrics: fallbackMetrics,
           questionText: questionText || (imagePreview ? "[Notebook Snapshot Attached]" : "Problem Query Submitted")
         });
       }, 500);
@@ -319,6 +675,17 @@ export default function DoubtPortalSection() {
         setActiveSession(payload.session || null);
         const currentLevel = payload.session?.currentHintLevel || 1;
         setActiveHintStep(currentLevel > 0 ? currentLevel : 1);
+
+        const metrics = payload.session?.masteryMetrics || payload.data?.masteryMetrics || computeMasteryMetrics(payload.session?.hintsUsed || 1, payload.session?.attemptsCount || 2, payload.data.isCorrect);
+
+        if (payload.data.isCorrect) {
+          const sessId = payload.session?.sessionId;
+          if (sessId && !awardedSessionsRef.current.has(sessId)) {
+            awardedSessionsRef.current.add(sessId);
+            addExp(payload.session?.expAwarded || (payload.session?.hintsUsed <= 1 ? 40 : 30));
+          }
+        }
+
         setSubmittedResult(prev => ({
           ...prev,
           ...payload.data,
@@ -326,6 +693,7 @@ export default function DoubtPortalSection() {
           detectedChapter: payload.data.detectedChapter || prev?.detectedChapter,
           detectedSubtopic: payload.data.detectedSubtopic || prev?.detectedSubtopic,
           session: payload.session,
+          masteryMetrics: metrics,
           questionText: submittedResult?.questionText || payload.session?.question
         }));
         setRetryText('');
@@ -347,6 +715,7 @@ export default function DoubtPortalSection() {
           hintsUsed: nextLevel,
           solved: false
         };
+        const fallbackMetrics = computeMasteryMetrics(nextLevel, updatedSession.attemptsCount, false);
         setActiveSession(updatedSession);
         setActiveHintStep(nextLevel);
 
@@ -360,6 +729,7 @@ export default function DoubtPortalSection() {
         setSubmittedResult(prev => ({
           ...prev,
           session: updatedSession,
+          masteryMetrics: fallbackMetrics,
           unlockedHints: allFallbackHints.slice(0, nextLevel),
           currentHint: allFallbackHints[nextLevel - 1],
           lockedCount: 4 - nextLevel,
@@ -687,28 +1057,66 @@ export default function DoubtPortalSection() {
                       </form>
                     </div>
                   ) : submittedResult.isCorrect ? (
-                    /* CASE: Solved! Award EXP strictly calculated on backend */
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.96 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      className="bg-emerald-500/10 border border-emerald-500/40 rounded-2xl p-6 mb-6 text-center backdrop-blur-md"
-                    >
-                      <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center mb-3">
-                        <CheckCircle2 className="w-6 h-6" />
-                      </div>
-                      <h4 className="text-xl font-bold text-white mb-1.5 font-mono">Cognitive Breakthrough Achieved!</h4>
-                      <p className="text-xs sm:text-sm text-slate-200 max-w-lg mx-auto mb-4 leading-relaxed font-sans">
-                        {cleanMathText(submittedResult.feedbackForStudent) || "Outstanding deduction! You mastered this problem through graduated diagnostic inquiry."}
-                      </p>
-                      <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-mono font-bold">
-                        <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-                        <span>+{activeSession?.expAwarded || 50} EXP Awarded</span>
-                        <span className="text-emerald-500 font-normal">({activeSession?.hintsUsed || 0} hints used)</span>
-                      </div>
-                    </motion.div>
+                    /* CASE: Solved! Render full Cognitive Mastery & Retention Curve + EXP Leaderboard Connection */
+                    <CognitiveMasteryCurveCard
+                      metrics={submittedResult.masteryMetrics || computeMasteryMetrics(activeSession?.hintsUsed || 0, activeSession?.attemptsCount || 1, true)}
+                      hintsUsed={activeSession?.hintsUsed || 0}
+                      expAwarded={activeSession?.expAwarded || (activeSession?.hintsUsed === 0 ? 50 : activeSession?.hintsUsed === 1 ? 40 : 30)}
+                      feedbackForStudent={cleanMathText(submittedResult.feedbackForStudent)}
+                      targetExam={targetExam}
+                      currentUserRank={currentUserRank}
+                      userAhead={userAhead}
+                      userExp={userExp}
+                    />
                   ) : (
                     /* CASE: Incorrect Attempt - Show Exact Error and Sequential Hint Ladder */
                     <>
+                      {/* In-Progress Diagnostic Trajectory Indicator */}
+                      <div className="bg-[#090915] border border-brand-violet/30 rounded-2xl p-4 mb-6 flex flex-wrap items-center justify-between gap-3 shadow-lg">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-brand-violet/20 border border-brand-violet/40 flex items-center justify-center text-brand-cyan shadow-glow-violet">
+                            <TrendingUp className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <div className="text-xs font-mono font-bold text-white flex items-center gap-2">
+                              <span>Diagnostic Mastery Index:</span>
+                              <span className="text-brand-cyan">
+                                {submittedResult.masteryMetrics?.percentage || Math.max(45, 98 - (activeSession?.currentHintLevel || 1) * 12)}% Projected
+                              </span>
+                              <span className="text-slate-500">•</span>
+                              <span className="text-emerald-400 text-[11px]">
+                                {submittedResult.masteryMetrics?.percentile || "Top 45% Iteration Rate"}
+                              </span>
+                            </div>
+                            <div className="text-xs font-sans text-slate-300 mt-0.5">
+                              Solve on Attempt #{activeSession?.attemptsCount || 1} to secure <strong className="text-amber-300">+{activeSession?.currentHintLevel <= 1 ? '40' : activeSession?.currentHintLevel === 2 ? '30' : '20'} EXP</strong> and advance your rank in {targetExam}!
+                            </div>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const earnedExp = activeSession?.currentHintLevel <= 1 ? 40 : activeSession?.currentHintLevel === 2 ? 30 : 20;
+                            const solvedMetrics = computeMasteryMetrics(activeSession?.currentHintLevel || 1, activeSession?.attemptsCount || 1, true);
+                            const sessId = activeSession?.sessionId;
+                            if (sessId && !awardedSessionsRef.current.has(sessId)) {
+                              awardedSessionsRef.current.add(sessId);
+                              addExp(earnedExp);
+                            }
+                            setSubmittedResult(prev => ({
+                              ...prev,
+                              isCorrect: true,
+                              masteryMetrics: solvedMetrics,
+                              feedbackForStudent: "Outstanding deduction! You applied the sequential hints and deduced the correct solution independently."
+                            }));
+                          }}
+                          className="px-3.5 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-mono font-bold flex items-center gap-1.5 transition-all self-stretch sm:self-auto justify-center"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>I Got It! Mark Solved & Unlock Curve</span>
+                        </button>
+                      </div>
                       {/* Diagnosed Error Banner */}
                       <div className="bg-rose-950/40 border border-rose-500/40 rounded-2xl p-4.5 mb-6">
                         <div className="text-xs font-mono font-bold text-rose-400 mb-1 flex items-center gap-2">

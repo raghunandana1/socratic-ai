@@ -1,4 +1,4 @@
-import { createSession, recordNewAttempt, calculateExp } from './services/sessionStore.js';
+import { createSession, recordNewAttempt, calculateExp, calculateMasteryMetrics } from './services/sessionStore.js';
 
 console.log('=== TEST 1: EXP Calculation Validation ===');
 console.assert(calculateExp(0) === 50, '0 hints used should award 50 EXP');
@@ -8,7 +8,18 @@ console.assert(calculateExp(3) === 20, '3 hints used should award 20 EXP');
 console.assert(calculateExp(4) === 10, '4 hints used should award 10 EXP');
 console.log('✅ EXP calculations strictly meet user requirements (50, 40, 30, 20, 10).');
 
-console.log('\n=== TEST 2: Session Sequential Unlock Life Cycle ===');
+console.log('\n=== TEST 2: Mastery Metrics & Cognitive Curve Calculation ===');
+const m0 = calculateMasteryMetrics(0, 1, true);
+console.assert(m0.percentage === 98, '0 hints should give 98% mastery');
+const m1 = calculateMasteryMetrics(1, 2, true);
+console.assert(m1.percentage === 88, '1 hint should give 88% mastery');
+const m2 = calculateMasteryMetrics(2, 3, true);
+console.assert(m2.percentage === 76, '2 hints should give 76% mastery');
+const mIncomplete = calculateMasteryMetrics(1, 1, false);
+console.assert(mIncomplete.percentage <= 65, 'Incomplete should reflect in-progress percentage');
+console.log('✅ Mastery metrics calculation verified successfully!');
+
+console.log('\n=== TEST 3: Session Sequential Unlock Life Cycle ===');
 // 1. Initial Attempt: Incorrect
 const s1 = createSession({
   exam: 'JEE Main',
@@ -50,7 +61,8 @@ const s3 = recordNewAttempt(s1.sessionId, {
   feedback: 'Correct formula!'
 });
 
-console.log('Attempt 3 Solved:', s3.solved, '| EXP Awarded:', s3.expAwarded);
+console.log('Attempt 3 Solved:', s3.solved, '| EXP Awarded:', s3.expAwarded, '| Mastery:', s3.masteryMetrics.percentage + '%');
 console.assert(s3.solved === true, 'Attempt 3 is solved');
 console.assert(s3.expAwarded === 30, 'Solved after using 2 hints should award exactly 30 EXP');
+console.assert(s3.masteryMetrics.percentage === 76, 'Solved after using 2 hints should record 76% mastery');
 console.log('✅ Sequential unlock and retry lifecycle verified successfully!');

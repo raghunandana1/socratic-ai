@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Menu, X, ChevronDown, Check } from 'lucide-react';
+import { ArrowRight, Menu, X, ChevronDown, Check, Zap, Trophy } from 'lucide-react';
 import MagneticButton from './MagneticButton';
 import { useExam } from '../context/ExamContext';
 
@@ -9,7 +9,7 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [examDropdownOpen, setExamDropdownOpen] = useState(false);
 
-  const { targetExam, setTargetExam } = useExam();
+  const { targetExam, setTargetExam, userExp, currentUserRank } = useExam();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,6 +27,7 @@ export default function Navbar() {
     { name: 'Product', href: '#product' },
     { name: 'How it Works', href: '#how-it-works' },
     { name: 'Doubt Portal', href: '#doubt-portal' },
+    { name: 'Leaderboard', href: '#leaderboard' },
     { name: 'Adaptive AI', href: '#adaptive-ai' },
     { name: 'Demo', href: '#demo' },
   ];
@@ -121,6 +122,25 @@ export default function Navbar() {
           ))}
         </nav>
 
+        {/* User EXP & Division Standing Badge */}
+        <a
+          href="#leaderboard"
+          onClick={(e) => {
+            e.preventDefault();
+            handleLinkClick('#leaderboard');
+          }}
+          className="hidden lg:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0E0E1B] border border-amber-500/30 hover:border-amber-500/60 transition-all text-xs font-mono group shadow-[0_0_15px_rgba(245,158,11,0.1)]"
+        >
+          <span className="flex items-center gap-1.5 text-amber-300 font-bold">
+            <Zap className="w-3.5 h-3.5 fill-amber-400 text-amber-400 group-hover:scale-110 transition-transform" />
+            <span>{userExp} EXP</span>
+          </span>
+          <span className="text-white/20">|</span>
+          <span className="text-slate-300 group-hover:text-brand-cyan transition-colors font-medium">
+            Rank #{currentUserRank}
+          </span>
+        </a>
+
         {/* CTA Button */}
         <div className="hidden md:flex items-center gap-4">
           <MagneticButton
@@ -167,6 +187,17 @@ export default function Navbar() {
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* Mobile EXP & Rank Bar */}
+            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between font-mono text-xs">
+              <span className="flex items-center gap-1.5 text-amber-300 font-bold">
+                <Zap className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                <span>{userExp} EXP</span>
+              </span>
+              <span className="text-slate-300">
+                Rank <strong className="text-white">#{currentUserRank}</strong> in {targetExam}
+              </span>
             </div>
 
             {navLinks.map((link) => (
