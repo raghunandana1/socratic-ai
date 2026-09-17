@@ -8,12 +8,8 @@ import { useExam } from '../context/ExamContext';
 function CognitiveMasteryCurveCard({
   metrics,
   hintsUsed = 0,
-  expAwarded = 50,
   feedbackForStudent,
-  targetExam = 'JEE Main',
-  currentUserRank = 4,
-  userAhead,
-  userExp = 260
+  targetExam = 'JEE Main'
 }) {
   const percentage = metrics?.percentage || (hintsUsed === 0 ? 98 : hintsUsed === 1 ? 88 : hintsUsed === 2 ? 76 : hintsUsed === 3 ? 64 : 52);
   const percentile = metrics?.percentile || (hintsUsed === 0 ? "Top 2% Percentile (Mastery Tier)" : hintsUsed === 1 ? "Top 8% Percentile (Advanced Tier)" : "Top 18% Percentile (Proficient Tier)");
@@ -118,12 +114,12 @@ function CognitiveMasteryCurveCard({
           </div>
         </div>
 
-        {/* EXP Reward Badge */}
-        <div className="px-4 py-2.5 rounded-2xl bg-amber-500/15 border border-amber-500/40 text-amber-300 font-mono text-xs font-bold flex items-center gap-2 shadow-[0_0_20px_rgba(245,158,11,0.2)] self-stretch sm:self-auto justify-center">
-          <Zap className="w-4 h-4 fill-amber-400 text-amber-400" />
+        {/* Retention Tier Badge */}
+        <div className="px-4 py-2.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-mono text-xs font-bold flex items-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.15)] self-stretch sm:self-auto justify-center">
+          <Sparkles className="w-4 h-4 text-emerald-400" />
           <div className="text-left">
-            <div className="text-amber-200 leading-none">+{expAwarded} EXP Awarded</div>
-            <div className="text-[10px] text-amber-400/80 font-normal mt-0.5">({hintsUsed} hints used)</div>
+            <div className="text-emerald-200 leading-none">{retention}% 72h Retention</div>
+            <div className="text-[10px] text-emerald-400/80 font-normal mt-0.5">({hintsUsed} {hintsUsed === 1 ? 'hint' : 'hints'} used)</div>
           </div>
         </div>
       </div>
@@ -254,33 +250,28 @@ function CognitiveMasteryCurveCard({
         </div>
       </div>
 
-      {/* Leaderboard Standing & Proximity to Peer Ahead */}
+      {/* Diagnostic Mastery Summary & Retention Horizon */}
       <div className="pt-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
         <div className="text-xs font-sans text-slate-300">
           <div className="font-mono font-bold text-white flex items-center gap-2 mb-1">
-            <span>Rank #{currentUserRank} in {targetExam} Division</span>
+            <span className="text-emerald-400 font-bold">{percentage}% Cognitive Mastery Confirmed</span>
             <span className="text-slate-600">•</span>
-            <span className="text-amber-400">{userExp} Total EXP</span>
+            <span className="text-brand-cyan">{targetExam} Syllabus Standard</span>
           </div>
           <div className="text-xs text-slate-400">
-            {userAhead ? (
-              <span>
-                Direct Competitor in front: <strong className="text-white">@{userAhead.handle}</strong> ({userAhead.exp} EXP) is <strong className="text-amber-400">{userAhead.exp - userExp} EXP</strong> ahead.
-              </span>
-            ) : (
-              <span className="text-emerald-400 font-semibold">
-                You currently hold Rank #1 in the {targetExam} arena!
-              </span>
-            )}
+            Self-derived Socratic reasoning stabilizes neural synaptic retention at <strong className="text-white">{retention}% recall</strong> over the next 72 hours.
           </div>
         </div>
 
         <button
           type="button"
-          onClick={scrollToLeaderboard}
+          onClick={() => {
+            const el = document.querySelector('#doubt-portal');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }}
           className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-violet to-brand-cyan text-white text-xs font-mono font-bold flex items-center gap-2 transition-all shadow-glow-violet hover:opacity-95 self-stretch sm:self-auto justify-center"
         >
-          <span>View Standing on Leaderboard</span>
+          <span>Diagnose Another Problem</span>
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>
@@ -291,12 +282,7 @@ function CognitiveMasteryCurveCard({
 export default function DoubtPortalSection() {
   const { 
     targetExam, 
-    setTargetExam,
-    userExp,
-    solvedCount,
-    currentUserRank,
-    userAhead,
-    addExp 
+    setTargetExam
   } = useExam();
 
   const [errorTag, setErrorTag] = useState('Conceptual Blindspot');
@@ -1064,12 +1050,8 @@ export default function DoubtPortalSection() {
                     <CognitiveMasteryCurveCard
                       metrics={submittedResult.masteryMetrics || computeMasteryMetrics(activeSession?.hintsUsed || 0, activeSession?.attemptsCount || 1, true)}
                       hintsUsed={activeSession?.hintsUsed || 0}
-                      expAwarded={activeSession?.expAwarded || (activeSession?.hintsUsed === 0 ? 50 : activeSession?.hintsUsed === 1 ? 40 : 30)}
                       feedbackForStudent={cleanMathText(submittedResult.feedbackForStudent)}
                       targetExam={targetExam}
-                      currentUserRank={currentUserRank}
-                      userAhead={userAhead}
-                      userExp={userExp}
                     />
                   ) : (
                     /* CASE: Incorrect Attempt - Show Exact Error and Sequential Hint Ladder */
@@ -1092,7 +1074,7 @@ export default function DoubtPortalSection() {
                               </span>
                             </div>
                             <div className="text-xs font-sans text-slate-300 mt-0.5">
-                              Solve on Attempt #{activeSession?.attemptsCount || 1} to secure <strong className="text-amber-300">+{activeSession?.currentHintLevel <= 1 ? '40' : activeSession?.currentHintLevel === 2 ? '30' : '20'} EXP</strong> and advance your rank in {targetExam}!
+                              Solve on Attempt #{activeSession?.attemptsCount || 1} to achieve cognitive breakthrough and unlock your full retention curve!
                             </div>
                           </div>
                         </div>
@@ -1100,13 +1082,7 @@ export default function DoubtPortalSection() {
                         <button
                           type="button"
                           onClick={() => {
-                            const earnedExp = activeSession?.currentHintLevel <= 1 ? 40 : activeSession?.currentHintLevel === 2 ? 30 : 20;
                             const solvedMetrics = computeMasteryMetrics(activeSession?.currentHintLevel || 1, activeSession?.attemptsCount || 1, true);
-                            const sessId = activeSession?.sessionId;
-                            if (sessId && !awardedSessionsRef.current.has(sessId)) {
-                              awardedSessionsRef.current.add(sessId);
-                              addExp(earnedExp);
-                            }
                             setSubmittedResult(prev => ({
                               ...prev,
                               isCorrect: true,

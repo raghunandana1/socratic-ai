@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Menu, X, ChevronDown, Check, Zap, Trophy } from 'lucide-react';
+import { ArrowRight, Menu, X, ChevronDown, Check } from 'lucide-react';
 import MagneticButton from './MagneticButton';
 import { useExam } from '../context/ExamContext';
 
@@ -9,7 +9,7 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [examDropdownOpen, setExamDropdownOpen] = useState(false);
 
-  const { targetExam, setTargetExam, userExp, currentUserRank } = useExam();
+  const { targetExam, setTargetExam } = useExam();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -121,19 +121,6 @@ export default function Navbar() {
           ))}
         </nav>
 
-        {/* Leaderboard Button */}
-        <a
-          href="#leaderboard"
-          onClick={(e) => {
-            e.preventDefault();
-            handleLinkClick('#leaderboard');
-          }}
-          className="hidden lg:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0E0E1B] border border-amber-500/30 hover:border-amber-500/60 transition-all text-xs font-mono font-bold text-amber-300 hover:text-amber-200 group shadow-[0_0_15px_rgba(245,158,11,0.1)]"
-        >
-          <Trophy className="w-3.5 h-3.5 text-amber-400 group-hover:scale-110 transition-transform" />
-          <span>Leaderboard</span>
-        </a>
-
         {/* CTA Button */}
         <div className="hidden md:flex items-center gap-4">
           <MagneticButton
@@ -181,22 +168,6 @@ export default function Navbar() {
                 ))}
               </div>
             </div>
-
-            {/* Mobile Leaderboard Link */}
-            <a
-              href="#leaderboard"
-              onClick={(e) => {
-                e.preventDefault();
-                handleLinkClick('#leaderboard');
-              }}
-              className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between font-mono text-xs text-amber-300 font-bold"
-            >
-              <span className="flex items-center gap-2">
-                <Trophy className="w-4 h-4 text-amber-400" />
-                <span>Leaderboard</span>
-              </span>
-              <ArrowRight className="w-3.5 h-3.5 text-amber-400/70" />
-            </a>
 
             {navLinks.map((link) => (
               <a
