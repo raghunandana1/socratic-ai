@@ -5,7 +5,7 @@ import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { diagnoseDoubtWithGemini } from './services/geminiService.js';
+import { diagnoseDoubtWithGemini, analyzeVisionImageWithGemini } from './services/geminiService.js';
 import { initialLeaderboards } from './services/sessionStore.js';
 
 dotenv.config();
@@ -174,12 +174,42 @@ app.post('/api/v1/doubts/diagnose', upload.single('image'), async (req, res) => 
   }
 });
 
+// 5. Multimodal Vision OCR Extraction Route
+app.post('/api/v1/vision/analyze', upload.single('image'), async (req, res) => {
+  try {
+    const { exam } = req.body;
+    const imageBuffer = req.file ? req.file.buffer : null;
+    const imageMimeType = req.file ? req.file.mimetype : null;
+
+    console.log(`[Vision Ingestion] Received image upload: Size=${imageBuffer ? imageBuffer.length : 0} bytes | Exam=${exam || 'JEE Main'}`);
+
+    const result = await analyzeVisionImageWithGemini({
+      imageBuffer,
+      imageMimeType,
+      exam
+    });
+
+    return res.json({
+      success: true,
+      data: result
+    });
+  } catch (error) {
+    console.error('[Vision Route Error]', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to extract vision data from image',
+      message: error.message
+    });
+  }
+});
+
 // Start Server
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`====================================================`);
   console.log(`🚀 Socratic AI Backend Server running on port ${PORT}`);
   console.log(`📡 Health Check: http://localhost:${PORT}/api/v1/health`);
   console.log(`🎯 Diagnose API: POST http://localhost:${PORT}/api/v1/doubts/diagnose`);
+  console.log(`👁️ Vision OCR API: POST http://localhost:${PORT}/api/v1/vision/analyze`);
   console.log(`🔑 Gemini Key Status: ${process.env.GEMINI_API_KEY && !process.env.GEMINI_API_KEY.includes('your_gemini') ? 'Configured ✅' : 'Not Configured (Demo Mode Active) ⚠️'}`);
   console.log(`====================================================`);
 });

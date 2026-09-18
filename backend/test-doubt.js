@@ -116,3 +116,20 @@ console.assert(p3.deltaExp === 20, 'p3 remaining balance should be 20 EXP (30 ti
 console.assert(p3.expAwarded === 30, 'p3 total EXP should match the 30 EXP tier');
 console.log('✅ Partial progress micro-credit (+5 EXP) and remaining balance logic verified perfectly!');
 
+console.log('\n=== TEST 5: Multimodal Vision OCR Analysis Validation ===');
+import { analyzeVisionImageWithGemini } from './services/geminiService.js';
+
+const visionRes = await analyzeVisionImageWithGemini({
+  imageBuffer: null,
+  imageMimeType: null,
+  exam: 'JEE Main'
+});
+
+console.assert(visionRes.detectedSubject === 'Physics', 'Should detect Physics');
+console.assert(visionRes.detectedChapter === 'Kinematics', 'Should detect Kinematics');
+console.assert(visionRes.displayFormula.left === 'v_rel', 'Should format v_rel formula');
+console.assert(Array.isArray(visionRes.variableBreakdown) && visionRes.variableBreakdown.length > 0, 'Should have variable breakdown');
+console.assert(typeof visionRes.studentExplanation === 'string', 'Should provide student intuition');
+console.log('✅ Multimodal Vision OCR extraction verified successfully!');
+
+
