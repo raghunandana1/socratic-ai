@@ -210,6 +210,8 @@ function processDiagnosticPayload({
 }) {
   const hasAttempt = parsedData.hasAttempt !== false;
   const isCorrect = Boolean(parsedData.isCorrect);
+  const isPartial = !isCorrect && Boolean(parsedData.isPartial);
+  const partialCreditReason = isPartial ? cleanMathFormatting(parsedData.partialCreditReason || "Valid intermediate reasoning or equation set up") : null;
 
   const detectedExam = parsedData.detectedExam || exam || (existingSession?.exam) || "JEE Main";
   const detectedSubj = parsedData.detectedSubject || subject || (existingSession?.subject) || "Physics";
@@ -237,6 +239,7 @@ function processDiagnosticPayload({
       doubtText,
       hasImage,
       isCorrect,
+      isPartial,
       feedback: feedbackForStudent,
       newHints: cleanedHints
     });
@@ -255,6 +258,7 @@ function processDiagnosticPayload({
         hasImage
       },
       isCorrect,
+      isPartial,
       hasAttempt
     });
   }
@@ -274,6 +278,8 @@ function processDiagnosticPayload({
       hintsUsed: session.hintsUsed,
       solved: session.solved,
       expAwarded: session.expAwarded,
+      partialExpTotal: session.partialExpTotal || 0,
+      deltaExp: session.deltaExp || 0,
       masteryMetrics: session.masteryMetrics
     },
     data: {
@@ -284,6 +290,10 @@ function processDiagnosticPayload({
       masteryMetrics: session.masteryMetrics,
       hasAttempt,
       isCorrect: session.solved,
+      isPartial,
+      partialCreditReason,
+      deltaExp: session.deltaExp || 0,
+      partialExpTotal: session.partialExpTotal || 0,
       firstIncorrectStep,
       reasoningSteps,
       errorTitle: session.identifiedError.errorTitle,
@@ -311,6 +321,8 @@ function getFallbackDiagnosticResponse({
   const cleanQuery = (doubtText || "").trim();
   const hasAttempt = Boolean(cleanQuery.length > 0 || hasImage);
   const isCorrect = /correct|eureka|solution verified/i.test(cleanQuery);
+  const isPartial = !isCorrect && hasAttempt;
+  const partialCreditReason = isPartial ? "Step-wise formulation identified; check intermediate simplification" : null;
   const fallbackSyllabus = detectFallbackSyllabus(doubtText);
 
   const resolvedExam = exam || existingSession?.exam || "JEE Main";
@@ -331,6 +343,7 @@ function getFallbackDiagnosticResponse({
       doubtText,
       hasImage,
       isCorrect,
+      isPartial,
       feedback: isCorrect ? "Solution verified!" : "Your approach is moving in the right direction, but check intermediate simplification."
     });
   } else {
@@ -348,6 +361,7 @@ function getFallbackDiagnosticResponse({
         hasImage
       },
       isCorrect,
+      isPartial,
       hasAttempt
     });
   }
@@ -366,6 +380,8 @@ function getFallbackDiagnosticResponse({
       hintsUsed: session.hintsUsed,
       solved: session.solved,
       expAwarded: session.expAwarded,
+      partialExpTotal: session.partialExpTotal || 0,
+      deltaExp: session.deltaExp || 0,
       masteryMetrics: session.masteryMetrics
     },
     data: {
@@ -376,6 +392,10 @@ function getFallbackDiagnosticResponse({
       masteryMetrics: session.masteryMetrics,
       hasAttempt,
       isCorrect: session.solved,
+      isPartial,
+      partialCreditReason,
+      deltaExp: session.deltaExp || 0,
+      partialExpTotal: session.partialExpTotal || 0,
       firstIncorrectStep: session.solved ? null : "Step 2: Misapplied constraint",
       reasoningSteps: [
         "Step 1: Extracted given parameters and boundary conditions",

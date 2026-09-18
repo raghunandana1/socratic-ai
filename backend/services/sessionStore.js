@@ -166,6 +166,7 @@ export function createSession({
   errorDescription = '',
   initialAttempt = null,
   isCorrect = false,
+  isPartial = false,
   hasAttempt = true
 }) {
   const sessionId = `SOC-SESS-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
@@ -175,12 +176,20 @@ export function createSession({
   let hintsUsed = 0;
   let solved = isCorrect;
   let expAwarded = 0;
+  let partialExpTotal = 0;
+  let deltaExp = 0;
 
   if (solved) {
     expAwarded = calculateExp(0);
+    deltaExp = expAwarded;
   } else if (hasAttempt) {
     currentHintLevel = 1;
     hintsUsed = 1;
+    if (isPartial) {
+      partialExpTotal = 5;
+      expAwarded = 5;
+      deltaExp = 5;
+    }
   }
 
   const attempts = [];
@@ -191,6 +200,8 @@ export function createSession({
       hasImage: Boolean(initialAttempt.hasImage),
       timestamp: now,
       isCorrect: solved,
+      isPartial: Boolean(isPartial),
+      deltaExp,
       feedback: errorDescription
     });
   }
@@ -209,6 +220,8 @@ export function createSession({
     hintsUsed,
     solved,
     expAwarded,
+    partialExpTotal,
+    deltaExp,
     allHints,
     identifiedError: {
       errorTitle,
@@ -221,7 +234,7 @@ export function createSession({
   return session;
 }
 
-export function recordNewAttempt(sessionId, { doubtText, hasImage, isCorrect, feedback, newHints = null }) {
+export function recordNewAttempt(sessionId, { doubtText, hasImage, isCorrect, isPartial = false, feedback, newHints = null }) {
   const session = sessions.get(sessionId);
   if (!session) return null;
 
@@ -232,10 +245,26 @@ export function recordNewAttempt(sessionId, { doubtText, hasImage, isCorrect, fe
     session.allHints = newHints;
   }
 
+  let deltaExp = 0;
+
   if (isCorrect) {
     session.solved = true;
-    session.expAwarded = calculateExp(session.hintsUsed);
+    const tierTotal = calculateExp(session.hintsUsed);
+    // Deduct any partial EXP already earned so total never exceeds the tier reward
+    const remainingBalance = Math.max(10, tierTotal - (session.partialExpTotal || 0));
+    deltaExp = remainingBalance;
+    session.partialExpTotal = (session.partialExpTotal || 0);
+    session.expAwarded = (session.partialExpTotal || 0) + remainingBalance;
   } else {
+    // Partial attempt credit (+5 EXP, max 2 partial credits = 10 EXP per session)
+    if (isPartial && (session.partialExpTotal || 0) < 10) {
+      deltaExp = 5;
+      session.partialExpTotal = (session.partialExpTotal || 0) + 5;
+      session.expAwarded = session.partialExpTotal;
+    } else {
+      deltaExp = 0;
+    }
+
     // Increment hint level sequentially (up to 4)
     if (session.currentHintLevel < 4) {
       session.currentHintLevel += 1;
@@ -246,12 +275,16 @@ export function recordNewAttempt(sessionId, { doubtText, hasImage, isCorrect, fe
     }
   }
 
+  session.deltaExp = deltaExp;
+
   session.attempts.push({
     attemptNumber,
     doubtText: doubtText || '',
     hasImage: Boolean(hasImage),
     timestamp: Date.now(),
     isCorrect,
+    isPartial: Boolean(isPartial),
+    deltaExp,
     feedback: feedback || ''
   });
 

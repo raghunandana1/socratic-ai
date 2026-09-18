@@ -34,7 +34,9 @@ TASK INSTRUCTIONS:
 2. Multi-Step Analysis:
    - "questionStatement": Clear, transcribed question statement in human-readable math.
    - "reasoningSteps": Break down the student's attempt into discrete steps (e.g. ["Step 1: Set up energy conservation equation...", "Step 2: Substituted h = 5m..."]).
-   - "isCorrect": Set to true IF AND ONLY IF the student's attempt/retry is mathematically/conceptually sound and reaches the correct conclusion.
+   - "isCorrect": Set to true IF AND ONLY IF the student's attempt/retry is mathematically/conceptually sound and reaches the complete correct final conclusion.
+   - "isPartial": Set to true IF the student made an honest attempt, set up valid intermediate equations, or showed genuine partial conceptual progress, but has NOT yet reached the full final conclusion. If the attempt is completely blank, invalid, or off-topic, set to false. (Note: if "isCorrect" is true, "isPartial" must be false).
+   - "partialCreditReason": If "isPartial" is true, provide a brief 1-line encouraging note describing the valid partial work (e.g. "Valid conservation setup identified; intermediate substitution needed"). Otherwise null.
    - "firstIncorrectStep": If incorrect, identify the EXACT step number or line where the logic or computation first went wrong (e.g. "Step 2: Sign error in potential energy definition"). If correct or no attempt, set to null.
    - "errorExplanation": Clear, empathetic explanation of why that first step is incorrect, WITHOUT revealing the full remaining solution.
 
@@ -48,6 +50,8 @@ TASK INSTRUCTIONS:
 {
   "hasAttempt": true,
   "isCorrect": false,
+  "isPartial": true,
+  "partialCreditReason": "Valid initial framework or equation set up",
   "detectedExam": "JEE Main",
   "detectedSubject": "Physics",
   "detectedChapter": "Rotational Mechanics",

@@ -66,3 +66,53 @@ console.assert(s3.solved === true, 'Attempt 3 is solved');
 console.assert(s3.expAwarded === 30, 'Solved after using 2 hints should award exactly 30 EXP');
 console.assert(s3.masteryMetrics.percentage === 76, 'Solved after using 2 hints should record 76% mastery');
 console.log('✅ Sequential unlock and retry lifecycle verified successfully!');
+
+console.log('\n=== TEST 4: Partial Attempt Micro-Credit (+5 EXP) Validation ===');
+// Create session with partial attempt 1
+const p1 = createSession({
+  exam: 'JEE Main',
+  subject: 'Physics',
+  chapter: 'Rotational Mechanics',
+  subtopic: 'Torque',
+  questionText: 'Find angular acceleration',
+  allHints: ['Hint 1', 'Hint 2', 'Hint 3', 'Hint 4'],
+  errorTitle: 'Calculation Slip',
+  errorDescription: 'Missed inertia factor',
+  initialAttempt: { doubtText: 'tau = r * F', hasImage: false },
+  isCorrect: false,
+  isPartial: true,
+  hasAttempt: true
+});
+
+console.assert(p1.expAwarded === 5, 'Attempt 1 partial should award +5 EXP');
+console.assert(p1.deltaExp === 5, 'Attempt 1 delta should be 5 EXP');
+console.assert(p1.partialExpTotal === 5, 'Attempt 1 partial total should be 5');
+
+// Attempt 2: Another valid partial equation
+const p2 = recordNewAttempt(p1.sessionId, {
+  doubtText: 'tau = I * alpha, where I = 0.5 * M * R^2',
+  hasImage: false,
+  isCorrect: false,
+  isPartial: true,
+  feedback: 'Equations correct; now isolate alpha'
+});
+
+console.assert(p2.expAwarded === 10, 'Attempt 2 partial should bring total to 10 EXP');
+console.assert(p2.deltaExp === 5, 'Attempt 2 delta should be 5 EXP');
+console.assert(p2.partialExpTotal === 10, 'Attempt 2 partial total should be 10');
+
+// Attempt 3: Final Solve!
+const p3 = recordNewAttempt(p1.sessionId, {
+  doubtText: 'alpha = 2 * F / (M * R)',
+  hasImage: false,
+  isCorrect: true,
+  feedback: 'Breakthrough achieved!'
+});
+
+// Solved at hint level 2 (hintsUsed = 2 -> tier base = 30 EXP).
+// Since 10 EXP was already awarded in partials, remaining balance is 20 EXP. Total = 30 EXP.
+console.assert(p3.solved === true, 'p3 must be solved');
+console.assert(p3.deltaExp === 20, 'p3 remaining balance should be 20 EXP (30 tier - 10 partial)');
+console.assert(p3.expAwarded === 30, 'p3 total EXP should match the 30 EXP tier');
+console.log('✅ Partial progress micro-credit (+5 EXP) and remaining balance logic verified perfectly!');
+

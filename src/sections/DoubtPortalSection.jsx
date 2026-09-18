@@ -302,6 +302,7 @@ export default function DoubtPortalSection() {
   const [retryImageFile, setRetryImageFile] = useState(null);
   const [retryImagePreview, setRetryImagePreview] = useState(null);
   const [isSubmittingRetry, setIsSubmittingRetry] = useState(false);
+  const [partialNotice, setPartialNotice] = useState(null);
 
   const fileInputRef = useRef(null);
   const retryFileInputRef = useRef(null);
@@ -577,6 +578,13 @@ export default function DoubtPortalSection() {
             awardedSessionsRef.current.add(sessId);
             addExp(payload.session?.expAwarded || (payload.session?.hintsUsed === 0 ? 50 : 40));
           }
+        } else if (payload.data.isPartial && payload.session?.deltaExp > 0) {
+          addExp(payload.session.deltaExp);
+          setPartialNotice({
+            amount: payload.session.deltaExp,
+            reason: payload.data.partialCreditReason || "Initial problem attempt logged — +5 Effort EXP credited!"
+          });
+          setTimeout(() => setPartialNotice(null), 7000);
         }
 
         setSubmittedResult({
@@ -606,13 +614,26 @@ export default function DoubtPortalSection() {
           currentHintLevel: 1,
           hintsUsed: 1,
           solved: false,
-          expAwarded: 0
+          expAwarded: 5,
+          partialExpTotal: 5,
+          deltaExp: 5
         };
+        addExp(5);
+        setPartialNotice({
+          amount: 5,
+          reason: "Initial attempt recorded! +5 Effort EXP credited."
+        });
+        setTimeout(() => setPartialNotice(null), 7000);
+
         const fallbackMetrics = computeMasteryMetrics(1, 1, false);
         setActiveSession(fallbackSession);
         setSubmittedResult({
           hasAttempt: true,
           isCorrect: false,
+          isPartial: true,
+          partialCreditReason: "Initial framework and attempt recorded",
+          deltaExp: 5,
+          partialExpTotal: 5,
           detectedSubject: diagnosis.detectedSubject,
           detectedChapter: diagnosis.detectedChapter,
           detectedSubtopic: diagnosis.detectedSubtopic,
@@ -671,8 +692,17 @@ export default function DoubtPortalSection() {
           const sessId = payload.session?.sessionId;
           if (sessId && !awardedSessionsRef.current.has(sessId)) {
             awardedSessionsRef.current.add(sessId);
-            addExp(payload.session?.expAwarded || (payload.session?.hintsUsed <= 1 ? 40 : 30));
+            const delta = payload.session?.deltaExp || Math.max(10, (payload.session?.expAwarded || 30) - (payload.session?.partialExpTotal || 0));
+            addExp(delta);
           }
+        } else if (payload.session?.deltaExp > 0 || payload.data.isPartial) {
+          const delta = payload.session?.deltaExp || 5;
+          addExp(delta);
+          setPartialNotice({
+            amount: delta,
+            reason: payload.data.partialCreditReason || `Attempt #${payload.session?.attemptsCount || 2} effort credit credited! Hint ${currentLevel} unlocked.`
+          });
+          setTimeout(() => setPartialNotice(null), 7000);
         }
 
         setSubmittedResult(prev => ({
@@ -697,12 +727,27 @@ export default function DoubtPortalSection() {
       setTimeout(() => {
         setIsSubmittingRetry(false);
         const nextLevel = Math.min(4, (activeSession?.currentHintLevel || 1) + 1);
+        const currentPartial = (activeSession?.partialExpTotal || 0);
+        const delta = currentPartial < 10 ? 5 : 0;
+        const newPartialTotal = currentPartial + delta;
+        if (delta > 0) {
+          addExp(delta);
+          setPartialNotice({
+            amount: delta,
+            reason: `Attempt #${(activeSession?.attemptsCount || 1) + 1} effort credit awarded! Hint ${nextLevel} unlocked.`
+          });
+          setTimeout(() => setPartialNotice(null), 7000);
+        }
+
         const updatedSession = {
           ...activeSession,
           attemptsCount: (activeSession?.attemptsCount || 1) + 1,
           currentHintLevel: nextLevel,
           hintsUsed: nextLevel,
-          solved: false
+          solved: false,
+          partialExpTotal: newPartialTotal,
+          deltaExp: delta,
+          expAwarded: newPartialTotal
         };
         const fallbackMetrics = computeMasteryMetrics(nextLevel, updatedSession.attemptsCount, false);
         setActiveSession(updatedSession);
@@ -719,6 +764,10 @@ export default function DoubtPortalSection() {
           ...prev,
           session: updatedSession,
           masteryMetrics: fallbackMetrics,
+          isPartial: true,
+          partialCreditReason: `Attempt #${updatedSession.attemptsCount} partial equation submitted`,
+          deltaExp: delta,
+          partialExpTotal: newPartialTotal,
           unlockedHints: allFallbackHints.slice(0, nextLevel),
           currentHint: allFallbackHints[nextLevel - 1],
           lockedCount: 4 - nextLevel,
@@ -1056,6 +1105,32 @@ export default function DoubtPortalSection() {
                   ) : (
                     /* CASE: Incorrect Attempt - Show Exact Error and Sequential Hint Ladder */
                     <>
+                      {/* Partial Progress Notification Banner */}
+                      <AnimatePresence>
+                        {partialNotice && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -8 }}
+                            className="bg-amber-500/15 border border-amber-500/30 rounded-2xl p-3.5 mb-5 flex items-center justify-between gap-3 text-xs font-mono"
+                          >
+                            <div className="flex items-center gap-2.5">
+                              <Zap className="w-4 h-4 text-amber-400 animate-pulse flex-shrink-0" />
+                              <span className="text-amber-200">
+                                <strong className="text-amber-400">+{partialNotice.amount} Effort EXP Awarded!</strong> {partialNotice.reason}
+                              </span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setPartialNotice(null)}
+                              className="text-amber-400 hover:text-white p-1 rounded-lg transition-colors"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+
                       {/* In-Progress Diagnostic Trajectory Indicator */}
                       <div className="bg-[#090915] border border-brand-violet/30 rounded-2xl p-4 mb-6 flex flex-wrap items-center justify-between gap-3 shadow-lg">
                         <div className="flex items-center gap-3">
@@ -1073,8 +1148,14 @@ export default function DoubtPortalSection() {
                                 {submittedResult.masteryMetrics?.percentile || "Top 45% Iteration Rate"}
                               </span>
                             </div>
-                            <div className="text-xs font-sans text-slate-300 mt-0.5">
-                              Solve on Attempt #{activeSession?.attemptsCount || 1} to achieve cognitive breakthrough and unlock your full retention curve!
+                            <div className="text-xs font-sans text-slate-300 mt-0.5 flex flex-wrap items-center gap-2">
+                              <span>Solve on Attempt #{activeSession?.attemptsCount || 1} to unlock your 72h retention curve.</span>
+                              <span className="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-mono font-bold">
+                                ⚡ Partial: +{activeSession?.partialExpTotal || submittedResult?.partialExpTotal || 0} EXP
+                              </span>
+                              <span className="text-slate-400 text-[10px] font-mono">
+                                (+{Math.max(10, (activeSession?.currentHintLevel === 1 ? 40 : activeSession?.currentHintLevel === 2 ? 30 : activeSession?.currentHintLevel === 3 ? 20 : 10) - (activeSession?.partialExpTotal || submittedResult?.partialExpTotal || 0))} EXP on solve)
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -1082,12 +1163,27 @@ export default function DoubtPortalSection() {
                         <button
                           type="button"
                           onClick={() => {
-                            const solvedMetrics = computeMasteryMetrics(activeSession?.currentHintLevel || 1, activeSession?.attemptsCount || 1, true);
+                            const solvedLevel = activeSession?.currentHintLevel || 1;
+                            const solvedAttempts = activeSession?.attemptsCount || 1;
+                            const tierBase = solvedLevel === 1 ? 40 : solvedLevel === 2 ? 30 : solvedLevel === 3 ? 20 : 10;
+                            const currentPartial = activeSession?.partialExpTotal || submittedResult?.partialExpTotal || 0;
+                            const remainingExp = Math.max(10, tierBase - currentPartial);
+                            addExp(remainingExp);
+
+                            const updatedSess = {
+                              ...activeSession,
+                              solved: true,
+                              expAwarded: currentPartial + remainingExp
+                            };
+                            setActiveSession(updatedSess);
+
+                            const solvedMetrics = computeMasteryMetrics(solvedLevel, solvedAttempts, true);
                             setSubmittedResult(prev => ({
                               ...prev,
                               isCorrect: true,
+                              session: updatedSess,
                               masteryMetrics: solvedMetrics,
-                              feedbackForStudent: "Outstanding deduction! You applied the sequential hints and deduced the correct solution independently."
+                              feedbackForStudent: `Outstanding deduction! You applied the sequential hints and reached the complete breakthrough independently (+${remainingExp} Breakthrough EXP awarded).`
                             }));
                           }}
                           className="px-3.5 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-mono font-bold flex items-center gap-1.5 transition-all self-stretch sm:self-auto justify-center"
