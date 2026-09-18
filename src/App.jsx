@@ -8,7 +8,6 @@ import ScrollProgress from './components/ScrollProgress';
 import Navbar from './components/Navbar';
 import HeroSection from './sections/HeroSection';
 import ProblemSection from './sections/ProblemSection';
-import VisionSection from './sections/VisionSection';
 import GuidanceSection from './sections/GuidanceSection';
 import DoubtPortalSection from './sections/DoubtPortalSection';
 import AdaptiveRLEngineSection from './sections/AdaptiveRLEngineSection';
@@ -58,7 +57,6 @@ function MainAppContent() {
       <main className="relative z-10">
         <HeroSection />
         <ProblemSection />
-        <VisionSection />
         <GuidanceSection />
         <DoubtPortalSection />
         <AdaptiveRLEngineSection />

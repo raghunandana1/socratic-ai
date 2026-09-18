@@ -42,7 +42,7 @@ export default function GuidanceSection() {
   };
 
   return (
-    <section ref={sectionRef} className="py-24 px-4 md:px-8 relative z-10 overflow-hidden">
+    <section ref={sectionRef} id="how-it-works" className="py-24 px-4 md:px-8 relative z-10 overflow-hidden">
       {/* Background Parallax Ambient Glow */}
       <motion.div
         style={{ y: orbY }}

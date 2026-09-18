@@ -35,7 +35,7 @@ export default function Footer() {
           </h4>
           <ul className="space-y-2.5 text-sm">
             <li><a href="#product" className="hover:text-brand-cyan transition-colors">Product Architecture</a></li>
-            <li><a href="#how-it-works" className="hover:text-brand-cyan transition-colors">Multimodal Vision OCR</a></li>
+            <li><a href="#how-it-works" className="hover:text-brand-cyan transition-colors">Socratic Guidance Engine</a></li>
             <li><a href="#adaptive-ai" className="hover:text-brand-cyan transition-colors">Adaptive RL Policy Engine</a></li>
           </ul>
         </div>
