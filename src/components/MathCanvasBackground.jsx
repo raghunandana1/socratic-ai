@@ -44,8 +44,21 @@ export default function MathCanvasBackground() {
       });
     }
 
+    let lastScrollY = window.scrollY;
+    let scrollVelocity = 0;
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      scrollVelocity = (currentScrollY - lastScrollY);
+      lastScrollY = currentScrollY;
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
     const render = () => {
       ctx.clearRect(0, 0, width, height);
+
+      // Smoothly dampen scroll velocity
+      scrollVelocity *= 0.9;
 
       // Draw faint connections between close particles
       for (let i = 0; i < particles.length; i++) {
@@ -68,11 +81,13 @@ export default function MathCanvasBackground() {
       // Draw and update math symbols
       particles.forEach((p) => {
         p.x += p.vx;
-        p.y += p.vy;
+        // Subtle vertical parallax drift linked to scroll
+        p.y += p.vy - scrollVelocity * 0.12 * (p.size / 15);
 
-        // Bounce off edges
+        // Wrap or bounce
         if (p.x < 0 || p.x > width) p.vx *= -1;
-        if (p.y < 0 || p.y > height) p.vy *= -1;
+        if (p.y < -40) p.y = height + 30;
+        if (p.y > height + 40) p.y = -30;
 
         // Mouse interaction
         const dx = p.x - mouse.x;
@@ -102,6 +117,7 @@ export default function MathCanvasBackground() {
     return () => {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('scroll', handleScroll);
       cancelAnimationFrame(animationFrameId);
     };
   }, []);

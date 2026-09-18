@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import { Lightbulb, CheckCircle2, RotateCcw } from 'lucide-react';
 import TiltCard from '../components/TiltCard';
 import MagneticButton from '../components/MagneticButton';
@@ -10,6 +10,16 @@ export default function GuidanceSection() {
   const { targetExam } = useExam();
   const [currentHintLevel, setCurrentHintLevel] = useState(1);
   const [isCompleted, setIsCompleted] = useState(false);
+  const sectionRef = useRef(null);
+  const prefersReducedMotion = useReducedMotion();
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start']
+  });
+
+  const orbY = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? [0, 0] : [-50, 70]);
+  const cardY = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? [0, 0] : [20, -20]);
 
   const scenario = GUIDANCE_SCENARIOS[targetExam] || GUIDANCE_SCENARIOS["JEE Main"];
 
@@ -32,7 +42,12 @@ export default function GuidanceSection() {
   };
 
   return (
-    <section className="py-24 px-4 md:px-8 relative z-10">
+    <section ref={sectionRef} className="py-24 px-4 md:px-8 relative z-10 overflow-hidden">
+      {/* Background Parallax Ambient Glow */}
+      <motion.div
+        style={{ y: orbY }}
+        className="absolute top-1/3 left-1/4 w-[600px] h-[600px] bg-brand-violet/5 rounded-full blur-[140px] pointer-events-none -z-10"
+      />
       <div className="max-w-7xl mx-auto">
         
         {/* Section Header */}
@@ -72,7 +87,8 @@ export default function GuidanceSection() {
 
         {/* Large Interactive Tutoring Demo Card */}
         <div className="max-w-4xl mx-auto">
-          <TiltCard className="bg-[#0A0A10] border-white/10 p-6 md:p-10 shadow-2xl relative">
+          <motion.div style={{ y: cardY }}>
+            <TiltCard className="bg-[#0A0A10] border-white/10 p-6 md:p-10 shadow-2xl relative">
             
             {/* Header */}
             <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-8">
@@ -180,7 +196,8 @@ export default function GuidanceSection() {
             </div>
 
           </TiltCard>
-        </div>
+        </motion.div>
+      </div>
 
       </div>
     </section>

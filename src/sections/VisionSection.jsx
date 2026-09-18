@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import { Eye, CheckCircle, ScanLine, FileText, ArrowRight, Zap, Camera, Upload, Image as ImageIcon, BookOpen, Info } from 'lucide-react';
 import TiltCard from '../components/TiltCard';
 import { VISION_PRESETS } from '../data/mockData';
@@ -12,6 +12,16 @@ export default function VisionSection() {
   const [customImage, setCustomImage] = useState(null);
   const [isScanning, setIsScanning] = useState(false);
   const fileInputRef = useRef(null);
+  const sectionRef = useRef(null);
+  const prefersReducedMotion = useReducedMotion();
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start']
+  });
+
+  const orbCyanY = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? [0, 0] : [-60, 80]);
+  const orbVioletY = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? [0, 0] : [50, -50]);
 
   // Sync preset with active target exam when exam changes
   useEffect(() => {
@@ -54,7 +64,16 @@ export default function VisionSection() {
   };
 
   return (
-    <section id="how-it-works" className="py-24 px-4 md:px-8 relative z-10 bg-bg-card/40 border-y border-white/5">
+    <section ref={sectionRef} id="how-it-works" className="py-24 px-4 md:px-8 relative z-10 bg-bg-card/40 border-y border-white/5 overflow-hidden">
+      {/* Ambient Parallax Orbs */}
+      <motion.div
+        style={{ y: orbCyanY }}
+        className="absolute top-1/4 -right-20 w-[500px] h-[500px] bg-brand-cyan/5 rounded-full blur-[140px] pointer-events-none -z-10"
+      />
+      <motion.div
+        style={{ y: orbVioletY }}
+        className="absolute bottom-1/4 -left-20 w-[500px] h-[500px] bg-brand-violet/5 rounded-full blur-[140px] pointer-events-none -z-10"
+      />
       <div className="max-w-7xl mx-auto">
         
         {/* Section Header */}

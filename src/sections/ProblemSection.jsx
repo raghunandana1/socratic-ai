@@ -1,10 +1,25 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef } from 'react';
+import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import { Clock, HelpCircle, GitCommit } from 'lucide-react';
 import TiltCard from '../components/TiltCard';
 import { PROBLEM_CARDS } from '../data/mockData';
 
 export default function ProblemSection() {
+  const sectionRef = useRef(null);
+  const prefersReducedMotion = useReducedMotion();
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start']
+  });
+
+  const yCard1 = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? [0, 0] : [-18, 18]);
+  const yCard2 = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? [0, 0] : [0, 0]);
+  const yCard3 = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? [0, 0] : [18, -18]);
+  const orbY = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? [0, 0] : [-40, 60]);
+
+  const cardParallaxOffsets = [yCard1, yCard2, yCard3];
+
   const cardIcons = {
     "01": <Clock className="w-6 h-6 text-rose-400" />,
     "02": <HelpCircle className="w-6 h-6 text-amber-400" />,
@@ -12,7 +27,12 @@ export default function ProblemSection() {
   };
 
   return (
-    <section id="product" className="py-24 px-4 md:px-8 relative z-10">
+    <section ref={sectionRef} id="product" className="py-24 px-4 md:px-8 relative z-10 overflow-hidden">
+      {/* Subtle Background Parallax Glow */}
+      <motion.div
+        style={{ y: orbY }}
+        className="absolute top-1/2 left-1/3 w-[500px] h-[500px] bg-brand-violet/5 rounded-full blur-[130px] pointer-events-none -z-10"
+      />
       <div className="max-w-7xl mx-auto">
         
         {/* Section Header */}
@@ -48,38 +68,41 @@ export default function ProblemSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.7, delay: index * 0.18 }}
+              className="h-full"
             >
-              <TiltCard className={`h-full flex flex-col justify-between p-8 bg-gradient-to-b ${card.accentColor} border-white/10 ${card.borderColor}`}>
-                <div>
-                  {/* Top Badge & Number */}
-                  <div className="flex items-center justify-between mb-8">
-                    <span className="text-3xl sm:text-4xl font-mono font-extrabold text-white tracking-wider">
-                      {card.stat}
-                    </span>
-                    <div className="p-3 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md">
-                      {cardIcons[card.id]}
+              <motion.div style={{ y: cardParallaxOffsets[index] }} className="h-full">
+                <TiltCard className={`h-full flex flex-col justify-between p-8 bg-gradient-to-b ${card.accentColor} border-white/10 ${card.borderColor}`}>
+                  <div>
+                    {/* Top Badge & Number */}
+                    <div className="flex items-center justify-between mb-8">
+                      <span className="text-3xl sm:text-4xl font-mono font-extrabold text-white tracking-wider">
+                        {card.stat}
+                      </span>
+                      <div className="p-3 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md">
+                        {cardIcons[card.id]}
+                      </div>
                     </div>
+
+                    {/* Title */}
+                    <h3 className="text-xl font-bold text-white mb-3 tracking-tight">
+                      {card.title}
+                    </h3>
+
+                    {/* Description */}
+                    <p className="text-slate-400 text-sm leading-relaxed mb-6 font-normal">
+                      {card.description}
+                    </p>
                   </div>
 
-                  {/* Title */}
-                  <h3 className="text-xl font-bold text-white mb-3 tracking-tight">
-                    {card.title}
-                  </h3>
-
-                  {/* Description */}
-                  <p className="text-slate-400 text-sm leading-relaxed mb-6 font-normal">
-                    {card.description}
-                  </p>
-                </div>
-
-                {/* Bottom Tag */}
-                <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs">
-                  <span className="font-mono text-slate-300 font-medium">
-                    {card.tag}
-                  </span>
-                  <span className="text-slate-400 font-mono">CRITICAL</span>
-                </div>
-              </TiltCard>
+                  {/* Bottom Tag */}
+                  <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs">
+                    <span className="font-mono text-slate-300 font-medium">
+                      {card.tag}
+                    </span>
+                    <span className="text-slate-400 font-mono">CRITICAL</span>
+                  </div>
+                </TiltCard>
+              </motion.div>
             </motion.div>
           ))}
         </div>

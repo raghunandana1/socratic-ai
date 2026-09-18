@@ -1,13 +1,27 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef } from 'react';
+import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import { ArrowRight, Sparkles, BrainCircuit } from 'lucide-react';
 import MagneticButton from '../components/MagneticButton';
 
 export default function FinalCTASection() {
+  const sectionRef = useRef(null);
+  const prefersReducedMotion = useReducedMotion();
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end end']
+  });
+
+  const spotlightY = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? [0, 0] : [100, -20]);
+  const spotlightScale = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? [1, 1] : [0.85, 1.15]);
+
   return (
-    <section className="py-32 px-4 md:px-8 relative z-10 overflow-hidden">
-      {/* Background Orbs */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-gradient-to-t from-brand-violet/20 via-brand-cyan/10 to-transparent rounded-full blur-[140px] pointer-events-none" />
+    <section ref={sectionRef} className="py-32 px-4 md:px-8 relative z-10 overflow-hidden">
+      {/* Background Parallax Spotlight */}
+      <motion.div
+        style={{ y: spotlightY, scale: spotlightScale }}
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-gradient-to-t from-brand-violet/20 via-brand-cyan/10 to-transparent rounded-full blur-[140px] pointer-events-none"
+      />
 
       <div className="max-w-5xl mx-auto text-center relative z-10">
         
@@ -54,7 +68,7 @@ export default function FinalCTASection() {
             variant="primary"
             className="text-lg px-9 py-4"
             onClick={() => {
-              const el = document.querySelector('#demo');
+              const el = document.querySelector('#doubt-portal');
               if (el) el.scrollIntoView({ behavior: 'smooth' });
             }}
           >
