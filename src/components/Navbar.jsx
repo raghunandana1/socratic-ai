@@ -157,7 +157,10 @@ export default function Navbar() {
                 {exams.map((ex) => (
                   <button
                     key={ex}
-                    onClick={() => setTargetExam(ex)}
+                    onClick={() => {
+                      setTargetExam(ex);
+                      setMobileMenuOpen(false);
+                    }}
                     className={`px-2.5 py-1 rounded text-xs font-bold ${
                       targetExam === ex ? 'bg-brand-violet text-white' : 'bg-white/5 text-slate-400'
                     }`}

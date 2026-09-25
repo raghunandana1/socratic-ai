@@ -329,42 +329,198 @@ export const DEMO_QUESTION = {
   }
 };
 
-// Independent Exam Calculations
+// Independent Exam Calculations & Dynamic Difficulty Curve Profiles
 export const SEPARATE_EXAM_DATA = {
   "JEE Main": {
     examName: "JEE Main Diagnostic Model",
     targetAccuracy: 88,
+    baseDifficulty: 7.2,
+    curveType: "Dynamic S-Curve (High-Speed Calibration)",
     recommendedDifficulty: "HARD (Concept Isolation)",
     predictedScore: "245 / 300 (99.4 Percentile)",
+    themeColor: "brand-cyan",
+    strokeColor: "#00F0FF",
+    fillGradient: ["#00F0FF", "#7928CA"],
     subtopics: [
-      { name: "Calculus & Functions", score: 92 },
-      { name: "Mechanics & Gravitation", score: 86 },
-      { name: "Physical Chemistry", score: 85 },
-      { name: "Electromagnetism", score: 89 }
+      { name: "Calculus & Functions", score: 92, weight: "28%" },
+      { name: "Mechanics & Gravitation", score: 86, weight: "24%" },
+      { name: "Physical Chemistry", score: 85, weight: "22%" },
+      { name: "Electromagnetism", score: 89, weight: "26%" }
+    ],
+    milestones: [
+      {
+        id: "p1",
+        stage: "Stage 01",
+        title: "NCERT Baseline",
+        difficulty: 3.2,
+        concept: "Standard Formula Substitution & Units",
+        cognitiveSkill: "Basic Retrieval",
+        scaffolding: "Full Micro-Scaffolding Active"
+      },
+      {
+        id: "p2",
+        stage: "Stage 02",
+        title: "Single-Concept Application",
+        difficulty: 5.2,
+        concept: "Quadratic Roots & Projectile Trajectories",
+        cognitiveSkill: "Formula Coupling",
+        scaffolding: "Guiding Questions Available"
+      },
+      {
+        id: "p3",
+        stage: "Stage 03",
+        title: "Calibrated RL Pivot",
+        difficulty: 7.2,
+        concept: "Discriminant Boundary Constraints & Work-Energy",
+        cognitiveSkill: "Boundary Conditions",
+        scaffolding: "Socratic First-Principles Only"
+      },
+      {
+        id: "p4",
+        stage: "Stage 04",
+        title: "Multi-Step Trap Resistance",
+        difficulty: 8.4,
+        concept: "Eliminating Common Algebraic Traps in Limits",
+        cognitiveSkill: "Error Detection",
+        scaffolding: "Zero Crutches Permitted"
+      },
+      {
+        id: "p5",
+        stage: "Stage 05",
+        title: "AIR Rank Decider",
+        difficulty: 9.3,
+        concept: "Combined Mechanics & Conic Section Optimization",
+        cognitiveSkill: "High-Speed Synthesis",
+        scaffolding: "Timed Exam Environment"
+      }
     ]
   },
   "JEE Advanced": {
     examName: "JEE Advanced Diagnostic Model",
     targetAccuracy: 81,
+    baseDifficulty: 9.0,
+    curveType: "Exponential Multi-Concept Spline",
     recommendedDifficulty: "JEE ADVANCED (Multi-Concept Depth)",
     predictedScore: "198 / 360 (AIR < 800 Target)",
+    themeColor: "brand-purple",
+    strokeColor: "#A855F7",
+    fillGradient: ["#A855F7", "#EC4899"],
     subtopics: [
-      { name: "Rotational Dynamics & Fluids", score: 79 },
-      { name: "Coordinate Geometry & Conics", score: 83 },
-      { name: "Organic Synthesis & Mechanism", score: 82 },
-      { name: "Modern Physics & Quantum Optics", score: 80 }
+      { name: "Rotational Dynamics & Fluids", score: 79, weight: "30%" },
+      { name: "Coordinate Geometry & Conics", score: 83, weight: "24%" },
+      { name: "Organic Synthesis & Mechanism", score: 82, weight: "22%" },
+      { name: "Modern Physics & Quantum Optics", score: 80, weight: "24%" }
+    ],
+    milestones: [
+      {
+        id: "p1",
+        stage: "Stage 01",
+        title: "Rigorous Mechanics Core",
+        difficulty: 4.2,
+        concept: "Variable Mass Systems & Moment of Inertia",
+        cognitiveSkill: "Calculus Modeling",
+        scaffolding: "Conceptual Framing Active"
+      },
+      {
+        id: "p2",
+        stage: "Stage 02",
+        title: "Definite Integral Invariance",
+        difficulty: 6.8,
+        concept: "King's Rule Symmetry & Series Reductions",
+        cognitiveSkill: "Symmetry Exploitation",
+        scaffolding: "Guided Micro-Questions"
+      },
+      {
+        id: "p3",
+        stage: "Stage 03",
+        title: "Calibrated RL Pivot",
+        difficulty: 8.8,
+        concept: "Coupled Electro-Mechanics & Angular Impulse",
+        cognitiveSkill: "Multi-Domain Coupling",
+        scaffolding: "Socratic First-Principles"
+      },
+      {
+        id: "p4",
+        stage: "Stage 04",
+        title: "Multi-Concept Synthesis",
+        difficulty: 9.5,
+        concept: "Matrix Transformations in Optics & Wave Superposition",
+        cognitiveSkill: "Deep Structural Abstraction",
+        scaffolding: "Zero Crutches / Full Autonomy"
+      },
+      {
+        id: "p5",
+        stage: "Stage 05",
+        title: "Top 500 AIR Decider",
+        difficulty: 9.9,
+        concept: "Multi-Stage Organic Stereochemistry Cascades",
+        cognitiveSkill: "Olympiad Level Heuristics",
+        scaffolding: "Pure Cognitive Breakthrough"
+      }
     ]
   },
   "NEET UG": {
     examName: "NEET UG Diagnostic Model",
     targetAccuracy: 94,
+    baseDifficulty: 6.4,
+    curveType: "Precision Plateau Curve (Zero-Error Target)",
     recommendedDifficulty: "NEET SPEED & ACCURACY TARGET",
     predictedScore: "685 / 720 (Target Top GMC)",
+    themeColor: "brand-emerald",
+    strokeColor: "#10B981",
+    fillGradient: ["#10B981", "#06B6D4"],
     subtopics: [
-      { name: "Human Physiology & Genetics", score: 96 },
-      { name: "Organic Reaction Mechanisms", score: 92 },
-      { name: "Ray & Wave Optics", score: 91 },
-      { name: "Plant Diversity & Cell Biology", score: 97 }
+      { name: "Human Physiology & Genetics", score: 96, weight: "35%" },
+      { name: "Organic Reaction Mechanisms", score: 92, weight: "25%" },
+      { name: "Ray & Wave Optics", score: 91, weight: "20%" },
+      { name: "Plant Diversity & Cell Biology", score: 97, weight: "20%" }
+    ],
+    milestones: [
+      {
+        id: "p1",
+        stage: "Stage 01",
+        title: "NCERT Direct Retrieval",
+        difficulty: 2.8,
+        concept: "Biomolecule Classifications & Direct Genetics",
+        cognitiveSkill: "Instant Recall",
+        scaffolding: "Micro-Scaffolding Active"
+      },
+      {
+        id: "p2",
+        stage: "Stage 02",
+        title: "Reaction Pathways",
+        difficulty: 4.8,
+        concept: "Markovnikov Carbocation Intermediate Stability",
+        cognitiveSkill: "Mechanistic Logic",
+        scaffolding: "Guided Intermediate Hints"
+      },
+      {
+        id: "p3",
+        stage: "Stage 03",
+        title: "Calibrated RL Pivot",
+        difficulty: 6.4,
+        concept: "Complex Optics Ray Diagrams & Bio Energetics",
+        cognitiveSkill: "Error Prevention",
+        scaffolding: "Socratic First-Principles"
+      },
+      {
+        id: "p4",
+        stage: "Stage 04",
+        title: "High-Speed Elimination",
+        difficulty: 7.6,
+        concept: "Rapid 45-Second Assertion-Reasoning Traps",
+        cognitiveSkill: "Rapid Disambiguation",
+        scaffolding: "Zero Crutches"
+      },
+      {
+        id: "p5",
+        stage: "Stage 05",
+        title: "Top GMC Target (700+)",
+        difficulty: 8.6,
+        concept: "Multi-Step Equilibrium & Pedigree Analysis",
+        cognitiveSkill: "Zero-Margin Accuracy",
+        scaffolding: "Speed Benchmark Simulation"
+      }
     ]
   }
 };

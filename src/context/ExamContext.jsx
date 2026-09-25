@@ -55,11 +55,39 @@ export function ExamProvider({ children }) {
 
   const [streakDays, setStreakDays] = useState(12);
   const [lastOvertakeNotice, setLastOvertakeNotice] = useState(null);
+  const [trackSwitchNotice, setTrackSwitchNotice] = useState(null);
 
   const selectExam = (exam) => {
     setTargetExam(exam);
     localStorage.setItem('socratic_target_exam', exam);
     setShowOnboardingModal(false);
+
+    // Scroll page to the very beginning immediately
+    if (typeof window !== 'undefined') {
+      try {
+        if (window.lenis) {
+          window.lenis.scrollTo(0, { immediate: true });
+        }
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        // Secondary tick to ensure scroll persists after DOM layout
+        setTimeout(() => {
+          if (window.lenis) {
+            window.lenis.scrollTo(0, { immediate: true });
+          }
+          window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        }, 40);
+      } catch (e) {
+        window.scrollTo(0, 0);
+      }
+    }
+
+    setTrackSwitchNotice({
+      exam,
+      timestamp: Date.now()
+    });
+    setTimeout(() => {
+      setTrackSwitchNotice(prev => (prev?.exam === exam ? null : prev));
+    }, 3200);
   };
 
   const addExp = (amount) => {
@@ -141,6 +169,7 @@ export function ExamProvider({ children }) {
         userAhead,
         userBehind,
         lastOvertakeNotice,
+        trackSwitchNotice,
         addExp,
         getExamLeaderboard
       }}
