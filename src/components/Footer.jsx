@@ -1,66 +1,64 @@
 import React from 'react';
-import { Github, Twitter, Linkedin, Heart, Shield } from 'lucide-react';
+import { PixelGithub, PixelTwitter, PixelLinkedin } from './PixelIcon';
 
 export default function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-[#040406] py-16 px-4 md:px-8 relative z-10 text-slate-400">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-10">
+    <footer id="footer" className="border-t-4 border-black bg-[#DC2626] py-12 px-4 md:px-8 relative z-10 text-black">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8">
         
         {/* Brand Column */}
         <div className="md:col-span-5 flex flex-col justify-between">
           <div>
-            <a href="#" className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-violet to-brand-cyan p-[1px] shadow-glow-violet">
-                <div className="w-full h-full bg-[#050507] rounded-[11px] flex items-center justify-center">
-                  <span className="font-extrabold text-sm text-brand-cyan">∑</span>
-                </div>
-              </div>
-              <span className="text-xl font-bold text-white tracking-tight">
-                Socratic<span className="text-brand-cyan">AI</span>
+            <a href="#" className="inline-flex items-center gap-2.5 mb-4 bg-[#0D1117] border-3 border-black px-3 py-1.5 shadow-[3px_3px_0px_#000] pixel-cut-corners">
+              <span className="w-2.5 h-2.5 bg-[#EF4444] border border-black shadow-[1px_1px_0px_#000]" />
+              <span className="text-xs sm:text-sm font-bold tracking-tight text-[#EF4444] flex items-center gap-1.5 font-pixel">
+                SOCRATIC<span className="text-white">AI</span>
               </span>
             </a>
-            <p className="text-sm text-slate-400 max-w-sm leading-relaxed mb-6 font-normal">
-              AI that teaches you to think. Autonomous multimodal diagnostic learning platform designed exclusively for JEE Main, JEE Advanced & NEET UG aspirants.
+            <p className="text-[9px] text-black max-w-sm leading-relaxed mb-4 font-pixel">
+              Autonomous multimodal diagnostic learning platform designed exclusively for JEE Main, JEE Advanced &amp; NEET UG aspirants.
             </p>
+            <div className="text-[9px] font-pixel font-bold text-black bg-white border-2 border-black px-2.5 py-1 inline-block shadow-[2px_2px_0px_#000]">
+              OPERATIONAL • ZERO ANSWER DUMPING
+            </div>
           </div>
-          <div className="text-xs text-slate-400">
-            © {new Date().getFullYear()} SocraticAI Technologies Inc. All rights reserved.
+          <div className="text-[9px] text-black font-pixel font-bold mt-6">
+            © {new Date().getFullYear()} Socratic AI • All rights reserved.
           </div>
         </div>
 
         {/* Links Column 1 */}
         <div className="md:col-span-3">
-          <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">
+          <h4 className="text-[10px] font-pixel font-bold text-black uppercase tracking-wider mb-4 border-b-2 border-black pb-1 inline-block">
             Platform
           </h4>
-          <ul className="space-y-2.5 text-sm">
-            <li><a href="#product" className="hover:text-brand-cyan transition-colors">Product Architecture</a></li>
-            <li><a href="#how-it-works" className="hover:text-brand-cyan transition-colors">Socratic Guidance Engine</a></li>
-            <li><a href="#adaptive-ai" className="hover:text-brand-cyan transition-colors">Adaptive RL Policy Engine</a></li>
+          <ul className="space-y-2.5 text-[9px] font-pixel font-bold">
+            <li><a href="#product" className="text-black hover:text-white transition-colors">Why Socratic AI?</a></li>
+            <li><a href="#how-it-works" className="text-black hover:text-white transition-colors">Guided Learning Engine</a></li>
+            <li><a href="#doubt-portal" className="text-black hover:text-white transition-colors">Doubt Diagnosis Portal</a></li>
           </ul>
         </div>
 
         {/* Links Column 2 */}
         <div className="md:col-span-4">
-          <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">
-            Curriculum Standards
+          <h4 className="text-[10px] font-pixel font-bold text-black uppercase tracking-wider mb-4 border-b-2 border-black pb-1 inline-block">
+            Curriculum Tracks
           </h4>
-          <ul className="space-y-2.5 text-sm">
-            <li><span className="text-slate-300">JEE Main Mathematics & Physics</span></li>
-            <li><span className="text-slate-300">JEE Advanced Rotational Kinematics & Calculus</span></li>
-            <li><span className="text-slate-300">NEET UG Organic Chemistry & Biology Reasoning</span></li>
-            <li><span className="text-slate-300">Zero Answer-Dumping Compliance</span></li>
+          <ul className="space-y-2 text-[9px] font-pixel font-bold text-black">
+            <li>• JEE Main Mathematics &amp; Physics</li>
+            <li>• JEE Advanced Calculus &amp; Mechanics</li>
+            <li>• NEET UG Organic Chemistry &amp; Biology</li>
           </ul>
 
-          <div className="mt-6 flex items-center gap-4 text-slate-400">
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg bg-white/5 hover:text-white hover:bg-white/10 transition-all">
-              <Github className="w-4 h-4" />
+          <div className="mt-5 flex items-center gap-2.5">
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="p-2 border-2 border-black bg-white hover:bg-black hover:text-white shadow-[2px_2px_0px_#000] transition-all active:translate-x-0.5 active:translate-y-0.5 rounded-none" aria-label="GitHub">
+              <PixelGithub className="w-4 h-4" />
             </a>
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg bg-white/5 hover:text-white hover:bg-white/10 transition-all">
-              <Twitter className="w-4 h-4" />
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="p-2 border-2 border-black bg-white hover:bg-black hover:text-white shadow-[2px_2px_0px_#000] transition-all active:translate-x-0.5 active:translate-y-0.5 rounded-none" aria-label="Twitter">
+              <PixelTwitter className="w-4 h-4" />
             </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg bg-white/5 hover:text-white hover:bg-white/10 transition-all">
-              <Linkedin className="w-4 h-4" />
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="p-2 border-2 border-black bg-white hover:bg-black hover:text-white shadow-[2px_2px_0px_#000] transition-all active:translate-x-0.5 active:translate-y-0.5 rounded-none" aria-label="LinkedIn">
+              <PixelLinkedin className="w-4 h-4" />
             </a>
           </div>
         </div>

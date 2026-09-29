@@ -1,65 +1,72 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { Flame, Award, Zap, CheckCircle } from 'lucide-react';
-import TiltCard from '../components/TiltCard';
+import { Flame, Award, Zap, CheckCircle, Sparkles } from 'lucide-react';
+import { useExam } from '../context/ExamContext';
 
 export default function MasterySection() {
   const ref = React.useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  const [xpCount, setXpCount] = useState(0);
-  const [activeExamCategory, setActiveExamCategory] = useState("JEE Main");
+  const {
+    targetExam,
+    subjectMastery,
+    sessionExp,
+    streakDays,
+    lastPortalActivity
+  } = useExam();
 
-  const separateMasteryData = {
-    "JEE Main": [
-      { name: "Mathematics — Calculus & Algebra", accuracy: 89, color: "#8B5CF6", level: "JEE Main Mastered" },
-      { name: "Physics — Mechanics & Electrodynamics", accuracy: 87, color: "#22D3EE", level: "Top Percentile" },
-      { name: "Chemistry — Physical & Inorganic", accuracy: 84, color: "#10B981", level: "Mastery Level 4" }
-    ],
-    "JEE Advanced": [
-      { name: "Physics — Rotational Dynamics & Optics", accuracy: 81, color: "#22D3EE", level: "JEE Advanced Ready" },
-      { name: "Mathematics — Coordinate & Vectors", accuracy: 78, color: "#8B5CF6", level: "AIR < 1000 Target" },
-      { name: "Chemistry — Organic Mechanisms", accuracy: 83, color: "#10B981", level: "Advanced Diagnostic" }
-    ],
-    "NEET UG": [
-      { name: "Biology — Human Physiology & Genetics", accuracy: 96, color: "#10B981", level: "NEET Top Tier" },
-      { name: "Chemistry — Organic & Bio-molecules", accuracy: 92, color: "#8B5CF6", level: "Speed Mastered" },
-      { name: "Physics — Kinematics & Optics", accuracy: 91, color: "#22D3EE", level: "High Accuracy" }
-    ]
-  };
+  const [activeExamCategory, setActiveExamCategory] = useState(targetExam || "JEE Main");
+  const [xpCount, setXpCount] = useState(sessionExp || 120);
 
+  // Sync active exam category when user changes target exam
   useEffect(() => {
-    if (isInView) {
-      let current = 0;
-      const target = 120;
-      const timer = setInterval(() => {
-        current += 4;
-        if (current >= target) {
-          setXpCount(target);
-          clearInterval(timer);
-        } else {
-          setXpCount(current);
-        }
-      }, 30);
-      return () => clearInterval(timer);
+    if (targetExam) {
+      setActiveExamCategory(targetExam);
     }
-  }, [isInView]);
+  }, [targetExam]);
+
+  // Smoothly animate the session reward counter whenever new XP is awarded in the portal
+  useEffect(() => {
+    const target = sessionExp ?? 120;
+    if (!isInView) {
+      setXpCount(target);
+      return;
+    }
+    let current = xpCount;
+    const diff = target - current;
+    if (diff === 0) return;
+    const step = diff > 0 ? Math.max(1, Math.ceil(diff / 12)) : Math.min(-1, Math.floor(diff / 12));
+    const timer = setInterval(() => {
+      current += step;
+      if ((diff > 0 && current >= target) || (diff < 0 && current <= target)) {
+        setXpCount(target);
+        clearInterval(timer);
+      } else {
+        setXpCount(current);
+      }
+    }, 25);
+    return () => clearInterval(timer);
+  }, [isInView, sessionExp]);
+
+  const categories = subjectMastery ? Object.keys(subjectMastery) : ["JEE Main", "JEE Advanced", "NEET UG"];
+  const currentSubjects = (subjectMastery && subjectMastery[activeExamCategory]) || [];
+  const totalDoubtsLogged = currentSubjects.reduce((acc, s) => acc + (s.doubtsDiagnosed || 0), 0);
 
   return (
-    <section ref={ref} className="py-24 px-4 md:px-8 relative z-10">
+    <section ref={ref} className="py-20 px-4 md:px-8 relative z-10 bg-transparent font-sans">
       <div className="max-w-7xl mx-auto">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-14">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-brand-emerald/10 border border-brand-emerald/30 text-brand-emerald text-xs font-semibold tracking-wider uppercase mb-4 shadow-glow-emerald"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-none bg-white text-black border-3 border-black text-[10px] font-pixel font-bold uppercase mb-4 shadow-[3px_3px_0px_#000]"
           >
-            <Award className="w-3.5 h-3.5" />
-            <span>Reinforcement & Mastery Loop</span>
+            <span className="w-2 h-2 bg-[#10B981] border border-black animate-pulse" />
+            <span>CONTINUOUS MASTERY TRACKING</span>
           </motion.div>
 
           <motion.h2
@@ -67,10 +74,10 @@ export default function MasterySection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight mb-6"
+            className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight mb-4 font-pixel drop-shadow-[2px_2px_0px_#000]"
           >
             Every correct answer <br />
-            <span className="text-gradient-purple-cyan">makes the system smarter.</span>
+            <span className="text-[#FBBF24]">makes the system smarter.</span>
           </motion.h2>
 
           <motion.p
@@ -78,118 +85,179 @@ export default function MasterySection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="text-base sm:text-lg text-slate-400"
+            className="text-base sm:text-lg text-slate-100 font-sans leading-relaxed max-w-2xl mx-auto font-medium"
           >
             Track real cognitive growth. Select an exam target below to view its independently calculated mastery metrics.
           </motion.p>
         </div>
 
-        {/* Dashboard Mastery Card */}
+        {/* Dashboard Mastery Console Chassis */}
         <div className="max-w-4xl mx-auto">
-          <TiltCard className="bg-[#09090F] border-white/10 p-6 md:p-10 shadow-2xl relative overflow-hidden">
+          <div className="w-full bg-[#DC2626] border-4 border-black p-4 sm:p-6 shadow-[6px_6px_0px_#000] relative rounded-none">
             
-            {/* Top Stat Row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-8 border-b border-white/10 mb-8">
-              
-              {/* XP Counter Card */}
-              <div className="bg-[#050508] rounded-2xl p-6 border border-brand-violet/30 flex items-center justify-between relative overflow-hidden group">
-                <div>
-                  <div className="text-xs font-mono text-slate-400 uppercase tracking-wider mb-1">
-                    Last Session Reward
-                  </div>
-                  <div className="text-4xl font-mono font-extrabold text-brand-cyan tracking-tight">
-                    +{xpCount} XP
-                  </div>
-                  <div className="text-xs text-brand-purple font-mono mt-1">
-                    Diagnostic Boost Applied
-                  </div>
-                </div>
-                <div className="w-14 h-14 rounded-2xl bg-brand-violet/20 border border-brand-violet/40 flex items-center justify-center text-brand-cyan shadow-glow-violet">
-                  <Zap className="w-7 h-7 animate-pulse" />
-                </div>
+            {/* Header Bar */}
+            <div className="flex items-center justify-between pb-3 mb-4 border-b-3 border-black">
+              <div className="flex items-center gap-2">
+                <span className="w-3 h-3 bg-[#EF4444] border-2 border-black shadow-[1px_1px_0px_#000]" />
+                <span className="w-3 h-3 bg-[#F59E0B] border-2 border-black shadow-[1px_1px_0px_#000]" />
+                <span className="w-3 h-3 bg-[#10B981] border-2 border-black shadow-[1px_1px_0px_#000]" />
+                <span className="text-[10px] font-pixel text-black font-bold uppercase ml-1">
+                  Mastery Console
+                </span>
               </div>
-
-              {/* Streak Card */}
-              <div className="bg-[#050508] rounded-2xl p-6 border border-amber-500/30 flex items-center justify-between relative overflow-hidden">
-                <div>
-                  <div className="text-xs font-mono text-slate-400 uppercase tracking-wider mb-1">
-                    Cognitive Consistency
-                  </div>
-                  <div className="text-3xl font-mono font-extrabold text-amber-400 tracking-tight flex items-center gap-2">
-                    🔥 12 DAY STREAK
-                  </div>
-                  <div className="text-xs text-slate-400 font-mono mt-1">
-                    Top 2% Aspirant Momentum
-                  </div>
-                </div>
-                <div className="w-14 h-14 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
-                  <Flame className="w-7 h-7 animate-bounce" />
-                </div>
-              </div>
-
-            </div>
-
-            {/* Separate Exam Category Tab Bar */}
-            <div className="flex items-center justify-between mb-6">
-              <span className="text-xs font-mono text-slate-400 uppercase tracking-wider">
-                Exam Calculation Target:
-              </span>
-              <div className="flex gap-2">
-                {Object.keys(separateMasteryData).map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setActiveExamCategory(cat)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
-                      activeExamCategory === cat
-                        ? 'bg-brand-violet text-white shadow-glow-violet'
-                        : 'bg-white/5 text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
+              <div className="bg-[#0D1117] border-2 border-black px-2.5 py-0.5 text-[9px] font-pixel text-[#EF4444] font-bold shadow-[2px_2px_0px_#000]">
+                LEVEL 4 CALIBRATED
               </div>
             </div>
 
-            {/* Subject Mastery Progress Bars for Selected Exam */}
-            <div className="space-y-6">
-              {separateMasteryData[activeExamCategory].map((subject, idx) => (
-                <div key={subject.name} className="bg-[#050508] rounded-xl p-4 border border-white/5">
-                  <div className="flex justify-between items-center mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-white text-base">{subject.name}</span>
-                      <span className="text-xs font-mono px-2 py-0.5 rounded bg-white/5 text-slate-300 border border-white/5">
-                        {subject.level}
-                      </span>
-                    </div>
-                    <span className="text-lg font-mono font-extrabold" style={{ color: subject.color }}>
-                      {isInView ? subject.accuracy : 0}%
+            {/* Inner Slate Screen */}
+            <div className="bg-[#1E232A] border-3 border-black p-4 sm:p-6 shadow-[inset_0_0_20px_rgba(0,0,0,0.6)]">
+              {/* Dynamic Live Portal Event Banner */}
+              {lastPortalActivity && (Date.now() - (lastPortalActivity.timestamp || 0) < 90000) && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-[#0C1B14] border-2 border-[#10B981] p-2.5 mb-5 flex flex-wrap items-center justify-between gap-2 shadow-[2px_2px_0px_#000]"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-[#10B981] animate-ping" />
+                    <span className="text-[10px] font-pixel text-white">
+                      PORTAL SYNC ACTIVE: Evaluated <strong className="text-[#FBBF24] uppercase">{lastPortalActivity.subject}</strong> doubt
+                      {lastPortalActivity.isSolved ? ' (Breakthrough Solved)' : ' (Diagnostic Step Recorded)'}
                     </span>
                   </div>
+                  <span className="text-[9px] font-pixel bg-[#10B981] text-black px-2 py-0.5 font-bold shadow-[1px_1px_0px_#000]">
+                    +{lastPortalActivity.expEarned} XP LOGGED
+                  </span>
+                </motion.div>
+              )}
 
-                  <div className="w-full h-3 bg-white/10 rounded-full overflow-hidden p-0.5">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: isInView ? `${subject.accuracy}%` : 0 }}
-                      transition={{ duration: 1.2, delay: 0.2 + idx * 0.15, ease: "easeOut" }}
-                      className="h-full rounded-full"
-                      style={{ backgroundColor: subject.color }}
-                    />
+              {/* Top Stat Row */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-6 border-b-2 border-black mb-6">
+                
+                {/* XP Counter Card */}
+                <div className="bg-[#262D36] p-4 border-2 border-black shadow-[3px_3px_0px_#000] flex items-center justify-between">
+                  <div>
+                    <div className="text-[9px] font-pixel text-slate-300 uppercase tracking-wider mb-1">
+                      Session Reward
+                    </div>
+                    <div className="text-3xl font-pixel font-bold text-[#F59E0B] tracking-tight">
+                      +{xpCount} XP
+                    </div>
+                    <div className="text-[10px] text-slate-300 font-solution mt-1">
+                      Live Portal Effort &amp; Solves Credited
+                    </div>
+                  </div>
+                  <div className="w-11 h-11 bg-[#F59E0B] border-2 border-black flex items-center justify-center text-black shadow-[2px_2px_0px_#000]">
+                    <Zap className="w-5 h-5 text-black" />
                   </div>
                 </div>
-              ))}
+
+                {/* Streak Card */}
+                <div className="bg-[#262D36] p-4 border-2 border-black shadow-[3px_3px_0px_#000] flex items-center justify-between">
+                  <div>
+                    <div className="text-[9px] font-pixel text-slate-300 uppercase tracking-wider mb-1">
+                      Consistency Streak
+                    </div>
+                    <div className="text-2xl font-pixel font-bold text-[#FBBF24] tracking-tight">
+                      {streakDays}-Day Streak
+                    </div>
+                    <div className="text-[10px] text-slate-300 font-solution mt-1">
+                      Top 2% Aspirant Momentum
+                    </div>
+                  </div>
+                  <div className="w-11 h-11 bg-[#EF4444] border-2 border-black flex items-center justify-center text-white shadow-[2px_2px_0px_#000]">
+                    <Flame className="w-5 h-5" />
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Exam Category Tabs */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-5 gap-2">
+                <span className="text-[9px] font-pixel text-slate-300 uppercase">
+                  Target Track:
+                </span>
+                <div className="flex gap-2">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => setActiveExamCategory(cat)}
+                      className={`px-3 py-1 rounded-none text-[9px] font-pixel font-bold border-2 border-black transition-all ${
+                        activeExamCategory === cat
+                          ? 'bg-[#F59E0B] text-black shadow-[2px_2px_0px_#000]'
+                          : 'bg-white text-black hover:bg-slate-100 shadow-[2px_2px_0px_#000]'
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Subject Mastery Progress Bars */}
+              <div className="space-y-3">
+                {currentSubjects.map((subject, idx) => {
+                  const isRecentlyUpdated = lastPortalActivity &&
+                    lastPortalActivity.subject.toLowerCase() === subject.subject.toLowerCase() &&
+                    (activeExamCategory === lastPortalActivity.exam) &&
+                    (Date.now() - (lastPortalActivity.timestamp || 0) < 90000);
+
+                  return (
+                    <div
+                      key={subject.id || subject.name}
+                      className={`bg-[#262D36] p-3.5 border-2 transition-all ${
+                        isRecentlyUpdated
+                          ? 'border-[#F59E0B] shadow-[0_0_12px_rgba(245,158,11,0.4)]'
+                          : 'border-black shadow-[2px_2px_0px_#000]'
+                      }`}
+                    >
+                      <div className="flex flex-wrap justify-between items-center mb-1.5 gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-white text-xs sm:text-sm font-solution">{subject.name}</span>
+                          <span className="text-[9px] font-pixel px-2 py-0.5 bg-white text-black border-2 border-black shadow-[1px_1px_0px_#000]">
+                            {subject.level}
+                          </span>
+                          {isRecentlyUpdated && (
+                            <span className="text-[8px] font-pixel px-1.5 py-0.5 bg-[#10B981] text-black font-bold border border-black animate-pulse">
+                              JUST UPDATED
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2.5">
+                          <span className="text-[9px] font-solution text-slate-300">
+                            {subject.doubtsDiagnosed || 0} doubts analyzed
+                          </span>
+                          <span className="text-xs sm:text-sm font-pixel font-bold text-[#F59E0B]">
+                            [{isInView ? subject.accuracy : 0}%]
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="w-full h-3 bg-black overflow-hidden p-0.5 border-2 border-black">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: isInView ? `${subject.accuracy}%` : 0 }}
+                          transition={{ duration: 1.2, delay: 0.2 + idx * 0.15, ease: "easeOut" }}
+                          className="h-full bg-[#DC2626]"
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Bottom Verification Note */}
+              <div className="mt-6 pt-3.5 border-t-2 border-black flex flex-wrap items-center justify-between gap-2 text-[9px] text-slate-300 font-pixel">
+                <span className="flex items-center gap-1.5 text-[#10B981]">
+                  <CheckCircle className="w-3.5 h-3.5" />
+                  <span>{activeExamCategory} REAL-TIME SCORE VECTOR: ACTIVE ({totalDoubtsLogged} DOUBTS LOGGED)</span>
+                </span>
+                <span className="text-[#FBBF24]">REAL-TIME SYNCED WITH DOUBT PORTAL</span>
+              </div>
             </div>
 
-            {/* Bottom Verification Note */}
-            <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400 font-mono">
-              <span className="flex items-center gap-1.5 text-emerald-400">
-                <CheckCircle className="w-4 h-4" />
-                {activeExamCategory} Isolated Score Vector: Active
-              </span>
-              <span>Updated in real-time</span>
-            </div>
-
-          </TiltCard>
+          </div>
         </div>
 
       </div>

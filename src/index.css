@@ -4,25 +4,43 @@
 
 @layer base {
   :root {
-    --bg-dark: #050507;
-    --bg-card: #0A0A0F;
-    --bg-elevated: #0F0F17;
+    --bg-dark: #1250D8;
+    --bg-card: #1E232A;
+    --bg-elevated: #262D36;
+  }
+
+  /* Universal Square Block Rule: Zero border radius across all elements */
+  *, ::before, ::after {
+    border-radius: 0px !important;
   }
 
   html,
   body {
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-    background-color: var(--bg-dark);
+    font-family: 'Pixelify Sans', 'Silkscreen', 'Press Start 2P', monospace;
+    background-color: #1250D8;
     color: #F8FAFC;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    letter-spacing: 0.02em;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-family: 'Pixelify Sans', 'Silkscreen', 'Press Start 2P', monospace;
+    letter-spacing: 0.03em;
   }
 
-  p, span, a, button, input, textarea, select, label, code, pre {
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* Mathematical Equations & Formulas — Restored to previous clean typography */
+  .font-math,
+  .math-equation,
+  .math-equation * {
+    font-family: 'Plus Jakarta Sans', 'JetBrains Mono', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    letter-spacing: normal !important;
+  }
+
+  /* Normal Solutions, Explanations, Problem Text & Hints — Restored to previous font */
+  .font-solution,
+  .solution-text,
+  .solution-text * {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    letter-spacing: normal !important;
   }
 }
 
@@ -96,10 +114,290 @@
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
 }
 
-/* Grid pattern */
+/* 16px Technical Pixel Grid pattern */
 .bg-grid-pattern {
-  background-size: 40px 40px;
+  background-size: 24px 24px;
   background-image: 
     linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
 }
+
+.bg-pixel-grid-dense {
+  background-size: 12px 12px;
+  background-image: 
+    linear-gradient(to right, rgba(0, 240, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(121, 40, 202, 0.04) 1px, transparent 1px);
+}
+
+/* Subtle CRT Scanlines Overlay */
+.crt-scanlines {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.18) 0px,
+    rgba(0, 0, 0, 0.18) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+}
+
+/* Pixel Card & Panel Utilities */
+.pixel-panel {
+  background: rgba(10, 10, 16, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.9);
+  position: relative;
+}
+
+.pixel-panel-cyan {
+  background: rgba(8, 12, 18, 0.9);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  box-shadow: 3px 3px 0px rgba(0, 240, 255, 0.3);
+  position: relative;
+}
+
+.pixel-panel-violet {
+  background: rgba(12, 8, 20, 0.9);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  box-shadow: 3px 3px 0px rgba(121, 40, 202, 0.3);
+  position: relative;
+}
+
+/* Pixel Stepped Corners */
+.pixel-corners {
+  clip-path: polygon(
+    0 3px, 3px 3px, 3px 0,
+    calc(100% - 3px) 0, calc(100% - 3px) 3px, 100% 3px,
+    100% calc(100% - 3px), calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) 100%,
+    3px 100%, 3px calc(100% - 3px), 0 calc(100% - 3px)
+  );
+}
+
+.pixel-corners-sm {
+  clip-path: polygon(
+    0 2px, 2px 2px, 2px 0,
+    calc(100% - 2px) 0, calc(100% - 2px) 2px, 100% 2px,
+    100% calc(100% - 2px), calc(100% - 2px) calc(100% - 2px), calc(100% - 2px) 100%,
+    2px 100%, 2px calc(100% - 2px), 0 calc(100% - 2px)
+  );
+}
+
+/* Pixel Button Micro-Interactions */
+.pixel-btn {
+  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease;
+  position: relative;
+  border-radius: 0px !important;
+}
+
+.pixel-btn:hover {
+  transform: translate(-1px, -1px);
+}
+
+.pixel-btn:active {
+  transform: translate(2px, 2px) !important;
+  box-shadow: 0px 0px 0px transparent !important;
+}
+
+/* Authentic 3D Square Block Button */
+.pixel-block-btn {
+  position: relative;
+  border-radius: 0px !important;
+  border-top: 2px solid rgba(255, 255, 255, 0.45);
+  border-left: 2px solid rgba(255, 255, 255, 0.45);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.95);
+  border-right: 2px solid rgba(0, 0, 0, 0.95);
+  box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.95);
+  transition: transform 0.06s ease, box-shadow 0.06s ease;
+}
+
+.pixel-block-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0px 0px rgba(0, 0, 0, 0.95);
+}
+
+.pixel-block-btn:active {
+  transform: translate(3px, 3px) !important;
+  box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.95) !important;
+}
+
+/* Segmented Square Energy Cell Progress Bar */
+.pixel-energy-bar {
+  background-image: repeating-linear-gradient(
+    90deg,
+    currentColor 0px,
+    currentColor 7px,
+    transparent 7px,
+    transparent 10px
+  );
+}
+
+/* Authentic 2x2 & 4x4 Bayer Pixel Dither Patterns */
+.dither-2x2 {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2' viewBox='0 0 2 2'%3E%3Crect width='1' height='1' fill='%23000000' opacity='0.25'/%3E%3Crect x='1' y='1' width='1' height='1' fill='%23000000' opacity='0.25'/%3E%3C/svg%3E");
+  background-size: 2px 2px;
+  image-rendering: pixelated;
+}
+
+.dither-light {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Crect width='1' height='1' fill='%23ffffff' opacity='0.12'/%3E%3Crect x='2' y='2' width='1' height='1' fill='%23ffffff' opacity='0.12'/%3E%3C/svg%3E");
+  background-size: 4px 4px;
+  image-rendering: pixelated;
+}
+
+.dither-dark {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Crect x='0' y='0' width='1' height='1' fill='%23000000' opacity='0.4'/%3E%3Crect x='2' y='1' width='1' height='1' fill='%23000000' opacity='0.4'/%3E%3Crect x='1' y='2' width='1' height='1' fill='%23000000' opacity='0.4'/%3E%3Crect x='3' y='3' width='1' height='1' fill='%23000000' opacity='0.4'/%3E%3C/svg%3E");
+  background-size: 4px 4px;
+  image-rendering: pixelated;
+}
+
+/* Stepped Pixel Notches & Cutout Corners */
+.pixel-cut-corners {
+  clip-path: polygon(
+    0 4px, 2px 4px, 2px 2px, 4px 2px, 4px 0,
+    calc(100% - 4px) 0, calc(100% - 4px) 2px, calc(100% - 2px) 2px, calc(100% - 2px) 4px, 100% 4px,
+    100% calc(100% - 4px), calc(100% - 2px) calc(100% - 4px), calc(100% - 2px) calc(100% - 2px), calc(100% - 4px) calc(100% - 2px), calc(100% - 4px) 100%,
+    4px 100%, 4px calc(100% - 2px), 2px calc(100% - 2px), 2px calc(100% - 4px), 0 calc(100% - 4px)
+  );
+}
+
+/* Hard 8-Bit Pixel Borders & Highlights */
+.pixel-frame {
+  border: 3px solid #000000;
+  box-shadow: 
+    inset 2px 2px 0px 0px rgba(255, 255, 255, 0.35),
+    inset -2px -2px 0px 0px rgba(0, 0, 0, 0.45),
+    4px 4px 0px 0px #000000;
+}
+
+.pixel-frame-red {
+  border: 4px solid #000000;
+  box-shadow: 
+    inset 3px 3px 0px 0px #EF4444,
+    inset -3px -3px 0px 0px #7F1D1D,
+    5px 5px 0px 0px #000000;
+}
+
+.pixel-frame-gold {
+  border: 3px solid #000000;
+  box-shadow: 
+    inset 2px 2px 0px 0px #FDE68A,
+    inset -2px -2px 0px 0px #B45309,
+    4px 4px 0px 0px #000000;
+}
+
+/* Blinking Pixel Terminal Cursor */
+@keyframes pixel-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.pixel-cursor-block {
+  display: inline-block;
+  width: 8px;
+  height: 14px;
+  background-color: #F59E0B;
+  box-shadow: 1px 1px 0px #000;
+  animation: pixel-blink 0.7s steps(1, start) infinite;
+  vertical-align: text-bottom;
+  margin-left: 3px;
+}
+
+.pixel-cursor-green {
+  background-color: #10B981;
+}
+
+/* Crisp Pixel Rendering */
+.pixelated {
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* Subtle Dither Pattern */
+.pixel-dither {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 0);
+  background-size: 4px 4px;
+}
+
+/* Retro Arcade Console Chassis & Monitor Utilities ("Spidey Tracker" Aesthetic) */
+.arcade-chassis {
+  background-color: #DC2626;
+  border: 4px solid #000000;
+  box-shadow: 6px 6px 0px 0px #000000;
+  position: relative;
+}
+
+.arcade-screen {
+  background-color: #1E232A;
+  border: 3px solid #000000;
+  box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.7);
+  position: relative;
+}
+
+.arcade-card {
+  background-color: #262D36;
+  border: 3px solid #000000;
+  box-shadow: 4px 4px 0px 0px #000000;
+  position: relative;
+}
+
+/* Chunky Golden Yellow Arcade Button (Signature Spidey Tracker Style) */
+.arcade-yellow-btn {
+  background-color: #F59E0B;
+  color: #000000 !important;
+  border: 3px solid #000000 !important;
+  box-shadow: 4px 4px 0px 0px #000000 !important;
+  font-family: 'Press Start 2P', monospace !important;
+  font-weight: 700;
+  transition: transform 0.06s ease, box-shadow 0.06s ease, background-color 0.1s ease;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.arcade-yellow-btn:hover {
+  background-color: #FBBF24;
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0px 0px #000000 !important;
+}
+
+.arcade-yellow-btn:active {
+  transform: translate(3px, 3px) !important;
+  box-shadow: 1px 1px 0px 0px #000000 !important;
+}
+
+/* Tactile White / Light Grey Bezel Tab */
+.arcade-white-tab {
+  background-color: #FFFFFF;
+  color: #000000 !important;
+  border: 3px solid #000000 !important;
+  box-shadow: 3px 3px 0px 0px #000000 !important;
+  font-family: 'Press Start 2P', monospace !important;
+  font-size: 10px;
+  font-weight: 700;
+  transition: transform 0.06s ease, box-shadow 0.06s ease;
+}
+
+.arcade-white-tab:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px 0px #000000 !important;
+}
+
+.arcade-white-tab:active {
+  transform: translate(2px, 2px) !important;
+  box-shadow: 1px 1px 0px 0px #000000 !important;
+}
+
+/* Capsule Logo Pill on Top Bezel */
+.arcade-pill-logo {
+  background-color: #0D1117;
+  border: 3px solid #000000;
+  box-shadow: 3px 3px 0px 0px #000000;
+  color: #EF4444;
+  font-family: 'Press Start 2P', monospace;
+}
+

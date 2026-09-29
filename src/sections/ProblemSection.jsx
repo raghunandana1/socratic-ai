@@ -1,8 +1,8 @@
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
-import { Clock, HelpCircle, GitCommit } from 'lucide-react';
 import TiltCard from '../components/TiltCard';
 import { PROBLEM_CARDS } from '../data/mockData';
+import { PixelWarning, PixelTerminal, PixelCpu } from '../components/PixelIcon';
 
 export default function ProblemSection() {
   const sectionRef = useRef(null);
@@ -21,88 +21,81 @@ export default function ProblemSection() {
   const cardParallaxOffsets = [yCard1, yCard2, yCard3];
 
   const cardIcons = {
-    "01": <Clock className="w-6 h-6 text-rose-400" />,
-    "02": <HelpCircle className="w-6 h-6 text-amber-400" />,
-    "03": <GitCommit className="w-6 h-6 text-cyan-400" />,
+    "01": <PixelWarning className="w-5 h-5 text-black" />,
+    "02": <PixelTerminal className="w-5 h-5 text-black" />,
+    "03": <PixelCpu className="w-5 h-5 text-black" />,
   };
 
   return (
-    <section ref={sectionRef} id="product" className="py-24 px-4 md:px-8 relative z-10 overflow-hidden">
-      {/* Subtle Background Parallax Glow */}
-      <motion.div
-        style={{ y: orbY }}
-        className="absolute top-1/2 left-1/3 w-[500px] h-[500px] bg-brand-violet/5 rounded-full blur-[130px] pointer-events-none -z-10"
-      />
+    <section ref={sectionRef} id="product" className="scroll-mt-28 py-20 px-4 md:px-8 relative z-10 overflow-hidden bg-transparent">
       <div className="max-w-7xl mx-auto">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-14">
+          <motion.div
+            initial={{ opacity: 1, y: 0 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-none bg-white text-black border-3 border-black text-[10px] font-pixel font-bold uppercase mb-4 shadow-[3px_3px_0px_#000]"
+          >
+            <span className="w-2 h-2 bg-[#EF4444] border border-black animate-pulse" />
+            <span>THE PROBLEM</span>
+          </motion.div>
+
           <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-            className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight mb-6"
+            initial={{ opacity: 1, y: 0 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight mb-4 font-pixel drop-shadow-[2px_2px_0px_#000]"
           >
             The problem isn't finding the answer. <br className="hidden sm:inline" />
-            <span className="text-slate-400">It's knowing why you got it wrong.</span>
+            <span className="text-[#FBBF24]">It's knowing why you got it wrong.</span>
           </motion.h2>
 
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-base sm:text-lg text-slate-400"
+            initial={{ opacity: 1, y: 0 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-base sm:text-lg text-slate-100 font-sans leading-relaxed max-w-2xl mx-auto font-medium"
           >
-            JEE & NEET demand deep diagnostic reasoning. Traditional doubt solving and generic AI LLMs have created three systemic traps:
+            JEE & NEET demand deep diagnostic reasoning. Traditional coaching and generic AI LLMs have created three systemic traps:
           </motion.p>
         </div>
 
-        {/* 3 Cinematic Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* 3 Arcade Console Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
           {PROBLEM_CARDS.map((card, index) => (
             <motion.div
               key={card.id}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.7, delay: index * 0.18 }}
+              initial={{ opacity: 1, y: 0 }}
+              animate={{ opacity: 1, y: 0 }}
               className="h-full"
             >
-              <motion.div style={{ y: cardParallaxOffsets[index] }} className="h-full">
-                <TiltCard className={`h-full flex flex-col justify-between p-8 bg-gradient-to-b ${card.accentColor} border-white/10 ${card.borderColor}`}>
-                  <div>
-                    {/* Top Badge & Number */}
-                    <div className="flex items-center justify-between mb-8">
-                      <span className="text-3xl sm:text-4xl font-mono font-extrabold text-white tracking-wider">
-                        {card.stat}
-                      </span>
-                      <div className="p-3 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md">
-                        {cardIcons[card.id]}
-                      </div>
-                    </div>
+              <div className="h-full bg-[#DC2626] border-4 border-black p-0 shadow-[5px_5px_0px_#000] flex flex-col justify-between overflow-hidden pixel-cut-corners">
+                {/* Console Bezel Header Bar */}
+                <div className="p-3.5 sm:p-4 flex items-center justify-between border-b-3 border-black bg-[#DC2626]">
+                  <span className="bg-white text-black px-2.5 py-1 border-2 border-black font-pixel text-[10px] font-bold shadow-[2px_2px_0px_#000]">
+                    [0{index + 1}] {card.stat}
+                  </span>
+                  <div className="p-2 bg-[#F59E0B] border-2 border-black text-black shadow-[2px_2px_0px_#000]">
+                    {cardIcons[card.id]}
+                  </div>
+                </div>
 
-                    {/* Title */}
-                    <h3 className="text-xl font-bold text-white mb-3 tracking-tight">
+                {/* Console Screen Body */}
+                <div className="p-5 sm:p-6 bg-[#1E232A] flex-1 flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-sm sm:text-base font-bold text-white mb-2.5 font-pixel tracking-wide">
                       {card.title}
                     </h3>
-
-                    {/* Description */}
-                    <p className="text-slate-400 text-sm leading-relaxed mb-6 font-normal">
+                    <p className="text-slate-100 text-sm sm:text-base leading-relaxed font-medium font-sans">
                       {card.description}
                     </p>
                   </div>
-
-                  {/* Bottom Tag */}
-                  <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs">
-                    <span className="font-mono text-slate-300 font-medium">
+                  <div className="mt-5 pt-3 border-t-2 border-black">
+                    <span className="inline-block bg-white text-black px-2 py-0.5 border-2 border-black text-[9px] font-pixel font-bold shadow-[1px_1px_0px_#000]">
                       {card.tag}
                     </span>
-                    <span className="text-slate-400 font-mono">CRITICAL</span>
                   </div>
-                </TiltCard>
-              </motion.div>
+                </div>
+              </div>
             </motion.div>
           ))}
         </div>

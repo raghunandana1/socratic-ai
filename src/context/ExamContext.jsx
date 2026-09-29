@@ -29,12 +29,34 @@ const BASE_LEADERBOARDS = {
   ]
 };
 
+const DEFAULT_MASTERY_DATA = {
+  "JEE Main": [
+    { id: "math", subject: "Mathematics", name: "Mathematics — Calculus & Algebra", accuracy: 89, color: "#8B5CF6", level: "JEE Main Mastered", doubtsDiagnosed: 4, doubtsSolved: 3 },
+    { id: "physics", subject: "Physics", name: "Physics — Mechanics & Electrodynamics", accuracy: 87, color: "#22D3EE", level: "Top Percentile", doubtsDiagnosed: 3, doubtsSolved: 3 },
+    { id: "chem", subject: "Chemistry", name: "Chemistry — Physical & Inorganic", accuracy: 84, color: "#10B981", level: "Mastery Level 4", doubtsDiagnosed: 2, doubtsSolved: 2 }
+  ],
+  "JEE Advanced": [
+    { id: "physics", subject: "Physics", name: "Physics — Rotational Dynamics & Optics", accuracy: 81, color: "#22D3EE", level: "JEE Advanced Ready", doubtsDiagnosed: 3, doubtsSolved: 2 },
+    { id: "math", subject: "Mathematics", name: "Mathematics — Coordinate & Vectors", accuracy: 78, color: "#8B5CF6", level: "AIR < 1000 Target", doubtsDiagnosed: 2, doubtsSolved: 2 },
+    { id: "chem", subject: "Chemistry", name: "Chemistry — Organic Mechanisms", accuracy: 83, color: "#10B981", level: "Advanced Diagnostic", doubtsDiagnosed: 2, doubtsSolved: 2 }
+  ],
+  "NEET UG": [
+    { id: "bio", subject: "Biology", name: "Biology — Human Physiology & Genetics", accuracy: 96, color: "#10B981", level: "NEET Top Tier", doubtsDiagnosed: 5, doubtsSolved: 5 },
+    { id: "chem", subject: "Chemistry", name: "Chemistry — Organic & Bio-molecules", accuracy: 92, color: "#8B5CF6", level: "Speed Mastered", doubtsDiagnosed: 3, doubtsSolved: 3 },
+    { id: "physics", subject: "Physics", name: "Physics — Kinematics & Optics", accuracy: 91, color: "#22D3EE", level: "High Accuracy", doubtsDiagnosed: 2, doubtsSolved: 2 }
+  ]
+};
+
+
 export function ExamProvider({ children }) {
   const [targetExam, setTargetExam] = useState(() => {
     return localStorage.getItem('socratic_target_exam') || 'JEE Main';
   });
 
   const [showOnboardingModal, setShowOnboardingModal] = useState(() => {
+    if (typeof window !== 'undefined' && window.location.search.includes('skip_modal')) {
+      return false;
+    }
     return !localStorage.getItem('socratic_target_exam');
   });
 
@@ -54,8 +76,35 @@ export function ExamProvider({ children }) {
   });
 
   const [streakDays, setStreakDays] = useState(12);
+  const [totalAttempts, setTotalAttempts] = useState(() => {
+    const saved = localStorage.getItem('socratic_total_attempts');
+    return saved ? parseInt(saved, 10) : 6;
+  });
+  const [correctAttempts, setCorrectAttempts] = useState(() => {
+    const saved = localStorage.getItem('socratic_correct_attempts');
+    return saved ? parseInt(saved, 10) : 5;
+  });
   const [lastOvertakeNotice, setLastOvertakeNotice] = useState(null);
   const [trackSwitchNotice, setTrackSwitchNotice] = useState(null);
+
+  // Dynamic Subject Mastery & Session Activity
+  const [subjectMastery, setSubjectMastery] = useState(() => {
+    try {
+      const saved = localStorage.getItem('socratic_subject_mastery');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return DEFAULT_MASTERY_DATA;
+  });
+
+  const [sessionExp, setSessionExp] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('socratic_session_exp');
+      if (saved) return parseInt(saved, 10);
+    } catch (e) {}
+    return 120;
+  });
+
+  const [lastPortalActivity, setLastPortalActivity] = useState(null);
 
   const selectExam = (exam) => {
     setTargetExam(exam);
@@ -92,6 +141,15 @@ export function ExamProvider({ children }) {
 
   const addExp = (amount) => {
     if (!amount || amount <= 0) return;
+
+    setSessionExp(prev => {
+      const next = prev + amount;
+      try {
+        sessionStorage.setItem('socratic_session_exp', next.toString());
+      } catch (e) {}
+      return next;
+    });
+
     setUserExp(prev => {
       const nextExp = prev + amount;
       localStorage.setItem('socratic_user_exp', nextExp.toString());
@@ -116,6 +174,101 @@ export function ExamProvider({ children }) {
     });
   };
 
+  const recordDoubtActivity = ({ exam, subject, isSolved, hintsUsed = 1, expEarned = 5, errorType }) => {
+    const currentExam = exam || targetExam || 'JEE Main';
+    const subStr = (subject || '').toLowerCase();
+    
+    let normSubject = 'Physics';
+    if (subStr.includes('bio') || subStr.includes('botan') || subStr.includes('zool') || subStr.includes('genet') || subStr.includes('physiol')) {
+      normSubject = 'Biology';
+    } else if (subStr.includes('chem') || subStr.includes('organic') || subStr.includes('reaction') || subStr.includes('acid')) {
+      normSubject = 'Chemistry';
+    } else if (subStr.includes('math') || subStr.includes('calculus') || subStr.includes('algebra') || subStr.includes('integral') || subStr.includes('vector') || subStr.includes('matrix')) {
+      normSubject = 'Mathematics';
+    } else if (subStr.includes('phys') || subStr.includes('mechanic') || subStr.includes('rotat') || subStr.includes('torque') || subStr.includes('optics') || subStr.includes('electro')) {
+      normSubject = 'Physics';
+    } else {
+      normSubject = currentExam === 'NEET UG' ? 'Biology' : 'Physics';
+    }
+
+    setSubjectMastery(prevMastery => {
+      const trackList = prevMastery[currentExam] || DEFAULT_MASTERY_DATA[currentExam] || DEFAULT_MASTERY_DATA['JEE Main'];
+      
+      const updatedList = trackList.map(item => {
+        if (item.subject.toLowerCase() === normSubject.toLowerCase()) {
+          const newDiagnosed = (item.doubtsDiagnosed || 0) + 1;
+          const newSolved = isSolved ? (item.doubtsSolved || 0) + 1 : (item.doubtsSolved || 0);
+          
+          let accuracyDelta = 0;
+          if (isSolved) {
+            accuracyDelta = hintsUsed <= 1 ? 3 : hintsUsed === 2 ? 1 : 0;
+          } else {
+            accuracyDelta = 1;
+          }
+          const newAccuracy = Math.min(99, Math.max(50, item.accuracy + accuracyDelta));
+          
+          let newLevel = item.level;
+          if (newAccuracy >= 95) newLevel = "Elite Mastered";
+          else if (newAccuracy >= 90) newLevel = "Top Percentile";
+          else if (newAccuracy >= 85) newLevel = "Proficient Tier";
+          else if (newAccuracy >= 80) newLevel = "Calibrated Level 4";
+
+          return {
+            ...item,
+            doubtsDiagnosed: newDiagnosed,
+            doubtsSolved: newSolved,
+            accuracy: newAccuracy,
+            level: newLevel,
+            lastUpdated: Date.now()
+          };
+        }
+        return item;
+      });
+
+      const nextFull = {
+        ...prevMastery,
+        [currentExam]: updatedList
+      };
+
+      try {
+        localStorage.setItem('socratic_subject_mastery', JSON.stringify(nextFull));
+      } catch (e) {}
+
+      return nextFull;
+    });
+
+    setLastPortalActivity({
+      exam: currentExam,
+      subject: normSubject,
+      isSolved: Boolean(isSolved),
+      expEarned: expEarned || 0,
+      timestamp: Date.now()
+    });
+
+    if (expEarned && expEarned > 0) {
+      addExp(expEarned);
+    }
+  };
+
+  const liveAccuracy = Math.min(99, Math.max(45, Math.round((correctAttempts / Math.max(1, totalAttempts)) * 100)));
+
+  const recordDiagnosticAttempt = (isCorrect, expEarned = 50) => {
+    setTotalAttempts(prev => {
+      const next = prev + 1;
+      localStorage.setItem('socratic_total_attempts', next.toString());
+      return next;
+    });
+
+    if (isCorrect) {
+      setCorrectAttempts(prev => {
+        const next = prev + 1;
+        localStorage.setItem('socratic_correct_attempts', next.toString());
+        return next;
+      });
+      addExp(expEarned);
+    }
+  };
+
   // Compute live leaderboard with current user inserted and dynamically sorted
   const getExamLeaderboard = (examCategory) => {
     const category = ['JEE Main', 'JEE Advanced', 'NEET UG'].includes(examCategory)
@@ -133,7 +286,7 @@ export function ExamProvider({ children }) {
       solved: solvedCount,
       streak: streakDays,
       avatar: "⚡",
-      accuracy: 94,
+      accuracy: liveAccuracy,
       isCurrentUser: true
     };
 
@@ -165,13 +318,22 @@ export function ExamProvider({ children }) {
         setUserName,
         solvedCount,
         streakDays,
+        totalAttempts,
+        correctAttempts,
+        liveAccuracy,
+        recordDiagnosticAttempt,
         currentUserRank,
         userAhead,
         userBehind,
         lastOvertakeNotice,
         trackSwitchNotice,
         addExp,
-        getExamLeaderboard
+        getExamLeaderboard,
+        subjectMastery,
+        sessionExp,
+        setSessionExp,
+        lastPortalActivity,
+        recordDoubtActivity
       }}
     >
       {children}

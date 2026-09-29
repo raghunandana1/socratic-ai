@@ -192,7 +192,7 @@ export const PROBLEM_CARDS = [
     stat: "12–24 HOURS",
     title: "Waiting for a doubt",
     description: "Traditional coaching leaves students stuck overnight waiting for doubt sessions, killing momentum and retention.",
-    tag: "Traditional Bottleneck",
+    tag: "Slow Feedback",
     accentColor: "from-rose-500/20 to-violet-500/10",
     borderColor: "hover:border-rose-500/40"
   },

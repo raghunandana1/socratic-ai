@@ -8,14 +8,14 @@ export default function MagneticButton({
   className = "",
   variant = "primary"
 }) {
-  const { ref, position } = useMagnetic(0.25);
+  const { ref, position } = useMagnetic(0.2);
 
-  const baseStyles = "relative inline-flex items-center justify-center font-medium rounded-full transition-all duration-300 overflow-hidden group cursor-pointer";
+  const baseStyles = "relative inline-flex items-center justify-center font-bold rounded-none transition-all duration-75 group cursor-pointer select-none pixel-cut-corners";
   
   const variants = {
-    primary: "bg-gradient-to-r from-brand-violet to-brand-purple text-white shadow-glow-violet hover:shadow-lg hover:shadow-brand-violet/50 border border-brand-violet/40 px-7 py-3.5 text-sm md:text-base",
-    secondary: "bg-bg-elevated/80 text-slate-200 border border-white/10 hover:border-brand-cyan/40 hover:text-brand-cyan px-6 py-3.5 text-sm md:text-base backdrop-blur-md",
-    ghost: "text-slate-300 hover:text-white px-4 py-2 text-sm"
+    primary: "bg-[#F59E0B] text-black border-3 border-black shadow-[4px_4px_0px_#000] hover:bg-[#FBBF24] hover:shadow-[5px_5px_0px_#000] active:translate-x-[3px] active:translate-y-[3px] active:shadow-[1px_1px_0px_#000] px-7 py-3 text-xs md:text-sm font-pixel font-bold tracking-wider uppercase",
+    secondary: "bg-white text-black border-3 border-black shadow-[4px_4px_0px_#000] hover:bg-slate-100 hover:shadow-[5px_5px_0px_#000] active:translate-x-[3px] active:translate-y-[3px] active:shadow-[1px_1px_0px_#000] px-6 py-3 text-xs md:text-sm font-pixel font-bold tracking-wider uppercase",
+    ghost: "bg-[#1E232A] text-white hover:text-black hover:bg-white border-2 border-black shadow-[2px_2px_0px_#000] px-4 py-2 text-xs font-pixel font-bold transition-all active:translate-x-0.5 active:translate-y-0.5"
   };
 
   return (
@@ -23,14 +23,16 @@ export default function MagneticButton({
       ref={ref}
       onClick={onClick}
       animate={{ x: position.x, y: position.y }}
-      transition={{ type: "spring", stiffness: 200, damping: 15, mass: 0.1 }}
+      transition={{ type: "spring", stiffness: 220, damping: 18, mass: 0.1 }}
       className={`${baseStyles} ${variants[variant]} ${className}`}
     >
+      {/* 8-bit Top/Left Pixel Highlight Strip */}
+      <span className="absolute top-0 left-0 right-0 h-0.5 bg-white/50 pointer-events-none" />
+      <span className="absolute top-0 left-0 bottom-0 w-0.5 bg-white/50 pointer-events-none" />
+      
       <span className="relative z-10 flex items-center gap-2">
         {children}
       </span>
-      {/* Light sheen effect on hover */}
-      <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
     </motion.button>
   );
 }

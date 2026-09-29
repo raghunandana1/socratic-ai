@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from 'framer-motion';
-import { ArrowRight, Sparkles, CheckCircle2, RefreshCw, BrainCircuit } from 'lucide-react';
 import MagneticButton from '../components/MagneticButton';
 import TiltCard from '../components/TiltCard';
 import { HERO_PROBLEMS } from '../data/mockData';
 import { useExam } from '../context/ExamContext';
+import { PixelArrowRight, PixelRefresh, PixelCpu, PixelTerminal } from '../components/PixelIcon';
 
 export default function HeroSection() {
   const { targetExam } = useExam();
@@ -37,38 +37,30 @@ export default function HeroSection() {
   }, [isAutoPlaying, heroProblem]);
 
   const containerVariants = {
-    hidden: { opacity: 0 },
+    hidden: { opacity: 1 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.08,
-        delayChildren: 0.2,
+        staggerChildren: 0.05,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 24 },
+    hidden: { opacity: 1, y: 0 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
+      transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] },
     },
   };
 
   return (
-    <section ref={sectionRef} className="relative min-h-screen flex items-center justify-center pt-28 pb-16 px-4 md:px-8 overflow-hidden">
-      {/* Subtle Background Glowing Ambient Orbs with Parallax Drift */}
-      <motion.div
-        style={{ y: orbVioletY }}
-        className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand-violet/10 rounded-full blur-[140px] pointer-events-none"
-      />
-      <motion.div
-        style={{ y: orbCyanY }}
-        className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-brand-cyan/10 rounded-full blur-[120px] pointer-events-none"
-      />
+    <section ref={sectionRef} className="relative min-h-screen flex items-center justify-center pt-28 pb-16 px-4 md:px-8 overflow-hidden bg-transparent">
+      {/* Background Subtle Pixel Grid & Ambient Vignette */}
+      <div className="absolute inset-0 bg-pixel-grid-dense opacity-20 pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center z-10">
+      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center z-10">
         
         {/* Left Column — Text & CTAs */}
         <motion.div
@@ -77,30 +69,30 @@ export default function HeroSection() {
           animate="visible"
           className="lg:col-span-7 flex flex-col items-start text-left"
         >
-          {/* Eyebrow */}
+          {/* Eyebrow — Tactile White Arcade Badge */}
           <motion.div
             variants={itemVariants}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-violet/10 border border-brand-violet/30 text-brand-cyan text-xs font-semibold tracking-wider uppercase mb-6 shadow-glow-violet backdrop-blur-md"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-none bg-white border-3 border-black text-black text-[10px] sm:text-xs font-pixel font-bold uppercase mb-6 shadow-[3px_3px_0px_#000]"
           >
-            <BrainCircuit className="w-3.5 h-3.5 text-brand-cyan animate-pulse" />
-            <span>Autonomous AI for {targetExam} Aspirants</span>
+            <span className="w-2 h-2 bg-[#EF4444] border border-black shadow-[1px_1px_0px_#000] animate-pulse" />
+            <span>SOCRATIC AI • {targetExam}</span>
           </motion.div>
 
-          {/* Headline Word-by-Word Reveal */}
+          {/* Headline in Pixel Arcade Display Font with Solid Shadow */}
           <motion.h1
             variants={itemVariants}
-            className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.08] mb-6"
+            className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.25] mb-6 font-pixel drop-shadow-[3px_3px_0px_#000]"
           >
             <span className="block">Don't get the answer.</span>
-            <span className="block text-gradient-animated mt-1">
+            <span className="block text-[#FBBF24] mt-2">
               Discover it.
             </span>
           </motion.h1>
 
-          {/* Subtitle */}
+          {/* Subtitle in Clean Pixel Display Font */}
           <motion.p
             variants={itemVariants}
-            className="text-base sm:text-lg lg:text-xl text-slate-400 font-normal leading-relaxed max-w-2xl mb-8"
+            className="text-base sm:text-lg text-slate-100 font-sans leading-relaxed max-w-2xl mb-8 font-medium"
           >
             SocraticAI doesn't dump solutions. It understands your mistake, adapts to your level, and guides you toward the answer through diagnostic reasoning.
           </motion.p>
@@ -118,7 +110,7 @@ export default function HeroSection() {
               }}
             >
               <span>Start Solving</span>
-              <ArrowRight className="w-4 h-4" />
+              <PixelArrowRight className="w-4 h-4 text-black" />
             </MagneticButton>
 
             <MagneticButton
@@ -132,117 +124,147 @@ export default function HeroSection() {
             </MagneticButton>
           </motion.div>
 
-          {/* Social Proof Metadata */}
+          {/* Social Proof / Status Indicators — Tactile Arcade Badges */}
           <motion.div
             variants={itemVariants}
-            className="mt-10 flex flex-wrap items-center gap-6 text-xs sm:text-sm text-slate-400 border-t border-white/5 pt-6 w-full max-w-xl"
+            className="mt-8 flex flex-wrap items-center gap-3 text-xs font-pixel pt-6 w-full max-w-xl"
           >
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-brand-emerald" />
-              <span>RL Policy Trained on {targetExam} Doubts</span>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-none bg-white text-black border-3 border-black shadow-[3px_3px_0px_#000]">
+              <span className="w-2.5 h-2.5 bg-[#10B981] border border-black" />
+              <span className="text-[10px] font-bold">Track: {targetExam}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-brand-cyan" />
-              <span>Zero Answer-Dumping</span>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-none bg-white text-black border-3 border-black shadow-[3px_3px_0px_#000]">
+              <span className="w-2.5 h-2.5 bg-[#F59E0B] border border-black" />
+              <span className="text-[10px] font-bold">Zero Answer Dumping</span>
             </div>
           </motion.div>
         </motion.div>
 
-        {/* Right Column — Floating Interactive AI Visual */}
+        {/* Right Column — Retro Arcade Console Chassis */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 30 }}
+          initial={{ opacity: 1, scale: 1, y: 0 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
           className="lg:col-span-5 relative"
         >
           <motion.div style={{ y: cardParallaxY }}>
-            <TiltCard className="w-full bg-[#0A0A0F]/90 border-white/10 p-6 md:p-8 shadow-2xl relative">
-              {/* Top Bar of Floating Problem Interface */}
-              <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
+              {/* Outer Retro Red Console Chassis Bezel with Stepped Pixel Cutouts */}
+            <div className="w-full bg-[#DC2626] border-4 border-black p-4 sm:p-5 shadow-[6px_6px_0px_#000] relative rounded-none pixel-cut-corners">
+              
+              {/* Chassis Top Header Bar */}
+              <div className="flex items-center justify-between pb-3 mb-3 border-b-3 border-black">
+                {/* Authentic 8-bit Pixel LEDs with Highlights */}
                 <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-rose-500/80" />
-                  <span className="w-3 h-3 rounded-full bg-amber-500/80" />
-                  <span className="w-3 h-3 rounded-full bg-emerald-500/80" />
-                  <span className="ml-2 text-xs font-mono text-slate-400">socratic-diagnostic-v4.2</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-brand-cyan bg-brand-cyan/10 px-2.5 py-1 rounded-full border border-brand-cyan/20">
-                  <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan animate-pulse" />
-                  <span>Live AI Analysis</span>
-                </div>
-              </div>
-
-              {/* Input Problem Display */}
-              <div className="bg-[#050507] rounded-xl p-5 border border-white/5 mb-6 relative overflow-hidden group">
-                <div className="flex justify-between items-center text-xs text-slate-400 mb-2">
-                  <span className="font-mono text-brand-violet">{heroProblem.topic}</span>
-                  <span className="bg-white/5 px-2 py-0.5 rounded text-[10px] text-slate-300">STUDENT INPUT</span>
+                  <div className="relative w-3.5 h-3.5 bg-[#EF4444] border-2 border-black shadow-[1px_1px_0px_#000]">
+                    <div className="absolute top-0 left-0 w-1 h-1 bg-white opacity-80" />
+                  </div>
+                  <div className="relative w-3.5 h-3.5 bg-[#F59E0B] border-2 border-black shadow-[1px_1px_0px_#000]">
+                    <div className="absolute top-0 left-0 w-1 h-1 bg-white opacity-80" />
+                  </div>
+                  <div className="relative w-3.5 h-3.5 bg-[#10B981] border-2 border-black shadow-[1px_1px_0px_#000]">
+                    <div className="absolute top-0 left-0 w-1 h-1 bg-white opacity-80" />
+                  </div>
                 </div>
                 
-                <div className="font-mono text-xl sm:text-2xl font-bold text-white tracking-wide flex items-center justify-between">
-                  <span>{heroProblem.equation}</span>
-                  <Sparkles className="w-5 h-5 text-brand-violet animate-pulse" />
+                {/* Central Title Pill with Pixel Sprite */}
+                <div className="bg-[#0D1117] border-2 border-black px-2.5 py-0.5 text-[9px] font-pixel text-[#EF4444] font-bold tracking-wider shadow-[2px_2px_0px_#000] flex items-center gap-1.5">
+                  <PixelTerminal className="w-3 h-3 text-[#EF4444]" />
+                  <span>LIVE DIAGNOSTIC</span>
                 </div>
 
-                {/* Glowing Scan Bar */}
-                <div className="absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-brand-violet via-brand-cyan to-brand-purple animate-pulse" />
+                {/* Blinking 8-Bit Status Indicator */}
+                <div className="flex items-center gap-1.5 bg-white border-2 border-black px-2 py-0.5 text-[9px] font-pixel font-bold text-black shadow-[2px_2px_0px_#000]">
+                  <span className="w-2 h-2 bg-[#10B981] border border-black animate-pulse shadow-[1px_1px_0px_#000]" />
+                  <span>ONLINE</span>
+                </div>
               </div>
 
-              {/* Socratic AI Diagnostic Step Display */}
-              <div className="space-y-4 min-h-[170px] relative">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeStepIndex}
-                    initial={{ opacity: 0, y: 15, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -15, scale: 0.98 }}
-                    transition={{ duration: 0.35, ease: "easeOut" }}
-                    className="bg-brand-violet/10 border border-brand-violet/30 rounded-xl p-5 backdrop-blur-md relative"
+              {/* Inner Slate Monitor Screen */}
+              <div className="bg-[#1E232A] border-3 border-black p-4 relative overflow-hidden shadow-[inset_0_0_16px_rgba(0,0,0,0.6)]">
+                
+                {/* Problem Question Box with Pixel Notches */}
+                <div className="bg-[#262D36] border-2 border-black p-3.5 mb-3.5 shadow-[3px_3px_0px_#000]">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="bg-[#F59E0B] text-black px-2 py-0.5 border-2 border-black font-pixel text-[9px] font-bold flex items-center gap-1 shadow-[1px_1px_0px_#000]">
+                      <PixelCpu className="w-2.5 h-2.5 text-black" />
+                      <span>{heroProblem.topic}</span>
+                    </span>
+                    <span className="bg-white text-black px-2 py-0.5 border-2 border-black text-[9px] font-pixel font-bold shadow-[1px_1px_0px_#000]">
+                      Problem
+                    </span>
+                  </div>
+                  
+                  {/* Mathematical equation in clean readable font */}
+                  <div className="font-math text-base sm:text-lg font-bold text-white tracking-wide py-1">
+                    {heroProblem.equation}
+                  </div>
+                </div>
+
+                {/* Socratic Step / Hint Card */}
+                <div className="min-h-[140px] relative">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={activeStepIndex}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.2 }}
+                      className="bg-[#262D36] border-3 border-black p-3.5 shadow-[3px_3px_0px_#000]"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[10px] font-pixel font-bold text-[#EF4444] uppercase tracking-wider flex items-center">
+                          <span>&gt; {heroProblem.steps[activeStepIndex]?.title}</span>
+                          <span className="pixel-cursor-block" />
+                        </span>
+                        <span className="text-[9px] font-pixel font-bold bg-white text-black border-2 border-black px-2 py-0.5 shadow-[1px_1px_0px_#000]">
+                          {heroProblem.steps[activeStepIndex]?.badge}
+                        </span>
+                      </div>
+
+                      {/* Solution / Hint Text in clean readable font */}
+                      <p className="text-sm font-solution text-slate-100 leading-relaxed font-normal">
+                        "{heroProblem.steps[activeStepIndex]?.hint}"
+                      </p>
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+
+                {/* Monitor Bottom Controls with Segmented Pixel Progress Bar */}
+                <div className="mt-3.5 pt-3 border-t-2 border-black flex items-center justify-between text-xs">
+                  {/* Chunky Segmented 8-Bit Progress Cells */}
+                  <div className="flex items-center gap-1.5">
+                    {heroProblem.steps.map((_, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          setIsAutoPlaying(false);
+                          setActiveStepIndex(idx);
+                        }}
+                        className={`h-3 rounded-none border-2 border-black transition-all relative ${
+                          activeStepIndex === idx
+                            ? 'w-8 bg-[#F59E0B] shadow-[2px_2px_0px_#000]'
+                            : 'w-4 bg-[#0D1117] hover:bg-[#262D36]'
+                        }`}
+                        aria-label={`Step ${idx + 1}`}
+                      >
+                        {activeStepIndex === idx && (
+                          <div className="absolute top-0 left-0 right-0 h-0.5 bg-[#FEF08A] opacity-90" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Pixel Auto/Pause Toggle Button */}
+                  <button
+                    onClick={() => setIsAutoPlaying(!isAutoPlaying)}
+                    className="flex items-center gap-1.5 px-2.5 py-1 bg-white text-black border-2 border-black text-[9px] font-pixel font-bold shadow-[2px_2px_0px_#000] hover:bg-slate-100 active:translate-x-0.5 active:translate-y-0.5 transition-all"
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-mono font-bold text-brand-cyan uppercase tracking-wider">
-                        {heroProblem.steps[activeStepIndex]?.title}
-                      </span>
-                      <span className="text-[11px] font-medium bg-brand-violet/20 text-brand-purple border border-brand-violet/30 px-2.5 py-0.5 rounded-full">
-                        {heroProblem.steps[activeStepIndex]?.badge}
-                      </span>
-                    </div>
-
-                    <p className="text-sm md:text-base font-medium text-slate-100 leading-relaxed font-sans">
-                      "{heroProblem.steps[activeStepIndex]?.hint}"
-                    </p>
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-
-              {/* Interactive Step Switcher Controls */}
-              <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1.5">
-                  {heroProblem.steps.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => {
-                        setIsAutoPlaying(false);
-                        setActiveStepIndex(idx);
-                      }}
-                      className={`h-1.5 rounded-full transition-all duration-300 ${
-                        activeStepIndex === idx
-                          ? 'w-7 bg-brand-cyan shadow-glow-cyan'
-                          : 'w-2 bg-white/20 hover:bg-white/40'
-                      }`}
-                      aria-label={`Go to hint step ${idx + 1}`}
-                    />
-                  ))}
+                    <PixelRefresh className={`w-3 h-3 ${isAutoPlaying ? 'animate-spin' : ''}`} />
+                    <span>{isAutoPlaying ? 'Auto' : 'Paused'}</span>
+                  </button>
                 </div>
-
-                <button
-                  onClick={() => setIsAutoPlaying(!isAutoPlaying)}
-                  className="flex items-center gap-1.5 text-slate-400 hover:text-white transition-colors"
-                >
-                  <RefreshCw className={`w-3.5 h-3.5 ${isAutoPlaying ? 'animate-spin' : ''}`} />
-                  <span>{isAutoPlaying ? 'Auto-stepping' : 'Paused'}</span>
-                </button>
               </div>
-            </TiltCard>
+            </div>
           </motion.div>
         </motion.div>
 
