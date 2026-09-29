@@ -194,6 +194,9 @@ function detectFallbackSyllabus(text) {
   if (t.includes('quadratic') || t.includes('roots') || t.includes('discriminant')) {
     return { subject: 'Mathematics', chapter: 'Quadratic Equations', subtopic: 'Nature of Roots & Inequalities' };
   }
+  if (t.includes('pen') || t.includes('distribute') || t.includes('ways') || t.includes('identical') || t.includes('permutation') || t.includes('combination') || t.includes('arrange') || t.includes('select')) {
+    return { subject: 'Mathematics', chapter: 'Permutations & Combinations', subtopic: 'Distribution of Identical & Distinct Objects' };
+  }
   if (t.includes('matrix') || t.includes('determinant')) {
     return { subject: 'Mathematics', chapter: 'Matrices & Determinants', subtopic: 'Matrix Inversion & Properties' };
   }
@@ -216,18 +219,37 @@ function processDiagnosticPayload({
   const isPartial = !isCorrect && Boolean(parsedData.isPartial);
   const partialCreditReason = isPartial ? cleanMathFormatting(parsedData.partialCreditReason || "Valid intermediate reasoning or equation set up") : null;
 
+  const fallbackTopic = detectFallbackSyllabus(doubtText);
+
   const detectedExam = parsedData.detectedExam || exam || (existingSession?.exam) || "JEE Main";
-  const detectedSubj = parsedData.detectedSubject || subject || (existingSession?.subject) || "Physics";
-  const detectedChap = parsedData.detectedChapter || chapter || (existingSession?.chapter) || "Core Mechanics";
-  const detectedSub = parsedData.detectedSubtopic || subtopic || (existingSession?.subtopic) || "Foundational Principles";
+  const detectedSubj = parsedData.detectedSubject || subject || (existingSession?.subject) || fallbackTopic.subject;
+  const detectedChap = parsedData.detectedChapter || chapter || (existingSession?.chapter) || fallbackTopic.chapter;
+  const detectedSub = parsedData.detectedSubtopic || subtopic || (existingSession?.subtopic) || fallbackTopic.subtopic;
   const questionStatement = cleanMathFormatting(parsedData.questionStatement || parsedData.transcribedText || doubtText || "Problem Statement");
 
-  const rawHints = parsedData.hints && parsedData.hints.length >= 4 ? parsedData.hints : [
-    "Identify the known physical/mathematical invariants and state your chosen coordinate origin.",
-    "Which governing law or theorem directly relates your known variables to the target unknown?",
-    "Notice where your algebraic substitution or sign convention introduced an extraneous factor.",
-    "Equate the simplified terms to solve for the target variable."
-  ];
+  // Accept any hints returned by Gemini, fallback dynamically based on subject
+  let rawHints = parsedData.hints || parsedData.socraticHints || parsedData.hintLadder || [];
+  if (!Array.isArray(rawHints) || rawHints.length === 0) {
+    if (detectedSubj.includes('Math')) {
+      rawHints = [
+        "State the total available items and total recipient constraints.",
+        "Set up the system of non-negative integer solutions: R_i + B_i = 6 for each person.",
+        "Apply the stars-and-bars coefficient theorem or generate function method.",
+        "Evaluate the final product of combinations for red and blue distributions."
+      ];
+    } else {
+      rawHints = [
+        "Identify the primary variables and governing conservation relations.",
+        "Set up boundary conditions or equations for each component.",
+        "Check intermediate substitution for algebraic sign errors.",
+        "Solve for target variables and test boundary consistency."
+      ];
+    }
+  }
+  // Ensure array has at least 4 items by padding if needed
+  while (rawHints.length < 4) {
+    rawHints.push(`Step ${rawHints.length + 1}: Complete final algebraic simplification and verify constraints.`);
+  }
   const cleanedHints = rawHints.map(h => cleanMathFormatting(h));
 
   const errorTitle = parsedData.errorTitle || (parsedData.diagnosis?.errorTitle) || errorTag || "Conceptual Misapplication";

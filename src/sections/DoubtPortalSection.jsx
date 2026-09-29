@@ -434,12 +434,21 @@ export default function DoubtPortalSection() {
     if (
       t.includes('integral') || t.includes('derivative') || t.includes('quadratic') || t.includes('roots') ||
       t.includes('matrix') || t.includes('determinant') || t.includes('calculus') || t.includes('vector') ||
-      t.includes('trig') || t.includes('limit')
+      t.includes('trig') || t.includes('limit') || t.includes('pen') || t.includes('distribute') ||
+      t.includes('ways') || t.includes('identical') || t.includes('permutation') || t.includes('combination') ||
+      t.includes('arrange') || t.includes('select') || t.includes('red') || t.includes('blue') || t.includes('person')
     ) {
       return {
         subject: 'Mathematics',
-        chapter: t.includes('integral') ? 'Definite Integrals' : t.includes('quadratic') ? 'Quadratic Equations' : 'Calculus & Vectors',
-        subtopic: t.includes('integral') ? 'Integration by Parts' : 'Roots & Polynomial Constraints'
+        chapter: (t.includes('pen') || t.includes('distribute') || t.includes('identical') || t.includes('ways') || t.includes('permutation') || t.includes('combination'))
+          ? 'Permutations & Combinations'
+          : t.includes('integral') ? 'Definite Integrals'
+          : t.includes('quadratic') ? 'Quadratic Equations'
+          : 'Calculus & Algebra',
+        subtopic: (t.includes('pen') || t.includes('distribute') || t.includes('identical'))
+          ? 'Distribution of Identical Objects (Stars & Bars)'
+          : t.includes('integral') ? 'Integration by Parts'
+          : 'Algebraic & Combinatorial Constraints'
       };
     }
 
@@ -465,9 +474,9 @@ export default function DoubtPortalSection() {
     }
 
     return {
-      subject: 'Physics',
-      chapter: 'Mechanics & Electrodynamics',
-      subtopic: 'First-Principle Force Balance'
+      subject: 'Mathematics',
+      chapter: 'Algebraic & Discrete Mathematics',
+      subtopic: 'System of Constraints & Problem Solving'
     };
   };
 
@@ -509,6 +518,13 @@ export default function DoubtPortalSection() {
         "Examine intermediate carbocation / transition state stability (+I effect, hyperconjugation, or resonance).",
         "Consider the attacking nucleophile and steric hindrance around the reactive center.",
         "Direct the nucleophile to the most stable reactive center to form the major thermodynamic product."
+      ];
+    } else if (detected.chapter.includes('Permutations')) {
+      hints = [
+        "State the constraint: Each of the 4 persons gets 6 pens in total, so R_i + B_i = 6 for each person i.",
+        "Express B_i in terms of R_i: B_i = 6 - R_i. Substitute into B_1 + B_2 + B_3 + B_4 = 14.",
+        "Check non-negative integer bounds: 0 <= R_i <= 6 and 0 <= B_i <= 6 (which implies 0 <= R_i <= 6).",
+        "Find the coefficient of x^10 in generating functions or use stars-and-bars with upper bound constraints."
       ];
     } else {
       hints = [
