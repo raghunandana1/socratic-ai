@@ -127,7 +127,10 @@ export async function diagnoseDoubtWithGemini({
 
         if (!response.ok) {
           const errorBody = await response.text();
-          console.warn(`[Gemini API] Model ${model} failed with status ${response.status}: ${errorBody}`);
+          console.error(`[Gemini API Error] Model=${model} Status=${response.status} Error=${errorBody}`);
+          if (attemptNumber === 1 && model === candidateModels[candidateModels.length - 1]) {
+            throw new Error(`Gemini API Error (${response.status}): ${errorBody}`);
+          }
           continue;
         }
 
