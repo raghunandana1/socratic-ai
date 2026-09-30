@@ -87,9 +87,9 @@ export async function diagnoseDoubtWithGemini({
         // Add image if attached
         if (imageBuffer) {
           parts.push({
-            inlineData: {
-              data: imageBuffer.toString('base64'),
-              mimeType: imageMimeType || 'image/jpeg'
+            inline_data: {
+              mime_type: imageMimeType || 'image/jpeg',
+              data: imageBuffer.toString('base64')
             }
           });
         }
@@ -117,10 +117,10 @@ export async function diagnoseDoubtWithGemini({
                 parts: parts
               }
             ],
-            generationConfig: {
-              responseMimeType: 'application/json',
+            generation_config: {
+              response_mime_type: 'application/json',
               temperature: 0.2,
-              maxOutputTokens: 2048
+              max_output_tokens: 2048
             }
           })
         });
@@ -516,9 +516,9 @@ Analyze the image and return a strict JSON object with this schema:
       try {
         const parts = [
           {
-            inlineData: {
-              data: imageBuffer.toString('base64'),
-              mimeType: imageMimeType || 'image/jpeg'
+            inline_data: {
+              mime_type: imageMimeType || 'image/jpeg',
+              data: imageBuffer.toString('base64')
             }
           },
           {
@@ -536,10 +536,10 @@ Analyze the image and return a strict JSON object with this schema:
           body: JSON.stringify({
             system_instruction: { parts: [{ text: systemInstruction }] },
             contents: [{ role: 'user', parts }],
-            generationConfig: {
-              responseMimeType: 'application/json',
+            generation_config: {
+              response_mime_type: 'application/json',
               temperature: 0.1,
-              maxOutputTokens: 2048
+              max_output_tokens: 2048
             }
           })
         });
