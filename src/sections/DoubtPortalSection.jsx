@@ -1367,37 +1367,50 @@ export default function DoubtPortalSection() {
                         </button>
                       </div>
 
-                      {/* Diagnosed Error Banner */}
-                      <div className="bg-rose-950/40 border-2 border-rose-500/50 rounded-none p-4 mb-6 shadow-pixel-block">
-                        <div className="text-xs font-mono font-bold text-rose-400 mb-1 flex items-center gap-2">
-                          <AlertTriangle className="w-4 h-4" />
-                          <span>Diagnosed Slip: {submittedResult.errorTitle || "Reasoning Discrepancy"}</span>
+                      {/* Diagnosed Error & Step-by-Step Breakdown Banner */}
+                      <div className="bg-rose-950/40 border-2 border-rose-500/60 rounded-none p-5 mb-6 shadow-pixel-block">
+                        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-rose-500/30 pb-3 mb-3">
+                          <div className="text-xs sm:text-sm font-mono font-bold text-rose-400 flex items-center gap-2">
+                            <AlertTriangle className="w-4 h-4 text-rose-400" />
+                            <span>Diagnosed Slip: {submittedResult.errorTitle || "Reasoning Discrepancy"}</span>
+                          </div>
                           {submittedResult.firstIncorrectStep && (
-                            <span className="ml-auto text-[10px] font-mono bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded-none border border-rose-500/30">
-                              [First slip: {cleanMathText(submittedResult.firstIncorrectStep)}]
+                            <span className="text-xs font-mono font-bold bg-rose-500/20 text-rose-200 px-2.5 py-1 rounded-none border border-rose-500/40 shadow-pixel-block">
+                              📍 Slip Location: {cleanMathText(submittedResult.firstIncorrectStep)}
                             </span>
                           )}
                         </div>
-                        <p className="text-xs sm:text-sm font-solution text-slate-200 leading-relaxed">
-                          {cleanMathText(submittedResult.errorDescription)}
-                        </p>
+
+                        {/* Detailed AI Explanation of the Slip */}
+                        <div className="space-y-2">
+                          <p className="text-xs sm:text-sm font-solution text-slate-100 leading-relaxed font-medium">
+                            {cleanMathText(submittedResult.errorDescription)}
+                          </p>
+
+                          {submittedResult.feedbackForStudent && (
+                            <div className="mt-2.5 pt-2.5 border-t border-rose-500/20 text-xs font-solution text-rose-200/90 leading-relaxed italic flex items-start gap-2">
+                              <Sparkles className="w-3.5 h-3.5 text-rose-400 mt-0.5 flex-shrink-0" />
+                              <span>{cleanMathText(submittedResult.feedbackForStudent)}</span>
+                            </div>
+                          )}
+                        </div>
                       </div>
 
-                      {/* SEQUENTIAL HINT LADDER (Hints 1 to 4 with Strict Lock States) */}
-                      <div className="bg-[#07070E] border-2 border-brand-violet/50 rounded-none p-5 mb-6 shadow-pixel-block">
+                      {/* SEQUENTIAL HINT LADDER */}
+                      <div className="bg-[#07070E] border-2 border-brand-violet/60 rounded-none p-5 sm:p-6 mb-6 shadow-pixel-block">
                         <div className="flex flex-wrap items-center justify-between mb-4 border-b border-white/10 pb-3 gap-2">
-                          <div className="flex items-center gap-2 text-xs font-mono font-bold text-brand-cyan">
+                          <div className="flex items-center gap-2 text-xs sm:text-sm font-mono font-bold text-brand-cyan">
                             <Lightbulb className="w-4 h-4 text-brand-purple" />
-                            <span>Socratic Hint Ladder • Hint {activeSession?.currentHintLevel || 1} of 4</span>
+                            <span>Socratic Hint Ladder • Hint {activeHintStep} of 4</span>
                           </div>
 
-                          <div className="text-[11px] font-mono text-slate-400">
-                            Attempts: <span className="text-white font-bold">{activeSession?.attemptsCount || 1}</span>
+                          <div className="text-xs font-mono text-slate-400">
+                            Attempt: <span className="text-white font-bold">#{activeSession?.attemptsCount || 1}</span>
                           </div>
                         </div>
 
                         {/* Hint Level Selector Chips */}
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-5">
                           {[1, 2, 3, 4].map((level) => {
                             const isUnlocked = level <= (activeSession?.currentHintLevel || 1);
                             const isActive = activeHintStep === level;
@@ -1408,7 +1421,7 @@ export default function DoubtPortalSection() {
                                 type="button"
                                 disabled={!isUnlocked}
                                 onClick={() => isUnlocked && setActiveHintStep(level)}
-                                className={`py-2 px-3 rounded-none text-xs font-mono font-bold transition-all flex items-center justify-between pixel-block-btn ${
+                                className={`py-2.5 px-3 rounded-none text-xs font-mono font-bold transition-all flex items-center justify-between pixel-block-btn ${
                                   isActive
                                     ? 'bg-brand-violet text-white border-2 border-brand-violet/80 shadow-pixel-block-violet'
                                     : isUnlocked
@@ -1418,7 +1431,7 @@ export default function DoubtPortalSection() {
                               >
                                 <span>Hint {level}</span>
                                 {isUnlocked ? (
-                                  <span className="text-[10px] text-emerald-400">Unlocked</span>
+                                  <span className="text-[10px] text-emerald-400 font-bold">Unlocked</span>
                                 ) : (
                                   <span className="flex items-center gap-1 text-[10px] text-slate-500">
                                     <Lock className="w-3 h-3 text-slate-500" />
@@ -1430,18 +1443,20 @@ export default function DoubtPortalSection() {
                           })}
                         </div>
 
-                        {/* Unlocked Hint Text Display */}
+                        {/* Prominent Unlocked Hint Box */}
                         <motion.div
                           key={activeHintStep}
                           initial={{ opacity: 0, y: 5 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="bg-[#0F0F1A] p-4 rounded-none border-2 border-white/15 text-sm font-solution text-white leading-relaxed font-medium shadow-pixel-block"
+                          className="bg-[#0D0D19] p-5 sm:p-6 rounded-none border-2 border-brand-cyan/40 text-sm sm:text-base font-solution text-white leading-relaxed shadow-pixel-block"
                         >
-                          <div className="text-xs font-mono text-brand-cyan mb-1 uppercase tracking-wider flex items-center gap-1.5">
-                            <Lightbulb className="w-3.5 h-3.5 text-brand-purple" />
-                            <span>Hint {activeHintStep}:</span>
+                          <div className="text-xs font-mono font-bold text-brand-cyan mb-2 uppercase tracking-wider flex items-center gap-2">
+                            <Lightbulb className="w-4 h-4 text-brand-purple" />
+                            <span>Hint {activeHintStep} Guidance:</span>
                           </div>
-                          "{cleanMathText(submittedResult.unlockedHints?.[activeHintStep - 1] || submittedResult.currentHint)}"
+                          <div className="text-slate-100 font-solution text-sm sm:text-base leading-relaxed pl-1">
+                            "{cleanMathText(submittedResult.unlockedHints?.[activeHintStep - 1] || submittedResult.currentHint)}"
+                          </div>
                         </motion.div>
                       </div>
 
