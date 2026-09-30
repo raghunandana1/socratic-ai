@@ -108,7 +108,7 @@ export async function diagnoseDoubtWithGemini({
             'x-goog-api-key': apiKey
           },
           body: JSON.stringify({
-            systemInstruction: {
+            system_instruction: {
               parts: [{ text: systemInstruction }]
             },
             contents: [
@@ -355,12 +355,38 @@ function getFallbackDiagnosticResponse({
   const resolvedChap = chapter || existingSession?.chapter || fallbackSyllabus.chapter;
   const resolvedSub = subtopic || existingSession?.subtopic || fallbackSyllabus.subtopic;
 
-  const fallbackHints = [
-    "Identify the known physical/mathematical invariants and boundary conditions.",
-    "Recall the governing formula or conservation relation for this system. What variable needs isolating?",
-    "Check your algebraic expansion for sign reversals or missing constants.",
-    "Carry out the final reduction and test extreme boundary limits to verify consistency."
-  ];
+  let fallbackHints = [];
+  if (resolvedSubj.includes('Math')) {
+    if (resolvedChap.includes('Permutation') || cleanQuery.toLowerCase().includes('pen') || cleanQuery.toLowerCase().includes('distribute') || cleanQuery.toLowerCase().includes('ways')) {
+      fallbackHints = [
+        "State the total available items and total recipient constraints: R_i + B_i = 6 for each person i.",
+        "Express B_i in terms of R_i: B_i = 6 - R_i and substitute into B_1 + B_2 + B_3 + B_4 = 14.",
+        "Check non-negative integer bounds: 0 <= R_i <= 6 and 0 <= B_i <= 6 for each person.",
+        "Apply the stars-and-bars coefficient theorem or generate function method to find total non-negative integer solutions."
+      ];
+    } else {
+      fallbackHints = [
+        "Write down the governing equations and check domain restrictions for all variables.",
+        "Apply algebraic restructuring: group terms, complete the square, or look for symmetry.",
+        "Check the discriminant or boundary inequalities to determine real solution ranges.",
+        "Isolate the target variable and evaluate the final simplified numeric/symbolic result."
+      ];
+    }
+  } else if (resolvedSubj.includes('Chem')) {
+    fallbackHints = [
+      "Identify the reactive centers, nucleophile, and electrophile in the chemical system.",
+      "Evaluate intermediate carbocation/transition state stability (+I effect, resonance, hyperconjugation).",
+      "Consider steric hindrance and solvent effects on the reaction mechanism pathway.",
+      "Determine the major thermodynamic or kinetic product based on stability."
+    ];
+  } else {
+    fallbackHints = [
+      "Identify the system's conserved quantities (energy, momentum, or charge) and state your chosen coordinate origin.",
+      "Apply the governing law relating the field, force, or torque to the distance parameter.",
+      "Recall that torque is r * F * sin(theta), where theta is the angle between the position vector and the force vector.",
+      "Equate the net force/torque to acceleration parameters and solve for the target variable."
+    ];
+  }
 
   let session;
   if (existingSession) {
@@ -508,7 +534,7 @@ Analyze the image and return a strict JSON object with this schema:
             'x-goog-api-key': apiKey
           },
           body: JSON.stringify({
-            systemInstruction: { parts: [{ text: systemInstruction }] },
+            system_instruction: { parts: [{ text: systemInstruction }] },
             contents: [{ role: 'user', parts }],
             generationConfig: {
               responseMimeType: 'application/json',
