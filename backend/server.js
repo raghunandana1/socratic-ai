@@ -63,7 +63,7 @@ app.get('/api/v1/health', (req, res) => {
     version: '1.0.0',
     gemini: {
       isKeyConfigured,
-      model: process.env.GEMINI_MODEL || 'gemini-1.5-flash',
+      model: process.env.GEMINI_MODEL || 'gemini-3.6-flash',
       mode: isKeyConfigured ? 'Live Google Gemini Multimodal' : 'Heuristic Fallback (Demo)',
       keyPrefix: apiKey ? `${apiKey.substring(0, 4)}...` : 'none',
       keyLength: apiKey ? apiKey.length : 0

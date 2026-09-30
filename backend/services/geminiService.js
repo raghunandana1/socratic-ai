@@ -72,10 +72,10 @@ export async function diagnoseDoubtWithGemini({
   });
 
   const candidateModels = [];
-  if (process.env.GEMINI_MODEL && !['gemini-2.0-flash', 'gemini-1.5-flash'].includes(process.env.GEMINI_MODEL)) {
+  if (process.env.GEMINI_MODEL) {
     candidateModels.push(process.env.GEMINI_MODEL);
   }
-  candidateModels.push('gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro');
+  candidateModels.push('gemini-3.6-flash', 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro');
 
   const isKeyConfigured = apiKey && apiKey.trim() !== '' && !apiKey.includes('your_gemini_api_key_here');
 
@@ -507,8 +507,9 @@ Analyze the image and return a strict JSON object with this schema:
   if (isKeyConfigured && imageBuffer) {
     const candidateModels = [
       process.env.GEMINI_MODEL,
-      'gemini-2.0-flash',
+      'gemini-3.6-flash',
       'gemini-1.5-flash',
+      'gemini-2.0-flash',
       'gemini-1.5-pro'
     ].filter(Boolean);
 
