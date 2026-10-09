@@ -210,6 +210,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`📡 Health Check: http://localhost:${PORT}/api/v1/health`);
   console.log(`🎯 Diagnose API: POST http://localhost:${PORT}/api/v1/doubts/diagnose`);
   console.log(`👁️ Vision OCR API: POST http://localhost:${PORT}/api/v1/vision/analyze`);
-  console.log(`🔑 Gemini Key Status: ${process.env.GEMINI_API_KEY && !process.env.GEMINI_API_KEY.includes('your_gemini') ? 'Configured ✅' : 'Not Configured (Demo Mode Active) ⚠️'}`);
+  const keyVal = getApiKey();
+  console.log(`🔑 Gemini Key Status: ${keyVal && !keyVal.includes('your_gemini') ? 'Configured ✅' : 'Not Configured (Demo Mode Active) ⚠️'}`);
   console.log(`====================================================`);
 });
