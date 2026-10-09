@@ -79,6 +79,7 @@ export async function diagnoseDoubtWithGemini({
   const isKeyConfigured = apiKey && apiKey.trim() !== '' && !apiKey.includes('your_gemini_api_key_here');
 
   if (isKeyConfigured) {
+    let lastApiError = null;
     for (const model of candidateModels) {
       try {
         const parts = [];
@@ -127,9 +128,12 @@ export async function diagnoseDoubtWithGemini({
         if (!response.ok) {
           const errorBody = await response.text();
           console.error(`[Gemini API Error] Model=${model} Status=${response.status} Error=${errorBody}`);
-          if (attemptNumber === 1 && model === candidateModels[candidateModels.length - 1]) {
-            throw new Error(`Gemini API Error (${response.status}): ${errorBody}`);
-          }
+          let parsedErrorMsg = errorBody;
+          try {
+            const errObj = JSON.parse(errorBody);
+            parsedErrorMsg = errObj?.error?.message || errorBody;
+          } catch (e) {}
+          lastApiError = `Google Gemini API Error (HTTP ${response.status}): ${parsedErrorMsg}`;
           continue;
         }
 
@@ -156,7 +160,28 @@ export async function diagnoseDoubtWithGemini({
         });
       } catch (err) {
         console.error(`[Gemini Service] Error with model ${model}:`, err.message);
+        lastApiError = err.message;
       }
+    }
+
+    if (lastApiError) {
+      return {
+        success: false,
+        error: "Gemini API Call Failed",
+        message: lastApiError,
+        data: {
+          detectedExam: exam || "JEE Main",
+          detectedSubject: subject || "Physics",
+          detectedChapter: chapter || "General",
+          detectedSubtopic: subtopic || "General",
+          hasAttempt: true,
+          isCorrect: false,
+          unlockedHints: [
+            `⚠️ Gemini API Error: ${lastApiError}. Please verify your GEMINI_API_KEY in Render environment variables.`
+          ],
+          currentHint: `⚠️ Gemini API Error: ${lastApiError}. Please verify your GEMINI_API_KEY in Render environment variables.`
+        }
+      };
     }
   }
 
