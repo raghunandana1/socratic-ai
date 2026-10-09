@@ -31,7 +31,7 @@ export default function CustomCursor() {
             id: now,
             x: newPos.x + (Math.random() > 0.5 ? 4 : -2),
             y: newPos.y + (Math.random() > 0.5 ? 6 : 2),
-            color: Math.random() > 0.5 ? '#F59E0B' : '#EF4444',
+            color: Math.random() > 0.5 ? '#FFFFFF' : '#EF4444',
             size: Math.random() > 0.5 ? 3 : 2,
           }
         ]);

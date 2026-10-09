@@ -69,7 +69,7 @@ export default function Navbar() {
           <div className="relative hidden sm:block">
             <button
               onClick={() => setExamDropdownOpen(!examDropdownOpen)}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-none bg-white border-3 border-black text-black text-[10px] font-pixel font-bold hover:bg-[#F59E0B] active:translate-x-0.5 active:translate-y-0.5 transition-all shadow-[3px_3px_0px_#000] cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1 rounded-none bg-white border-3 border-black text-black text-[10px] font-pixel font-bold hover:bg-[#FFFFFF] active:translate-x-0.5 active:translate-y-0.5 transition-all shadow-[3px_3px_0px_#000] cursor-pointer"
             >
               <span>{targetExam}</span>
               <PixelChevronDown className="w-2.5 h-2.5 text-black" />
@@ -98,7 +98,7 @@ export default function Navbar() {
                       }}
                       className={`w-full text-left px-3 py-2 rounded-none text-[10px] font-pixel font-bold flex items-center justify-between transition-all my-0.5 border ${
                         targetExam === ex
-                          ? 'bg-[#F59E0B] text-black border-black shadow-[2px_2px_0px_#000]'
+                          ? 'bg-[#FFFFFF] text-black border-black shadow-[2px_2px_0px_#000]'
                           : 'text-slate-200 border-transparent hover:bg-white/10 hover:text-white'
                       }`}
                     >
@@ -134,7 +134,7 @@ export default function Navbar() {
           <MagneticButton
             variant="primary"
             onClick={() => handleLinkClick('#doubt-portal')}
-            className="!px-4 !py-2 !text-xs !bg-[#F59E0B] !text-black !border-3 !border-black !shadow-[3px_3px_0px_#000]"
+            className="!px-4 !py-2 !text-xs !bg-[#FFFFFF] !text-black !border-3 !border-black !shadow-[3px_3px_0px_#000]"
           >
             <span>Solve Now</span>
             <PixelArrowRight className="w-3.5 h-3.5 text-black" />

@@ -35,10 +35,10 @@ export default function TiltCard({ children, className = "", maxTilt = 6 }) {
       className={`rounded-none bg-[#1E232A] border-3 border-black shadow-[4px_4px_0px_#000] hover:shadow-[6px_6px_0px_#000] transition-all relative overflow-hidden group ${className}`}
     >
       {/* 4 Corner Square Arcade Rivets */}
-      <div className="absolute top-0 left-0 w-2 h-2 bg-[#DC2626] border border-black pointer-events-none z-20 group-hover:bg-[#F59E0B] transition-colors" />
-      <div className="absolute top-0 right-0 w-2 h-2 bg-[#DC2626] border border-black pointer-events-none z-20 group-hover:bg-[#F59E0B] transition-colors" />
-      <div className="absolute bottom-0 left-0 w-2 h-2 bg-[#DC2626] border border-black pointer-events-none z-20 group-hover:bg-[#F59E0B] transition-colors" />
-      <div className="absolute bottom-0 right-0 w-2 h-2 bg-[#DC2626] border border-black pointer-events-none z-20 group-hover:bg-[#F59E0B] transition-colors" />
+      <div className="absolute top-0 left-0 w-2 h-2 bg-[#DC2626] border border-black pointer-events-none z-20 group-hover:bg-[#FFFFFF] transition-colors" />
+      <div className="absolute top-0 right-0 w-2 h-2 bg-[#DC2626] border border-black pointer-events-none z-20 group-hover:bg-[#FFFFFF] transition-colors" />
+      <div className="absolute bottom-0 left-0 w-2 h-2 bg-[#DC2626] border border-black pointer-events-none z-20 group-hover:bg-[#FFFFFF] transition-colors" />
+      <div className="absolute bottom-0 right-0 w-2 h-2 bg-[#DC2626] border border-black pointer-events-none z-20 group-hover:bg-[#FFFFFF] transition-colors" />
 
       {/* Subtle CRT Scanline overlay */}
       <div className="absolute inset-0 crt-scanlines opacity-25 pointer-events-none z-10" />

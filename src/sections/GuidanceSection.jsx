@@ -62,7 +62,7 @@ export default function GuidanceSection() {
             className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight mb-4 font-pixel drop-shadow-[2px_2px_0px_#000]"
           >
             We don't solve it for you. <br />
-            <span className="text-[#FBBF24]">We help you solve it yourself.</span>
+            <span className="text-white">We help you solve it yourself.</span>
           </motion.h2>
 
           <motion.p
@@ -86,7 +86,7 @@ export default function GuidanceSection() {
                   <div className="relative w-3.5 h-3.5 bg-[#EF4444] border-2 border-black shadow-[1px_1px_0px_#000]">
                     <div className="absolute top-0 left-0 w-1 h-1 bg-white opacity-80" />
                   </div>
-                  <div className="relative w-3.5 h-3.5 bg-[#F59E0B] border-2 border-black shadow-[1px_1px_0px_#000]">
+                  <div className="relative w-3.5 h-3.5 bg-white border-2 border-black shadow-[1px_1px_0px_#000]">
                     <div className="absolute top-0 left-0 w-1 h-1 bg-white opacity-80" />
                   </div>
                   <div className="relative w-3.5 h-3.5 bg-[#10B981] border-2 border-black shadow-[1px_1px_0px_#000]">
@@ -141,7 +141,7 @@ export default function GuidanceSection() {
                         <span className="text-[10px] font-pixel font-bold text-[#EF4444] flex items-center gap-1.5 uppercase tracking-wide">
                           &gt; {hint.title}
                         </span>
-                        <span className="text-[9px] font-pixel font-bold bg-[#F59E0B] text-black border-2 border-black px-2 py-0.5 shadow-[1px_1px_0px_#000]">
+                        <span className="text-[9px] font-pixel font-bold bg-white text-black border-2 border-black px-2 py-0.5 shadow-[1px_1px_0px_#000]">
                           {hint.chip}
                         </span>
                       </div>
@@ -172,7 +172,7 @@ export default function GuidanceSection() {
                       <p className="text-sm sm:text-base text-emerald-200 max-w-lg mx-auto font-math font-solution mb-3 font-semibold">
                         {scenario.breakthrough.mathResult}
                       </p>
-                      <span className="inline-block text-[10px] font-pixel font-bold text-black bg-[#F59E0B] px-3 py-1 border-2 border-black shadow-[2px_2px_0px_#000]">
+                      <span className="inline-block text-[10px] font-pixel font-bold text-black bg-white px-3 py-1 border-2 border-black shadow-[2px_2px_0px_#000]">
                         {scenario.breakthrough.reward}
                       </span>
                     </motion.div>

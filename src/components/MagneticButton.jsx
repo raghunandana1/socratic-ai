@@ -13,7 +13,7 @@ export default function MagneticButton({
   const baseStyles = "relative inline-flex items-center justify-center font-bold rounded-none transition-all duration-75 group cursor-pointer select-none pixel-cut-corners";
   
   const variants = {
-    primary: "bg-[#F59E0B] text-black border-3 border-black shadow-[4px_4px_0px_#000] hover:bg-[#FBBF24] hover:shadow-[5px_5px_0px_#000] active:translate-x-[3px] active:translate-y-[3px] active:shadow-[1px_1px_0px_#000] px-7 py-3 text-xs md:text-sm font-pixel font-bold tracking-wider uppercase",
+    primary: "bg-white text-black border-3 border-black shadow-[4px_4px_0px_#000] hover:bg-slate-100 hover:shadow-[5px_5px_0px_#000] active:translate-x-[3px] active:translate-y-[3px] active:shadow-[1px_1px_0px_#000] px-7 py-3 text-xs md:text-sm font-pixel font-bold tracking-wider uppercase",
     secondary: "bg-white text-black border-3 border-black shadow-[4px_4px_0px_#000] hover:bg-slate-100 hover:shadow-[5px_5px_0px_#000] active:translate-x-[3px] active:translate-y-[3px] active:shadow-[1px_1px_0px_#000] px-6 py-3 text-xs md:text-sm font-pixel font-bold tracking-wider uppercase",
     ghost: "bg-[#1E232A] text-white hover:text-black hover:bg-white border-2 border-black shadow-[2px_2px_0px_#000] px-4 py-2 text-xs font-pixel font-bold transition-all active:translate-x-0.5 active:translate-y-0.5"
   };

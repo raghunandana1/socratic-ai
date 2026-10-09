@@ -202,8 +202,8 @@ export const PROBLEM_CARDS = [
     title: "Answer dumping",
     description: "Generic AI chatbots copy-paste full step-by-step solutions instantly. You get the answer, but gain zero cognitive muscle.",
     tag: "Passive Learning Trap",
-    accentColor: "from-amber-500/20 to-purple-500/10",
-    borderColor: "hover:border-amber-500/40"
+    accentColor: "from-white/20 to-purple-500/10",
+    borderColor: "hover:border-white/40"
   },
   {
     id: "03",

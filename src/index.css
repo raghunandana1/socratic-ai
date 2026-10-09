@@ -295,7 +295,7 @@
   display: inline-block;
   width: 8px;
   height: 14px;
-  background-color: #F59E0B;
+  background-color: #FFFFFF;
   box-shadow: 1px 1px 0px #000;
   animation: pixel-blink 0.7s steps(1, start) infinite;
   vertical-align: text-bottom;
@@ -344,7 +344,7 @@
 
 /* Chunky Golden Yellow Arcade Button (Signature Spidey Tracker Style) */
 .arcade-yellow-btn {
-  background-color: #F59E0B;
+  background-color: #FFFFFF;
   color: #000000 !important;
   border: 3px solid #000000 !important;
   box-shadow: 4px 4px 0px 0px #000000 !important;
@@ -360,7 +360,7 @@
 }
 
 .arcade-yellow-btn:hover {
-  background-color: #FBBF24;
+  background-color: #F1F5F9;
   transform: translate(-1px, -1px);
   box-shadow: 5px 5px 0px 0px #000000 !important;
 }

@@ -24,7 +24,7 @@ export default function FinalCTASection() {
           <div className="flex items-center justify-between pb-3 mb-4 border-b-3 border-black">
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 bg-[#EF4444] border-2 border-black shadow-[1px_1px_0px_#000]" />
-              <span className="w-3 h-3 bg-[#F59E0B] border-2 border-black shadow-[1px_1px_0px_#000]" />
+              <span className="w-3 h-3 bg-white border-2 border-black shadow-[1px_1px_0px_#000]" />
               <span className="w-3 h-3 bg-[#10B981] border-2 border-black shadow-[1px_1px_0px_#000]" />
             </div>
             <div className="bg-[#0D1117] border-2 border-black px-2.5 py-0.5 text-[9px] font-pixel text-[#EF4444] font-bold shadow-[2px_2px_0px_#000]">
@@ -56,7 +56,7 @@ export default function FinalCTASection() {
               className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight mb-4 font-pixel drop-shadow-[2px_2px_0px_#000]"
             >
               Your next breakthrough <br />
-              <span className="text-[#FBBF24]">is one question away.</span>
+              <span className="text-white">is one question away.</span>
             </motion.h2>
 
             <motion.p

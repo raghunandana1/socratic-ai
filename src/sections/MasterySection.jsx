@@ -77,7 +77,7 @@ export default function MasterySection() {
             className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight mb-4 font-pixel drop-shadow-[2px_2px_0px_#000]"
           >
             Every correct answer <br />
-            <span className="text-[#FBBF24]">makes the system smarter.</span>
+            <span className="text-white">makes the system smarter.</span>
           </motion.h2>
 
           <motion.p
@@ -99,7 +99,7 @@ export default function MasterySection() {
             <div className="flex items-center justify-between pb-3 mb-4 border-b-3 border-black">
               <div className="flex items-center gap-2">
                 <span className="w-3 h-3 bg-[#EF4444] border-2 border-black shadow-[1px_1px_0px_#000]" />
-                <span className="w-3 h-3 bg-[#F59E0B] border-2 border-black shadow-[1px_1px_0px_#000]" />
+                <span className="w-3 h-3 bg-white border-2 border-black shadow-[1px_1px_0px_#000]" />
                 <span className="w-3 h-3 bg-[#10B981] border-2 border-black shadow-[1px_1px_0px_#000]" />
                 <span className="text-[10px] font-pixel text-black font-bold uppercase ml-1">
                   Mastery Console
@@ -122,7 +122,7 @@ export default function MasterySection() {
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 bg-[#10B981] animate-ping" />
                     <span className="text-[10px] font-pixel text-white">
-                      PORTAL SYNC ACTIVE: Evaluated <strong className="text-[#FBBF24] uppercase">{lastPortalActivity.subject}</strong> doubt
+                      PORTAL SYNC ACTIVE: Evaluated <strong className="text-white uppercase">{lastPortalActivity.subject}</strong> doubt
                       {lastPortalActivity.isSolved ? ' (Breakthrough Solved)' : ' (Diagnostic Step Recorded)'}
                     </span>
                   </div>
@@ -141,14 +141,14 @@ export default function MasterySection() {
                     <div className="text-[9px] font-pixel text-slate-300 uppercase tracking-wider mb-1">
                       Session Reward
                     </div>
-                    <div className="text-3xl font-pixel font-bold text-[#F59E0B] tracking-tight">
+                    <div className="text-3xl font-pixel font-bold text-white tracking-tight">
                       +{xpCount} XP
                     </div>
                     <div className="text-[10px] text-slate-300 font-solution mt-1">
                       Live Portal Effort &amp; Solves Credited
                     </div>
                   </div>
-                  <div className="w-11 h-11 bg-[#F59E0B] border-2 border-black flex items-center justify-center text-black shadow-[2px_2px_0px_#000]">
+                  <div className="w-11 h-11 bg-white border-2 border-black flex items-center justify-center text-black shadow-[2px_2px_0px_#000]">
                     <Zap className="w-5 h-5 text-black" />
                   </div>
                 </div>
@@ -159,7 +159,7 @@ export default function MasterySection() {
                     <div className="text-[9px] font-pixel text-slate-300 uppercase tracking-wider mb-1">
                       Consistency Streak
                     </div>
-                    <div className="text-2xl font-pixel font-bold text-[#FBBF24] tracking-tight">
+                    <div className="text-2xl font-pixel font-bold text-white tracking-tight">
                       {streakDays}-Day Streak
                     </div>
                     <div className="text-[10px] text-slate-300 font-solution mt-1">
@@ -185,8 +185,8 @@ export default function MasterySection() {
                       onClick={() => setActiveExamCategory(cat)}
                       className={`px-3 py-1 rounded-none text-[9px] font-pixel font-bold border-2 border-black transition-all ${
                         activeExamCategory === cat
-                          ? 'bg-[#F59E0B] text-black shadow-[2px_2px_0px_#000]'
-                          : 'bg-white text-black hover:bg-slate-100 shadow-[2px_2px_0px_#000]'
+                          ? 'bg-white text-black shadow-[2px_2px_0px_#000]'
+                          : 'bg-[#262D36] text-white hover:bg-slate-700 shadow-[2px_2px_0px_#000]'
                       }`}
                     >
                       {cat}
@@ -208,7 +208,7 @@ export default function MasterySection() {
                       key={subject.id || subject.name}
                       className={`bg-[#262D36] p-3.5 border-2 transition-all ${
                         isRecentlyUpdated
-                          ? 'border-[#F59E0B] shadow-[0_0_12px_rgba(245,158,11,0.4)]'
+                          ? 'border-white shadow-[0_0_12px_rgba(255,255,255,0.4)]'
                           : 'border-black shadow-[2px_2px_0px_#000]'
                       }`}
                     >
@@ -228,7 +228,7 @@ export default function MasterySection() {
                           <span className="text-[9px] font-solution text-slate-300">
                             {subject.doubtsDiagnosed || 0} doubts analyzed
                           </span>
-                          <span className="text-xs sm:text-sm font-pixel font-bold text-[#F59E0B]">
+                          <span className="text-xs sm:text-sm font-pixel font-bold text-white">
                             [{isInView ? subject.accuracy : 0}%]
                           </span>
                         </div>
@@ -253,7 +253,7 @@ export default function MasterySection() {
                   <CheckCircle className="w-3.5 h-3.5" />
                   <span>{activeExamCategory} REAL-TIME SCORE VECTOR: ACTIVE ({totalDoubtsLogged} DOUBTS LOGGED)</span>
                 </span>
-                <span className="text-[#FBBF24]">REAL-TIME SYNCED WITH DOUBT PORTAL</span>
+                <span className="text-white">REAL-TIME SYNCED WITH DOUBT PORTAL</span>
               </div>
             </div>
 

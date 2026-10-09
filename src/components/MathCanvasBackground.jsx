@@ -57,7 +57,7 @@ export default function MathCanvasBackground() {
         size: Math.random() > 0.6 ? 2 : 1, // in virtual pixels
         glyph: GLYPHS[Math.floor(Math.random() * GLYPHS.length)],
         opacity: Math.random() * 0.28 + 0.1,
-        color: Math.random() > 0.4 ? '#38BDF8' : '#F59E0B',
+        color: Math.random() > 0.4 ? '#38BDF8' : '#FFFFFF',
       });
     }
 
@@ -117,7 +117,7 @@ export default function MathCanvasBackground() {
       }
 
       // Stepped Sine Wave on the coordinate system
-      ctx.fillStyle = '#F59E0B';
+      ctx.fillStyle = '#FFFFFF';
       ctx.globalAlpha = 0.16;
       for (let x = 0; x < axisLength - 8; x += 1) {
         const y = Math.round(Math.sin((x + time * 0.4) * 0.08) * 16);

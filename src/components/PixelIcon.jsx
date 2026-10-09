@@ -109,7 +109,7 @@ export function PixelWarning({ className = "w-4 h-4", color = "currentColor" }) 
   return (
     <svg viewBox="0 0 16 16" className={className} shapeRendering="crispEdges">
       {/* Stepped Yellow Triangle */}
-      <polygon points="7,1 9,1 11,5 13,9 15,13 15,15 1,15 1,13 3,9 5,5" fill="#F59E0B" stroke="#000000" strokeWidth="1" />
+      <polygon points="7,1 9,1 11,5 13,9 15,13 15,15 1,15 1,13 3,9 5,5" fill="#FFFFFF" stroke="#000000" strokeWidth="1" />
       {/* Exclamation point */}
       <rect x="7" y="5" width="2" height="5" fill="#000000" />
       <rect x="7" y="12" width="2" height="2" fill="#000000" />
@@ -157,7 +157,7 @@ export function PixelTerminal({ className = "w-4 h-4", color = "currentColor" })
       <rect x="5" y="8" width="1" height="1" fill={color} />
       <rect x="4" y="9" width="1" height="1" fill={color} />
       {/* _ cursor */}
-      <rect x="8" y="9" width="3" height="1" fill="#F59E0B" />
+      <rect x="8" y="9" width="3" height="1" fill="#FFFFFF" />
       {/* Stand */}
       <rect x="6" y="13" width="4" height="1" />
       <rect x="5" y="14" width="6" height="1" />

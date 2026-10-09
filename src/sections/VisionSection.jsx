@@ -305,7 +305,7 @@ export default function VisionSection() {
                 </div>
 
                 {/* Notebook / Camera Canvas Container */}
-                <div className="relative rounded-xl p-6 bg-[#0E0E14] border border-white/5 font-handwritten text-xl sm:text-2xl text-amber-200/90 leading-relaxed shadow-inner min-h-[280px] flex flex-col justify-center overflow-hidden">
+                <div className="relative rounded-xl p-6 bg-[#0E0E14] border border-white/5 font-handwritten text-xl sm:text-2xl text-slate-100 leading-relaxed shadow-inner min-h-[280px] flex flex-col justify-center overflow-hidden">
                   
                   {activeInputMode !== "preset" && customImage ? (
                     <div className="relative w-full h-56 flex flex-col items-center justify-center">
@@ -326,7 +326,7 @@ export default function VisionSection() {
                           <svg viewBox="0 0 240 70" className="w-full max-w-[240px] h-auto stroke-current text-cyan-400 fill-none stroke-[2]">
                             <path d="M 10,60 Q 120,-10 230,60" strokeDasharray="4 4" />
                             <line x1="0" y1="60" x2="240" y2="60" className="text-slate-500" strokeWidth="1" />
-                            <line x1="10" y1="60" x2="50" y2="35" className="text-amber-400" strokeWidth="2" />
+                            <line x1="10" y1="60" x2="50" y2="35" className="text-white" strokeWidth="2" />
                             <circle cx="120" cy="25" r="4" className="fill-brand-cyan" />
                           </svg>
                         </div>

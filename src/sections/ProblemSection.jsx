@@ -47,7 +47,7 @@ export default function ProblemSection() {
             className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight mb-4 font-pixel drop-shadow-[2px_2px_0px_#000]"
           >
             The problem isn't finding the answer. <br className="hidden sm:inline" />
-            <span className="text-[#FBBF24]">It's knowing why you got it wrong.</span>
+            <span className="text-white">It's knowing why you got it wrong.</span>
           </motion.h2>
 
           <motion.p
@@ -74,7 +74,7 @@ export default function ProblemSection() {
                   <span className="bg-white text-black px-2.5 py-1 border-2 border-black font-pixel text-[10px] font-bold shadow-[2px_2px_0px_#000]">
                     [0{index + 1}] {card.stat}
                   </span>
-                  <div className="p-2 bg-[#F59E0B] border-2 border-black text-black shadow-[2px_2px_0px_#000]">
+                  <div className="p-2 bg-white border-2 border-black text-black shadow-[2px_2px_0px_#000]">
                     {cardIcons[card.id]}
                   </div>
                 </div>

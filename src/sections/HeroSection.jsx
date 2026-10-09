@@ -84,7 +84,7 @@ export default function HeroSection() {
             className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.25] mb-6 font-pixel drop-shadow-[3px_3px_0px_#000]"
           >
             <span className="block">Don't get the answer.</span>
-            <span className="block text-[#FBBF24] mt-2">
+            <span className="block text-white mt-2">
               Discover it.
             </span>
           </motion.h1>
@@ -134,7 +134,7 @@ export default function HeroSection() {
               <span className="text-[10px] font-bold">Track: {targetExam}</span>
             </div>
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-none bg-white text-black border-3 border-black shadow-[3px_3px_0px_#000]">
-              <span className="w-2.5 h-2.5 bg-[#F59E0B] border border-black" />
+              <span className="w-2.5 h-2.5 bg-white border border-black" />
               <span className="text-[10px] font-bold">Zero Answer Dumping</span>
             </div>
           </motion.div>
@@ -158,7 +158,7 @@ export default function HeroSection() {
                   <div className="relative w-3.5 h-3.5 bg-[#EF4444] border-2 border-black shadow-[1px_1px_0px_#000]">
                     <div className="absolute top-0 left-0 w-1 h-1 bg-white opacity-80" />
                   </div>
-                  <div className="relative w-3.5 h-3.5 bg-[#F59E0B] border-2 border-black shadow-[1px_1px_0px_#000]">
+                  <div className="relative w-3.5 h-3.5 bg-white border-2 border-black shadow-[1px_1px_0px_#000]">
                     <div className="absolute top-0 left-0 w-1 h-1 bg-white opacity-80" />
                   </div>
                   <div className="relative w-3.5 h-3.5 bg-[#10B981] border-2 border-black shadow-[1px_1px_0px_#000]">
@@ -185,7 +185,7 @@ export default function HeroSection() {
                 {/* Problem Question Box with Pixel Notches */}
                 <div className="bg-[#262D36] border-2 border-black p-3.5 mb-3.5 shadow-[3px_3px_0px_#000]">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="bg-[#F59E0B] text-black px-2 py-0.5 border-2 border-black font-pixel text-[9px] font-bold flex items-center gap-1 shadow-[1px_1px_0px_#000]">
+                    <span className="bg-white text-black px-2 py-0.5 border-2 border-black font-pixel text-[9px] font-bold flex items-center gap-1 shadow-[1px_1px_0px_#000]">
                       <PixelCpu className="w-2.5 h-2.5 text-black" />
                       <span>{heroProblem.topic}</span>
                     </span>
@@ -242,7 +242,7 @@ export default function HeroSection() {
                         }}
                         className={`h-3 rounded-none border-2 border-black transition-all relative ${
                           activeStepIndex === idx
-                            ? 'w-8 bg-[#F59E0B] shadow-[2px_2px_0px_#000]'
+                            ? 'w-8 bg-white shadow-[2px_2px_0px_#000]'
                             : 'w-4 bg-[#0D1117] hover:bg-[#262D36]'
                         }`}
                         aria-label={`Step ${idx + 1}`}
