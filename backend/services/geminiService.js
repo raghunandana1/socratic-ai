@@ -52,8 +52,7 @@ export async function diagnoseDoubtWithGemini({
   imageBuffer,
   imageMimeType
 }) {
-  const envKey = Object.keys(process.env).find(k => k.trim().toUpperCase() === 'GEMINI_API_KEY' || k.trim().toUpperCase() === 'GOOGLE_API_KEY');
-  const rawApiKey = envKey ? process.env[envKey] : (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY);
+  const rawApiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
   const apiKey = rawApiKey ? rawApiKey.trim().replace(/^["']|["']$/g, '') : null;
 
   // Retrieve existing session if provided
@@ -509,8 +508,7 @@ function getFallbackDiagnosticResponse({
 }
 
 export async function analyzeVisionImageWithGemini({ imageBuffer, imageMimeType, exam = 'JEE Main' }) {
-  const envKey = Object.keys(process.env).find(k => k.trim().toUpperCase() === 'GEMINI_API_KEY' || k.trim().toUpperCase() === 'GOOGLE_API_KEY');
-  const rawApiKey = envKey ? process.env[envKey] : (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY);
+  const rawApiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
   const apiKey = rawApiKey ? rawApiKey.trim().replace(/^["']|["']$/g, '') : null;
 
   const isKeyConfigured = apiKey && apiKey.trim() !== '' && !apiKey.includes('your_gemini_api_key_here');

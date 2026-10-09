@@ -47,8 +47,7 @@ try {
 }
 
 function getApiKey() {
-  const envKey = Object.keys(process.env).find(k => k.trim().toUpperCase() === 'GEMINI_API_KEY' || k.trim().toUpperCase() === 'GOOGLE_API_KEY');
-  const val = envKey ? process.env[envKey] : (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY);
+  const val = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
   return val ? val.trim().replace(/^["']|["']$/g, '') : null;
 }
 
