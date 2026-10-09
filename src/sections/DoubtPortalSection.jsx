@@ -315,7 +315,7 @@ export default function DoubtPortalSection() {
   const awardedSessionsRef = useRef(new Set());
 
   // Resolves backend API URL (Localhost in dev, Render in production)
-  const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001').replace(/\/+$/, '');
+  const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'https://socratic-ai-9q7a.onrender.com').replace(/\/+$/, '');
 
   // Monitor Live Backend Status
   useEffect(() => {

@@ -19,7 +19,7 @@ export default function VisionSection() {
   const sectionRef = useRef(null);
   const prefersReducedMotion = useReducedMotion();
 
-  const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001').replace(/\/+$/, '');
+  const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'https://socratic-ai-9q7a.onrender.com').replace(/\/+$/, '');
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
