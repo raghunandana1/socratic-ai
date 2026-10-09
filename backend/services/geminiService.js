@@ -71,8 +71,8 @@ export async function diagnoseDoubtWithGemini({
     exam: existingSession ? existingSession.exam : exam
   });
 
-  const candidateModels = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
-  if (process.env.GEMINI_MODEL && (process.env.GEMINI_MODEL.startsWith('gemini-1.') || process.env.GEMINI_MODEL.startsWith('gemini-2.'))) {
+  const candidateModels = ['gemini-flash-latest', 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+  if (process.env.GEMINI_MODEL && process.env.GEMINI_MODEL.trim()) {
     candidateModels.unshift(process.env.GEMINI_MODEL.trim());
   }
 
@@ -547,8 +547,8 @@ Analyze the image and return a strict JSON object with this schema:
 }`;
 
   if (isKeyConfigured && imageBuffer) {
-    const candidateModels = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
-    if (process.env.GEMINI_MODEL && (process.env.GEMINI_MODEL.startsWith('gemini-1.') || process.env.GEMINI_MODEL.startsWith('gemini-2.'))) {
+    const candidateModels = ['gemini-flash-latest', 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+    if (process.env.GEMINI_MODEL && process.env.GEMINI_MODEL.trim()) {
       candidateModels.unshift(process.env.GEMINI_MODEL.trim());
     }
 
