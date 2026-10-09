@@ -1270,193 +1270,78 @@ export default function DoubtPortalSection() {
                       targetExam={targetExam}
                     />
                   ) : (
-                    /* CASE: Incorrect Attempt - Show Exact Error and Sequential Hint Ladder */
+                    /* Clean Socratic Hint Display */
                     <>
-                      {/* Partial Progress Notification Banner */}
-                      <AnimatePresence>
-                        {partialNotice && (
-                          <motion.div
-                            initial={{ opacity: 0, y: -8 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -8 }}
-                            className="bg-white/15 border-2 border-white/40 rounded-none p-3.5 mb-5 flex items-center justify-between gap-3 text-xs font-mono shadow-pixel-block"
-                          >
-                            <div className="flex items-center gap-2.5">
-                              <Zap className="w-4 h-4 text-white animate-pulse flex-shrink-0" />
-                              <span className="text-slate-200">
-                                <strong className="text-white">+{partialNotice.amount} Effort EXP Awarded!</strong> {partialNotice.reason}
-                              </span>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => setPartialNotice(null)}
-                              className="text-white hover:text-slate-300 p-1 rounded-none transition-colors border border-white/30"
-                            >
-                              <X className="w-3.5 h-3.5" />
-                            </button>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-
-                      {/* In-Progress Diagnostic Trajectory Indicator */}
-                      <div className="bg-[#090915] border-2 border-brand-violet/50 rounded-none p-4 mb-6 flex flex-wrap items-center justify-between gap-3 shadow-pixel-block">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-none bg-brand-violet/20 border-2 border-brand-violet/50 flex items-center justify-center text-brand-cyan shadow-pixel-block-violet">
-                            <TrendingUp className="w-5 h-5" />
+                      {/* SOCRATIC HINTS CARD */}
+                      <div className="bg-[#07070E] border-3 border-black p-5 sm:p-6 mb-6 shadow-[4px_4px_0px_#000]">
+                        <div className="flex flex-wrap items-center justify-between mb-4 border-b-2 border-black pb-3 gap-2">
+                          <div className="flex items-center gap-2 text-xs sm:text-sm font-pixel font-bold text-white">
+                            <Lightbulb className="w-4 h-4 text-white" />
+                            <span>SOCRATIC HINT &bull; STEP {activeHintStep} OF 4</span>
                           </div>
-                          <div>
-                            <div className="text-xs font-mono font-bold text-white flex items-center gap-2">
-                              <span>Mastery Index:</span>
-                              <span className="text-brand-cyan">
-                                [{submittedResult.masteryMetrics?.percentage || Math.max(45, 98 - (activeSession?.currentHintLevel || 1) * 12)}% Projected]
-                              </span>
-                              <span className="text-slate-500">•</span>
-                              <span className="text-emerald-400 text-[11px]">
-                                [{submittedResult.masteryMetrics?.percentile || "Top 45% Iteration Rate"}]
-                              </span>
-                            </div>
-                            <div className="text-xs font-sans text-slate-300 mt-0.5 flex flex-wrap items-center gap-2">
-                              <span className="font-mono text-[11px]">Solve on Attempt #{activeSession?.attemptsCount || 1} to unlock 72h retention curve.</span>
-                              <span className="px-2 py-0.5 rounded-none bg-white/20 text-white border border-white/30 text-[10px] font-mono font-bold">
-                                ⚡ Partial: +{activeSession?.partialExpTotal || submittedResult?.partialExpTotal || 0} EXP
-                              </span>
-                              <span className="text-slate-400 text-[10px] font-mono">
-                                (+{Math.max(10, (activeSession?.currentHintLevel === 1 ? 40 : activeSession?.currentHintLevel === 2 ? 30 : activeSession?.currentHintLevel === 3 ? 20 : 10) - (activeSession?.partialExpTotal || submittedResult?.partialExpTotal || 0))} EXP on solve)
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const solvedLevel = activeSession?.currentHintLevel || 1;
-                            const solvedAttempts = activeSession?.attemptsCount || 1;
-                            const tierBase = solvedLevel === 1 ? 40 : solvedLevel === 2 ? 30 : solvedLevel === 3 ? 20 : 10;
-                            const currentPartial = activeSession?.partialExpTotal || submittedResult?.partialExpTotal || 0;
-                            const remainingExp = Math.max(10, tierBase - currentPartial);
-                            recordDoubtActivity({
-                              exam: targetExam,
-                              subject: submittedResult?.detectedSubject || "Physics",
-                              isSolved: true,
-                              hintsUsed: solvedLevel,
-                              expEarned: remainingExp,
-                              errorType: submittedResult?.errorTitle || errorTag
-                            });
-
-                            const updatedSess = {
-                              ...activeSession,
-                              solved: true,
-                              expAwarded: currentPartial + remainingExp
-                            };
-                            setActiveSession(updatedSess);
-
-                            const solvedMetrics = computeMasteryMetrics(solvedLevel, solvedAttempts, true);
-                            setSubmittedResult(prev => ({
-                              ...prev,
-                              isCorrect: true,
-                              session: updatedSess,
-                              masteryMetrics: solvedMetrics,
-                              feedbackForStudent: `Outstanding deduction! You applied the sequential hints and reached the complete breakthrough independently (+${remainingExp} Breakthrough EXP awarded).`
-                            }));
-                          }}
-                          className="px-3.5 py-1.5 rounded-none bg-emerald-500/20 hover:bg-emerald-500/30 border-2 border-emerald-500/50 text-emerald-300 text-xs font-mono font-bold flex items-center gap-1.5 transition-all pixel-block-btn shadow-pixel-block-emerald self-stretch sm:self-auto justify-center"
-                        >
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                          <span>Mark Solved &amp; View Retention Curve</span>
-                        </button>
-                      </div>
-
-                      {/* Diagnosed Error & Step-by-Step Breakdown Banner */}
-                      <div className="bg-rose-950/40 border-2 border-rose-500/60 rounded-none p-5 mb-6 shadow-pixel-block">
-                        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-rose-500/30 pb-3 mb-3">
-                          <div className="text-xs sm:text-sm font-mono font-bold text-rose-400 flex items-center gap-2">
-                            <AlertTriangle className="w-4 h-4 text-rose-400" />
-                            <span>Diagnosed Slip: {submittedResult.errorTitle || "Reasoning Discrepancy"}</span>
-                          </div>
-                          {submittedResult.firstIncorrectStep && (
-                            <span className="text-xs font-mono font-bold bg-rose-500/20 text-rose-200 px-2.5 py-1 rounded-none border border-rose-500/40 shadow-pixel-block">
-                              📍 Slip Location: {cleanMathText(submittedResult.firstIncorrectStep)}
+                          {submittedResult.detectedSubject && (
+                            <span className="text-[10px] font-pixel bg-white text-black px-2 py-0.5 border border-black font-bold">
+                              {submittedResult.detectedSubject} &bull; {submittedResult.detectedChapter || "General"}
                             </span>
                           )}
                         </div>
 
-                        {/* Detailed AI Explanation of the Slip */}
-                        <div className="space-y-2">
-                          <p className="text-xs sm:text-sm font-solution text-slate-100 leading-relaxed font-medium">
-                            {cleanMathText(submittedResult.errorDescription)}
-                          </p>
-
-                          {submittedResult.feedbackForStudent && (
-                            <div className="mt-2.5 pt-2.5 border-t border-rose-500/20 text-xs font-solution text-rose-200/90 leading-relaxed italic flex items-start gap-2">
-                              <Sparkles className="w-3.5 h-3.5 text-rose-400 mt-0.5 flex-shrink-0" />
-                              <span>{cleanMathText(submittedResult.feedbackForStudent)}</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* SEQUENTIAL HINT LADDER */}
-                      <div className="bg-[#07070E] border-2 border-brand-violet/60 rounded-none p-5 sm:p-6 mb-6 shadow-pixel-block">
-                        <div className="flex flex-wrap items-center justify-between mb-4 border-b border-white/10 pb-3 gap-2">
-                          <div className="flex items-center gap-2 text-xs sm:text-sm font-mono font-bold text-brand-cyan">
-                            <Lightbulb className="w-4 h-4 text-brand-purple" />
-                            <span>Socratic Hint Ladder • Hint {activeHintStep} of 4</span>
-                          </div>
-
-                          <div className="text-xs font-mono text-slate-400">
-                            Attempt: <span className="text-white font-bold">#{activeSession?.attemptsCount || 1}</span>
-                          </div>
-                        </div>
-
-                        {/* Hint Level Selector Chips */}
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-5">
+                        {/* Hint Step Selector Tabs */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-5">
                           {[1, 2, 3, 4].map((level) => {
-                            const isUnlocked = level <= (activeSession?.currentHintLevel || 1);
                             const isActive = activeHintStep === level;
+                            const hintText = (submittedResult.hints && submittedResult.hints[level - 1]) || 
+                              (submittedResult.unlockedHints && submittedResult.unlockedHints[level - 1]) || 
+                              submittedResult.currentHint;
+
+                            if (!hintText) return null;
 
                             return (
                               <button
                                 key={level}
                                 type="button"
-                                disabled={!isUnlocked}
-                                onClick={() => isUnlocked && setActiveHintStep(level)}
-                                className={`py-2.5 px-3 rounded-none text-xs font-mono font-bold transition-all flex items-center justify-between pixel-block-btn ${
+                                onClick={() => setActiveHintStep(level)}
+                                className={`py-2 px-3 text-xs font-pixel font-bold border-2 border-black transition-all ${
                                   isActive
-                                    ? 'bg-brand-violet text-white border-2 border-brand-violet/80 shadow-pixel-block-violet'
-                                    : isUnlocked
-                                    ? 'bg-white/5 text-slate-300 hover:text-white border-2 border-white/15 hover:border-brand-cyan/60 shadow-pixel-block'
-                                    : 'bg-[#050508] text-slate-600 border-2 border-white/5 cursor-not-allowed shadow-none'
+                                    ? 'bg-white text-black shadow-[2px_2px_0px_#000]'
+                                    : 'bg-[#1E232A] text-white hover:bg-slate-700 shadow-[2px_2px_0px_#000]'
                                 }`}
                               >
                                 <span>Hint {level}</span>
-                                {isUnlocked ? (
-                                  <span className="text-[10px] text-emerald-400 font-bold">Unlocked</span>
-                                ) : (
-                                  <span className="flex items-center gap-1 text-[10px] text-slate-500">
-                                    <Lock className="w-3 h-3 text-slate-500" />
-                                    <span>Locked</span>
-                                  </span>
-                                )}
                               </button>
                             );
                           })}
                         </div>
 
-                        {/* Prominent Unlocked Hint Box */}
+                        {/* Detailed Socratic Hint Content Box */}
                         <motion.div
                           key={activeHintStep}
-                          initial={{ opacity: 0, y: 5 }}
+                          initial={{ opacity: 0, y: 4 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="bg-[#0D0D19] p-5 sm:p-6 rounded-none border-2 border-brand-cyan/40 text-sm sm:text-base font-solution text-white leading-relaxed shadow-pixel-block"
+                          className="bg-[#1E232A] p-5 sm:p-6 border-3 border-black text-sm sm:text-base text-white leading-relaxed shadow-[inset_0_0_12px_rgba(0,0,0,0.5)]"
                         >
-                          <div className="text-xs font-mono font-bold text-brand-cyan mb-2 uppercase tracking-wider flex items-center gap-2">
-                            <Lightbulb className="w-4 h-4 text-brand-purple" />
-                            <span>Hint {activeHintStep} Guidance:</span>
+                          <div className="text-[10px] font-pixel font-bold text-slate-400 mb-2 uppercase tracking-wider flex items-center gap-2">
+                            <Sparkles className="w-3.5 h-3.5 text-white" />
+                            <span>Detailed Socratic Guidance (Hint #{activeHintStep}):</span>
                           </div>
-                          <div className="text-slate-100 font-solution text-sm sm:text-base leading-relaxed pl-1">
-                            "{cleanMathText(submittedResult.unlockedHints?.[activeHintStep - 1] || submittedResult.currentHint)}"
+                          
+                          <div className="text-slate-100 font-solution text-sm sm:text-base leading-relaxed pl-1 space-y-2">
+                            <p className="whitespace-pre-wrap">
+                              "{cleanMathText(
+                                (submittedResult.hints && submittedResult.hints[activeHintStep - 1]) ||
+                                (submittedResult.unlockedHints && submittedResult.unlockedHints[activeHintStep - 1]) ||
+                                submittedResult.currentHint ||
+                                submittedResult.feedbackForStudent
+                              )}"
+                            </p>
                           </div>
+
+                          {submittedResult.feedbackForStudent && activeHintStep === 1 && (
+                            <div className="mt-4 pt-3 border-t-2 border-black/40 text-xs font-solution text-slate-200 leading-relaxed italic bg-[#14181F] p-3 border border-white/10">
+                              <strong className="text-white not-italic font-pixel text-[10px] block mb-1">Guidance Focus:</strong>
+                              {cleanMathText(submittedResult.feedbackForStudent)}
+                            </div>
+                          )}
                         </motion.div>
                       </div>
 

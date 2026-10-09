@@ -41,11 +41,11 @@ TASK INSTRUCTIONS:
    - "errorDescription": Detailed, 2-3 sentence explanation of EXACTLY where the student went wrong in their handwritten or typed work, what was missed, and why it introduces an error.
    - "feedbackForStudent": Empathetic, detailed guidance telling the student what to focus on next.
 
-3. 4-Tier Progressive Socratic Hints Ladder (Must provide 4 detailed, actionable hints):
-   - Hint 1 (Conceptual Direction): Explain the core governing principle or equation structure.
-   - Hint 2 (Targeted Error Nudge): Point directly to the specific variable or step where the slip occurred.
-   - Hint 3 (Explicit Formula / Step Scaffolding): Provide the exact mathematical relation or boundary inequality to apply next.
-   - Hint 4 (Final Breakthrough Scaffolding): Provide strong scaffolding leading up to the final calculation, leaving only the final arithmetic reduction for the student.
+3. 4-Tier Progressive Socratic Hints Ladder (MUST BE HIGHLY DETAILED, CLEAR, AND EXPLANATORY):
+   - Hint 1 (Conceptual Core): Provide a detailed explanation of the fundamental concept, law, or theorem needed to solve this problem.
+   - Hint 2 (Step-by-Step Analysis & Error Nudge): Point directly to what went wrong in the student's attempt (if any) or outline the exact first mathematical step required.
+   - Hint 3 (Explicit Formula & Setup Scaffolding): Give the exact formula, equation setup, or boundary condition with variable values explicitly substituted.
+   - Hint 4 (Final Breakthrough Scaffolding): Guide the student step-by-step to the final calculation, explaining the precise mathematical maneuver to complete the solution.
 
 4. Strict JSON Output (adhere strictly to this schema, no markdown outside JSON):
 {
