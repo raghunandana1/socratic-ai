@@ -99,14 +99,23 @@ export async function diagnoseDoubtWithGemini({
           text: userPrompt
         });
 
-        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        const endpoint = apiKey.startsWith('AQ.') 
+          ? `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`
+          : `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+        const reqHeaders = {
+          'Content-Type': 'application/json'
+        };
+        if (apiKey.startsWith('AQ.')) {
+          reqHeaders['Authorization'] = `Bearer ${apiKey}`;
+          reqHeaders['x-goog-api-key'] = apiKey;
+        } else {
+          reqHeaders['x-goog-api-key'] = apiKey;
+        }
 
         const response = await fetch(endpoint, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-goog-api-key': apiKey
-          },
+          headers: reqHeaders,
           body: JSON.stringify({
             system_instruction: {
               parts: [{ text: systemInstruction }]
@@ -129,11 +138,20 @@ export async function diagnoseDoubtWithGemini({
           const errorBody = await response.text();
           console.error(`[Gemini API Error] Model=${model} Status=${response.status} Error=${errorBody}`);
           let parsedErrorMsg = errorBody;
+          let isServiceBlocked = false;
           try {
             const errObj = JSON.parse(errorBody);
             parsedErrorMsg = errObj?.error?.message || errorBody;
+            if (errorBody.includes('API_KEY_SERVICE_BLOCKED') || errorBody.includes('UNAUTHENTICATED')) {
+              isServiceBlocked = true;
+            }
           } catch (e) {}
-          lastApiError = `Google Gemini API Error (HTTP ${response.status}): ${parsedErrorMsg}`;
+
+          if (isServiceBlocked) {
+            lastApiError = `Google API Restriction (API_KEY_SERVICE_BLOCKED): Your key has restrictions on project 1062453820867. Please click "Create API Key" -> "Create API key in new project" on AI Studio (aistudio.google.com) to generate an unrestricted key (starts with AIzaSy...).`;
+          } else {
+            lastApiError = `Google Gemini API Error (HTTP ${response.status}): ${parsedErrorMsg}`;
+          }
           continue;
         }
 
