@@ -1197,71 +1197,9 @@ export default function DoubtPortalSection() {
                     </button>
                   </div>
 
-                  {/* AI Auto-Detected Concept Badge */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 mb-6 p-3.5 rounded-none bg-[#090915] border-2 border-brand-violet/40 shadow-pixel-block">
-                    <div className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-brand-cyan" />
-                      <span className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
-                        Detected Syllabus Mapping:
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
-                      <span className="px-2.5 py-0.5 rounded-none bg-brand-violet/20 border border-brand-violet/40 text-brand-purple font-bold">
-                        {submittedResult.detectedSubject || "Physics"}
-                      </span>
-                      <span className="text-slate-500 font-bold">➔</span>
-                      <span className="px-2.5 py-0.5 rounded-none bg-brand-cyan/10 border border-brand-cyan/30 text-brand-cyan font-bold">
-                        {submittedResult.detectedChapter || "Rotational Mechanics"}
-                      </span>
-                      {submittedResult.detectedSubtopic && (
-                        <>
-                          <span className="text-slate-500 font-bold">➔</span>
-                          <span className="px-2.5 py-0.5 rounded-none bg-white/5 border border-white/10 text-slate-200">
-                            {submittedResult.detectedSubtopic}
-                          </span>
-                        </>
-                      )}
-                    </div>
-                  </div>
 
-                  {/* Transcribed Problem Statement */}
-                  <div className="bg-[#07070E] p-4 rounded-none border-2 border-white/15 mb-6 text-xs shadow-pixel-block">
-                    <span className="text-slate-400 font-mono block mb-1 uppercase tracking-wider text-[10px]">Problem Statement:</span>
-                    <span className="text-white font-medium text-sm font-solution font-math leading-relaxed block mt-1">
-                      "{cleanMathText(submittedResult.questionText || activeSession?.question)}"
-                    </span>
-                  </div>
 
-                  {/* SPECIAL CASE: Problem Uploaded with No Student Attempt */}
-                  {submittedResult.hasAttempt === false ? (
-                    <div className="bg-white/10 border-2 border-white/40 rounded-none p-5 mb-6 text-center shadow-pixel-block">
-                      <div className="w-10 h-10 rounded-none bg-white/20 text-white mx-auto flex items-center justify-center mb-3 border-2 border-white/50">
-                        <HelpCircle className="w-5 h-5" />
-                      </div>
-                      <h5 className="text-sm font-mono font-bold text-white mb-1.5">No Student Attempt Detected</h5>
-                      <p className="text-xs sm:text-sm text-slate-300 max-w-lg mx-auto leading-relaxed mb-4 font-solution">
-                        {cleanMathText(submittedResult.feedbackForStudent) || "We extracted your question statement, but couldn't detect your own handwritten work or solution attempt. Socratic AI guides you through your errors — please give it a try first!"}
-                      </p>
-                      
-                      {/* Immediate attempt input */}
-                      <form onSubmit={handleRetrySubmit} className="max-w-lg mx-auto text-left space-y-3">
-                        <textarea
-                          value={retryText}
-                          onChange={(e) => setRetryText(e.target.value)}
-                          placeholder="Type your initial reasoning or equations here to start diagnosis..."
-                          rows={2}
-                          className="w-full bg-[#050508] border-2 border-white/20 rounded-none p-3 text-xs sm:text-sm font-solution text-white placeholder:text-slate-600 focus:outline-none focus:border-brand-cyan shadow-pixel-block"
-                        />
-                        <button
-                          type="submit"
-                          disabled={isSubmittingRetry || !retryText.trim()}
-                          className="w-full py-2.5 rounded-none bg-brand-violet text-white text-xs font-mono font-bold flex items-center justify-center gap-2 disabled:opacity-50 pixel-block-btn shadow-pixel-block-violet"
-                        >
-                          <span>{isSubmittingRetry ? "Evaluating Attempt..." : "Submit Initial Attempt ➔"}</span>
-                        </button>
-                      </form>
-                    </div>
-                  ) : submittedResult.isCorrect ? (
+                  {submittedResult.isCorrect ? (
                     /* CASE: Solved! Render full Cognitive Mastery & Retention Curve + EXP Leaderboard Connection */
                     <CognitiveMasteryCurveCard
                       metrics={submittedResult.masteryMetrics || computeMasteryMetrics(activeSession?.hintsUsed || 0, activeSession?.attemptsCount || 1, true)}
