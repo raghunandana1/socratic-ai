@@ -70,7 +70,7 @@ export async function diagnoseDoubtWithGemini({
     exam: existingSession ? existingSession.exam : exam
   });
 
-  const candidateModels = ['gemini-flash-latest', 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+  const candidateModels = ['gemini-3.8-flash', 'gemini-3.1-pro-preview', 'gemini-flash-latest'];
   if (process.env.GEMINI_MODEL && process.env.GEMINI_MODEL.trim()) {
     candidateModels.unshift(process.env.GEMINI_MODEL.trim());
   }
@@ -80,104 +80,105 @@ export async function diagnoseDoubtWithGemini({
   if (isKeyConfigured) {
     let lastApiError = null;
     for (const model of candidateModels) {
-      try {
-        const parts = [];
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          const parts = [];
 
-        // Add image if attached
-        if (imageBuffer) {
-          parts.push({
-            inline_data: {
-              mime_type: imageMimeType || 'image/jpeg',
-              data: imageBuffer.toString('base64')
-            }
-          });
-        }
-
-        // Add student prompt
-        parts.push({
-          text: userPrompt
-        });
-
-        const endpoint = apiKey.startsWith('AQ.') 
-          ? `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`
-          : `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-
-        const reqHeaders = {
-          'Content-Type': 'application/json'
-        };
-        if (apiKey.startsWith('AQ.')) {
-          reqHeaders['Authorization'] = `Bearer ${apiKey}`;
-          reqHeaders['x-goog-api-key'] = apiKey;
-        } else {
-          reqHeaders['x-goog-api-key'] = apiKey;
-        }
-
-        const response = await fetch(endpoint, {
-          method: 'POST',
-          headers: reqHeaders,
-          body: JSON.stringify({
-            system_instruction: {
-              parts: [{ text: systemInstruction }]
-            },
-            contents: [
-              {
-                role: 'user',
-                parts: parts
+          if (imageBuffer) {
+            parts.push({
+              inline_data: {
+                mime_type: imageMimeType || 'image/jpeg',
+                data: imageBuffer.toString('base64')
               }
-            ],
-            generation_config: {
-              response_mime_type: 'application/json',
-              temperature: 0.2,
-              max_output_tokens: 2048
-            }
-          })
-        });
-
-        if (!response.ok) {
-          const errorBody = await response.text();
-          console.error(`[Gemini API Error] Model=${model} Status=${response.status} Error=${errorBody}`);
-          let parsedErrorMsg = errorBody;
-          let isServiceBlocked = false;
-          try {
-            const errObj = JSON.parse(errorBody);
-            parsedErrorMsg = errObj?.error?.message || errorBody;
-            if (errorBody.includes('API_KEY_SERVICE_BLOCKED') || errorBody.includes('UNAUTHENTICATED')) {
-              isServiceBlocked = true;
-            }
-          } catch (e) {}
-
-          if (isServiceBlocked) {
-            lastApiError = `Google API Restriction (API_KEY_SERVICE_BLOCKED): Your key has restrictions on project 1062453820867. Please click "Create API Key" -> "Create API key in new project" on AI Studio (aistudio.google.com) to generate an unrestricted key (starts with AIzaSy...).`;
-          } else {
-            lastApiError = `Google Gemini API Error (HTTP ${response.status}): ${parsedErrorMsg}`;
+            });
           }
-          continue;
+
+          parts.push({
+            text: userPrompt
+          });
+
+          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+          const reqHeaders = {
+            'Content-Type': 'application/json',
+            'x-goog-api-key': apiKey
+          };
+
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: reqHeaders,
+            body: JSON.stringify({
+              system_instruction: {
+                parts: [{ text: systemInstruction }]
+              },
+              contents: [
+                {
+                  role: 'user',
+                  parts: parts
+                }
+              ],
+              generation_config: {
+                response_mime_type: 'application/json',
+                temperature: 0.2,
+                max_output_tokens: 2048
+              }
+            })
+          });
+
+          if (!response.ok) {
+            const errorBody = await response.text();
+            console.error(`[Gemini API Error] Model=${model} (Attempt ${attempt}/3) Status=${response.status} Error=${errorBody}`);
+
+            if (response.status === 503 && attempt < 3) {
+              await new Promise(r => setTimeout(r, 1000));
+              continue;
+            }
+
+            let parsedErrorMsg = errorBody;
+            let isServiceBlocked = false;
+            try {
+              const errObj = JSON.parse(errorBody);
+              parsedErrorMsg = errObj?.error?.message || errorBody;
+              if (errorBody.includes('API_KEY_SERVICE_BLOCKED') || errorBody.includes('UNAUTHENTICATED')) {
+                isServiceBlocked = true;
+              }
+            } catch (e) {}
+
+            if (isServiceBlocked) {
+              lastApiError = `Google API Restriction (API_KEY_SERVICE_BLOCKED): Your key has restrictions on project 1062453820867. Please click "Create API Key" -> "Create API key in new project" on AI Studio (aistudio.google.com) to generate an unrestricted key (starts with AIzaSy...).`;
+            } else {
+              lastApiError = `Google Gemini API Error (HTTP ${response.status}): ${parsedErrorMsg}`;
+            }
+            break;
+          }
+
+          const data = await response.json();
+          const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+          if (!rawText) {
+            throw new Error('Empty response from Gemini');
+          }
+
+          const cleanedText = rawText.replace(/^```json\s*/i, '').replace(/\s*```$/i, '').trim();
+          const parsedData = JSON.parse(cleanedText);
+
+          return processDiagnosticPayload({
+            parsedData,
+            existingSession,
+            exam,
+            subject,
+            chapter,
+            subtopic,
+            errorTag,
+            doubtText,
+            hasImage: !!imageBuffer
+          });
+        } catch (err) {
+          console.error(`[Gemini Service] Error with model ${model} attempt ${attempt}:`, err.message);
+          lastApiError = err.message;
+          if (attempt < 3) {
+            await new Promise(r => setTimeout(r, 1000));
+          }
         }
-
-        const data = await response.json();
-        const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-        if (!rawText) {
-          throw new Error('Empty response from Gemini');
-        }
-
-        const cleanedText = rawText.replace(/^```json\s*/i, '').replace(/\s*```$/i, '').trim();
-        const parsedData = JSON.parse(cleanedText);
-
-        return processDiagnosticPayload({
-          parsedData,
-          existingSession,
-          exam,
-          subject,
-          chapter,
-          subtopic,
-          errorTag,
-          doubtText,
-          hasImage: !!imageBuffer
-        });
-      } catch (err) {
-        console.error(`[Gemini Service] Error with model ${model}:`, err.message);
-        lastApiError = err.message;
       }
     }
 
@@ -545,7 +546,7 @@ Analyze the image and return a strict JSON object with this schema:
 }`;
 
   if (isKeyConfigured && imageBuffer) {
-    const candidateModels = ['gemini-flash-latest', 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+    const candidateModels = ['gemini-3.8-flash', 'gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.5-pro'];
     if (process.env.GEMINI_MODEL && process.env.GEMINI_MODEL.trim()) {
       candidateModels.unshift(process.env.GEMINI_MODEL.trim());
     }
