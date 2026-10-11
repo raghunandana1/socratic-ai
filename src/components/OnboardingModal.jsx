@@ -105,19 +105,15 @@ export default function OnboardingModal() {
                       key={opt.id}
                       type="button"
                       onClick={() => selectExam(opt.id)}
-                      className={`p-4 rounded-none border-3 border-black text-left flex flex-col justify-between transition-all duration-150 group cursor-pointer ${
-                        isSelected
-                          ? 'bg-white text-black shadow-[4px_4px_0px_#000] -translate-y-1'
-                          : 'bg-[#1E232A] text-white hover:bg-[#28303B] hover:-translate-y-0.5 shadow-[3px_3px_0px_#000]'
+                      className={`p-4 rounded-none border-3 border-black text-left flex flex-col justify-between transition-all duration-150 group cursor-pointer bg-[#1E232A] text-white hover:bg-white hover:text-black shadow-[3px_3px_0px_#000] hover:shadow-[5px_5px_0px_#000] hover:-translate-y-1 ${
+                        isSelected ? 'border-white/80' : ''
                       }`}
                     >
                       <div>
                         {/* Top Icon & Status Tag */}
                         <div className="flex items-center justify-between mb-3">
-                          <div className={`p-2 rounded-none border-2 border-black ${
-                            isSelected ? 'bg-black text-white' : 'bg-white text-black shadow-[2px_2px_0px_#000]'
-                          }`}>
-                            <IconComponent className={`w-5 h-5 ${isSelected ? 'text-white' : 'text-black'}`} />
+                          <div className="p-2 rounded-none border-2 border-black bg-white text-black group-hover:bg-black group-hover:text-white shadow-[2px_2px_0px_#000] transition-colors">
+                            <IconComponent className="w-5 h-5 text-current" />
                           </div>
 
                           {isSelected ? (
@@ -126,41 +122,31 @@ export default function OnboardingModal() {
                               ACTIVE
                             </span>
                           ) : (
-                            <span className="text-[9px] font-pixel font-bold uppercase px-2 py-0.5 bg-white text-black border-2 border-black shadow-[1px_1px_0px_#000]">
+                            <span className="text-[9px] font-pixel font-bold uppercase px-2 py-0.5 bg-[#2A313C] text-white group-hover:bg-black group-hover:text-white border-2 border-black shadow-[1px_1px_0px_#000] transition-colors">
                               {opt.id}
                             </span>
                           )}
                         </div>
 
                         {/* Title & Track */}
-                        <h3 className={`text-sm sm:text-base font-bold font-pixel mb-1 ${
-                          isSelected ? 'text-black' : 'text-white'
-                        }`}>
+                        <h3 className="text-sm sm:text-base font-bold font-pixel mb-1 text-white group-hover:text-black transition-colors">
                           {opt.title}
                         </h3>
 
-                        <div className={`text-[10px] font-pixel mb-2.5 ${
-                          isSelected ? 'text-slate-700' : 'text-slate-400'
-                        }`}>
+                        <div className="text-[10px] font-pixel mb-2.5 text-slate-400 group-hover:text-slate-700 transition-colors">
                           {opt.tagline}
                         </div>
                         
                         {/* Description */}
-                        <p className={`text-xs leading-relaxed mb-4 font-sans ${
-                          isSelected ? 'text-slate-800' : 'text-slate-300'
-                        }`}>
+                        <p className="text-xs leading-relaxed mb-4 font-sans text-slate-300 group-hover:text-slate-800 transition-colors">
                           {opt.desc}
                         </p>
                       </div>
 
                       {/* Footer Badge & Arrow */}
-                      <div className={`pt-2.5 border-t-2 border-black flex items-center justify-between text-[9px] font-pixel font-bold ${
-                        isSelected ? 'text-black' : 'text-white'
-                      }`}>
+                      <div className="pt-2.5 border-t-2 border-white/10 group-hover:border-black flex items-center justify-between text-[9px] font-pixel font-bold text-slate-300 group-hover:text-black transition-colors">
                         <span>{opt.badge}</span>
-                        <ArrowRight className={`w-3.5 h-3.5 group-hover:translate-x-1 transition-transform ${
-                          isSelected ? 'text-black' : 'text-white'
-                        }`} />
+                        <ArrowRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-black group-hover:translate-x-1 transition-transform" />
                       </div>
                     </button>
                   );
