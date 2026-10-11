@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from 'framer-motion';
-import { Eye, CheckCircle, ScanLine, FileText, ArrowRight, Zap, Camera, Upload, Image as ImageIcon, BookOpen, Info, Sparkles, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { Eye, CheckCircle, ScanLine, FileText, ArrowRight, Zap, Camera, Upload, Image as ImageIcon, BookOpen, Info, Sparkles, RefreshCw, CheckCircle2, X, SwitchCamera, AlertCircle } from 'lucide-react';
 import TiltCard from '../components/TiltCard';
 import { VISION_PRESETS } from '../data/mockData';
 import { useExam } from '../context/ExamContext';
@@ -14,8 +14,16 @@ export default function VisionSection() {
   const [isAnalyzingVision, setIsAnalyzingVision] = useState(false);
   const [uploadedVisionResult, setUploadedVisionResult] = useState(null);
 
+  // Live Camera states
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [cameraError, setCameraError] = useState(null);
+  const [cameraFacingMode, setCameraFacingMode] = useState('environment'); // 'environment' | 'user'
+  const [isCapturing, setIsCapturing] = useState(false);
+
   const fileInputRef = useRef(null);
   const cameraInputRef = useRef(null);
+  const videoRef = useRef(null);
+  const streamRef = useRef(null);
   const sectionRef = useRef(null);
   const prefersReducedMotion = useReducedMotion();
 
@@ -132,6 +140,107 @@ export default function VisionSection() {
     if (file) {
       processImageFile(file, "camera");
     }
+  };
+
+  // Cleanup camera stream on unmount
+  useEffect(() => {
+    return () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, []);
+
+  // Ensure stream connects to video element when modal is mounted
+  useEffect(() => {
+    if (isCameraOpen && streamRef.current && videoRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+      videoRef.current.play().catch(() => {});
+    }
+  }, [isCameraOpen]);
+
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+    setIsCameraOpen(false);
+    setCameraError(null);
+    setIsCapturing(false);
+  };
+
+  const handleOpenCamera = async (facing = cameraFacingMode) => {
+    setIsCameraOpen(true);
+    setCameraError(null);
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setCameraError("Camera is not supported on this browser/environment. Please use file upload.");
+      return;
+    }
+
+    try {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((t) => t.stop());
+        streamRef.current = null;
+      }
+
+      let stream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: facing,
+            width: { ideal: 1920 },
+            height: { ideal: 1080 }
+          },
+          audio: false
+        });
+      } catch (facingErr) {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: false
+        });
+      }
+
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play().catch(() => {});
+      }
+    } catch (err) {
+      console.error("Camera access error:", err);
+      setCameraError("Camera permission was denied or camera is in use. Please enable camera access in your browser or select an image file.");
+    }
+  };
+
+  const handleSwitchCamera = () => {
+    const nextMode = cameraFacingMode === 'environment' ? 'user' : 'environment';
+    setCameraFacingMode(nextMode);
+    handleOpenCamera(nextMode);
+  };
+
+  const handleCapturePhoto = () => {
+    if (!videoRef.current) return;
+    setIsCapturing(true);
+
+    const video = videoRef.current;
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth || 1280;
+    canvas.height = video.videoHeight || 720;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    canvas.toBlob((blob) => {
+      if (blob) {
+        const file = new File([blob], `live-camera-${Date.now()}.jpg`, { type: 'image/jpeg' });
+        stopCamera();
+        processImageFile(file, "camera");
+      } else {
+        setIsCapturing(false);
+      }
+    }, 'image/jpeg', 0.95);
   };
 
   const triggerScanAnimation = () => {
@@ -258,24 +367,18 @@ export default function VisionSection() {
 
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/15 hover:border-brand-cyan hover:text-brand-cyan text-slate-200 text-xs font-mono font-semibold transition-all"
+              className="flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-none bg-[#111318] border-2 border-black hover:bg-slate-800 text-slate-200 text-xs font-pixel font-bold transition-all shadow-[2px_2px_0px_#000]"
             >
-              <Upload className="w-4 h-4" />
-              <span>Upload Gallery Pic</span>
+              <Upload className="w-4 h-4 text-white" />
+              <span>Upload File</span>
             </button>
 
             <button
-              onClick={() => {
-                if (cameraInputRef.current) {
-                  cameraInputRef.current.click();
-                } else {
-                  fileInputRef.current?.click();
-                }
-              }}
-              className="flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-brand-violet text-white text-xs font-mono font-semibold shadow-glow-violet hover:bg-brand-purple transition-all"
+              onClick={() => handleOpenCamera()}
+              className="flex-1 md:flex-initial flex items-center justify-center gap-2 px-5 py-2.5 rounded-none bg-white text-black text-xs font-pixel font-bold border-2 border-black shadow-[3px_3px_0px_#000] hover:bg-slate-100 transition-all"
             >
-              <Camera className="w-4 h-4" />
-              <span>Click Picture</span>
+              <Camera className="w-4 h-4 text-black" />
+              <span>Live Camera 📸</span>
             </button>
           </div>
 
@@ -538,6 +641,141 @@ export default function VisionSection() {
         </div>
 
       </div>
+
+      {/* Live Camera Viewfinder Modal */}
+      <AnimatePresence>
+        {isCameraOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 10 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 10 }}
+              className="w-full max-w-2xl bg-[#07070E] border-4 border-black shadow-[8px_8px_0px_#000] relative overflow-hidden flex flex-col"
+            >
+              {/* Corner brackets */}
+              <div className="absolute top-0 left-0 w-3 h-3 bg-white" />
+              <div className="absolute top-0 right-0 w-3 h-3 bg-white" />
+              <div className="absolute bottom-0 left-0 w-3 h-3 bg-white" />
+              <div className="absolute bottom-0 right-0 w-3 h-3 bg-white" />
+
+              {/* Modal Header */}
+              <div className="flex items-center justify-between p-4 bg-[#14181F] border-b-2 border-black">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-xs sm:text-sm font-pixel font-bold text-white tracking-wider">
+                    LIVE CAMERA OCR SCANNER
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={stopCamera}
+                  className="p-1.5 border-2 border-black bg-white text-black hover:bg-slate-200 transition-colors"
+                  title="Close Camera"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Viewfinder Area */}
+              <div className="relative bg-black aspect-[4/3] sm:aspect-[16/10] overflow-hidden flex items-center justify-center">
+                {cameraError ? (
+                  <div className="p-6 text-center max-w-md">
+                    <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-3" />
+                    <h5 className="text-sm font-pixel font-bold text-white mb-2">Camera Unavailable</h5>
+                    <p className="text-xs font-mono text-slate-300 leading-relaxed mb-4">
+                      {cameraError}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        stopCamera();
+                        fileInputRef.current?.click();
+                      }}
+                      className="px-4 py-2 border-2 border-black bg-white text-black font-pixel text-xs font-bold shadow-[2px_2px_0px_#000] hover:bg-slate-100"
+                    >
+                      Select File From Device Instead
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <video
+                      ref={videoRef}
+                      autoPlay
+                      playsInline
+                      muted
+                      className="w-full h-full object-cover"
+                    />
+
+                    {/* Viewfinder Target Framing Overlay */}
+                    <div className="absolute inset-6 sm:inset-10 border-2 border-dashed border-white/60 pointer-events-none rounded-none flex flex-col justify-between p-3">
+                      <div className="flex justify-between items-start">
+                        <div className="w-4 h-4 border-t-2 border-l-2 border-emerald-400" />
+                        <div className="w-4 h-4 border-t-2 border-r-2 border-emerald-400" />
+                      </div>
+                      <div className="text-center">
+                        <span className="inline-block px-3 py-1 bg-black/70 backdrop-blur-sm border border-white/20 text-[10px] font-pixel text-white font-bold tracking-wider">
+                          ALIGN HANDWRITTEN EQUATION INSIDE FRAME
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-end">
+                        <div className="w-4 h-4 border-b-2 border-l-2 border-emerald-400" />
+                        <div className="w-4 h-4 border-b-2 border-r-2 border-emerald-400" />
+                      </div>
+                    </div>
+
+                    {/* Animated Scanning Laser Line */}
+                    <motion.div
+                      animate={{ y: [0, 240, 0] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                      className="absolute inset-x-0 top-6 h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_8px_#34D399] pointer-events-none"
+                    />
+                  </>
+                )}
+              </div>
+
+              {/* Control Footer */}
+              <div className="p-4 bg-[#14181F] border-t-2 border-black flex flex-wrap items-center justify-between gap-3">
+                <button
+                  type="button"
+                  onClick={handleSwitchCamera}
+                  disabled={Boolean(cameraError)}
+                  className="px-3 py-2 border-2 border-black bg-[#1E232A] text-white hover:bg-slate-700 text-xs font-pixel font-bold flex items-center gap-1.5 transition-all disabled:opacity-50"
+                  title="Switch Front/Rear Camera"
+                >
+                  <SwitchCamera className="w-4 h-4" />
+                  <span className="hidden sm:inline">Flip Camera</span>
+                </button>
+
+                <div className="flex items-center gap-2 ml-auto">
+                  <button
+                    type="button"
+                    onClick={stopCamera}
+                    className="px-4 py-2 border-2 border-black bg-[#1E232A] text-slate-300 hover:text-white text-xs font-pixel font-bold transition-all"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleCapturePhoto}
+                    disabled={Boolean(cameraError) || isCapturing}
+                    className="px-6 py-2.5 border-2 border-black bg-white text-black text-xs font-pixel font-bold shadow-[3px_3px_0px_#000] hover:bg-slate-200 transition-all flex items-center gap-2 disabled:opacity-50"
+                  >
+                    <Camera className="w-4 h-4" />
+                    <span>{isCapturing ? "Processing..." : "Capture & Analyze ➔"}</span>
+                  </button>
+                </div>
+              </div>
+
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
