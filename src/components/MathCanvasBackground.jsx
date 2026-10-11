@@ -1,13 +1,15 @@
 import React, { useEffect, useRef } from 'react';
 
 /**
- * Business-Class Executive Ambient Background with Spider-Man Web & Energy Trail
- * - Signature Spider-Man Palette: Crimson Red (#EF4444), Electric Cobalt Blue (#3B82F6), and Web Silk White (#FFFFFF)
- * - Significantly wider, bold luminous ribbon (tapering from ~20px down to ~2px)
- * - Delicate web-filament strands connecting points like authentic web-fluid
- * - Exactly 1-second lifespan (1000ms) with smooth fading dissipation
- * - Precision technical blueprint micro-grid with radial vignette
- * - Subtle, calm floating neural data nodes with delicate connections
+ * Business-Class Executive Screen with Spider-Man Multiverse Dimension Tear Trail
+ * - Inspired by Spider-Man: Into the Spider-Verse / Across the Spider-Verse
+ * - Moving the cursor rips open the dark screen to reveal the glowing Multiverse underneath:
+ *   * Chromatic Aberration RGB split: Neon Magenta (#FF0055) and Electric Cyan (#00F0FF)
+ *   * Comic-book Ben-Day halftone dot pattern visible through the tear
+ *   * Jagged dimensional glitch edges and web-fluid filament tethers
+ *   * Floating Spider-Verse glitch blocks that jitter horizontally
+ *   * Exactly 1-second lifespan (1000ms): the dimensional rift heals and seals shut over 1s
+ * - Background remains an executive, distraction-free obsidian screen until you interact!
  */
 
 export default function MathCanvasBackground() {
@@ -31,10 +33,10 @@ export default function MathCanvasBackground() {
       radius: 180,
     };
 
-    // 1-Second Lifespan Trail System (1000ms)
+    // 1-Second Lifespan Multiverse Tear System (1000ms)
     const TRAIL_DURATION = 1000;
     const trailPoints = [];
-    const trailSparks = [];
+    const glitchBlocks = [];
     let lastPointTime = 0;
 
     const handleMouseMove = (e) => {
@@ -42,36 +44,32 @@ export default function MathCanvasBackground() {
       mouse.targetX = e.clientX;
       mouse.targetY = e.clientY;
 
-      // Sample trail points on movement (throttle to ~10ms for smooth curve fidelity)
+      // Sample trail points on movement (~10ms interval)
       if (now - lastPointTime > 10) {
         lastPointTime = now;
         trailPoints.push({
           x: e.clientX,
           y: e.clientY,
           time: now,
+          // Subtle dimensional jitter for authentic comic book glitch tear
+          jitterX: (Math.random() - 0.5) * 5,
+          jitterY: (Math.random() - 0.5) * 5,
         });
 
-        // Spawn Spider-Man Web & Energy Sparks (Red, Blue, White)
-        const sparkCount = Math.random() > 0.4 ? 2 : 1;
-        for (let k = 0; k < sparkCount; k++) {
-          const angle = Math.random() * Math.PI * 2;
-          const speed = Math.random() * 1.3 + 0.4;
-          const colorRand = Math.random();
-          const sparkColor =
-            colorRand > 0.6
-              ? '#EF4444' // Crimson Spidey Red
-              : colorRand > 0.25
-              ? '#3B82F6' // Electric Cobalt Blue
-              : '#FFFFFF'; // Pure Web Silk White
-
-          trailSparks.push({
-            x: e.clientX + (Math.random() - 0.5) * 8,
-            y: e.clientY + (Math.random() - 0.5) * 8,
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed - 0.25, // slight upward float
+        // Spawn Spider-Verse Glitch Blocks (Rectangular chromatic pixels that jitter)
+        const blockCount = Math.random() > 0.3 ? 2 : 1;
+        for (let k = 0; k < blockCount; k++) {
+          const colors = ['#FF0055', '#00F0FF', '#FFE600', '#EF4444', '#FFFFFF'];
+          const color = colors[Math.floor(Math.random() * colors.length)];
+          glitchBlocks.push({
+            x: e.clientX + (Math.random() - 0.5) * 16,
+            y: e.clientY + (Math.random() - 0.5) * 16,
+            vx: (Math.random() - 0.5) * 2.2,
+            vy: (Math.random() - 0.5) * 1.5 - 0.3,
+            w: Math.random() * 8 + 3,
+            h: Math.random() * 4 + 2,
             time: now,
-            size: Math.random() * 2.2 + 1.6,
-            color: sparkColor,
+            color,
           });
         }
       }
@@ -84,7 +82,7 @@ export default function MathCanvasBackground() {
     };
     window.addEventListener('resize', handleResize);
 
-    // Subtle, sparse neural data nodes
+    // Subtle, sparse neural data nodes for serene resting state
     const nodeCount = Math.min(Math.floor((width * height) / 28000), 55);
     const nodes = [];
 
@@ -108,7 +106,7 @@ export default function MathCanvasBackground() {
 
       ctx.clearRect(0, 0, width, height);
 
-      // 1. Soft, diffused ambient spotlight following the cursor (Spidey Red & Blue aura)
+      // 1. Soft ambient luminescence following cursor (Multiverse violet & cyan glow)
       const spotGrad = ctx.createRadialGradient(
         mouse.x,
         mouse.y,
@@ -117,8 +115,8 @@ export default function MathCanvasBackground() {
         mouse.y,
         340
       );
-      spotGrad.addColorStop(0, 'rgba(239, 68, 68, 0.06)');
-      spotGrad.addColorStop(0.35, 'rgba(59, 130, 246, 0.04)');
+      spotGrad.addColorStop(0, 'rgba(255, 0, 85, 0.05)');
+      spotGrad.addColorStop(0.35, 'rgba(0, 240, 255, 0.04)');
       spotGrad.addColorStop(0.7, 'rgba(30, 58, 138, 0.02)');
       spotGrad.addColorStop(1, 'rgba(7, 10, 18, 0)');
 
@@ -144,7 +142,7 @@ export default function MathCanvasBackground() {
         }
       }
 
-      // 3. Render and update subtle data nodes
+      // 3. Render and update resting data nodes
       for (let i = 0; i < nodes.length; i++) {
         const n = nodes[i];
         n.x += n.vx;
@@ -171,83 +169,136 @@ export default function MathCanvasBackground() {
         ctx.fill();
       }
 
-      // 4. Prune expired trail elements older than 1000ms
+      // 4. Prune expired trail points and glitch blocks older than 1000ms
       while (trailPoints.length > 0 && now - trailPoints[0].time > TRAIL_DURATION) {
         trailPoints.shift();
       }
-      for (let i = trailSparks.length - 1; i >= 0; i--) {
-        if (now - trailSparks[i].time > TRAIL_DURATION) {
-          trailSparks.splice(i, 1);
+      for (let i = glitchBlocks.length - 1; i >= 0; i--) {
+        if (now - glitchBlocks[i].time > TRAIL_DURATION) {
+          glitchBlocks.splice(i, 1);
         }
       }
 
-      // 5. Render Spider-Man Dual-Tone Web & Energy Ribbon Trail (1s vanish, wide width)
+      // 5. RENDER SPIDER-MAN MULTIVERSE DIMENSIONAL TEAR (Revealing dimension behind screen)
       if (trailPoints.length > 1) {
         ctx.save();
+
+        // Pass A: Chromatic Aberration - Neon Cyan Channel Offset (-3px)
         for (let i = 1; i < trailPoints.length; i++) {
           const p1 = trailPoints[i - 1];
           const p2 = trailPoints[i];
-
           const age = (now - p2.time) / TRAIL_DURATION;
-          const life = Math.max(0, 1 - age); // 1.0 (new) -> 0.0 (vanished at 1s)
+          const life = Math.max(0, 1 - age);
+          const widthVal = life * 22 + 2;
 
-          // Substantially wider width: starts at ~20px at head, tapers to ~2px at tail
-          const outerWidth = life * 19 + 2;
-          const midWidth = life * 11 + 1.5;
-          const coreWidth = life * 4 + 0.8;
-          const alpha = life * 0.9;
-
-          // Layer 1: Wide Spidey Crimson Red Energy Aura
           ctx.beginPath();
-          ctx.moveTo(p1.x, p1.y);
-          ctx.lineTo(p2.x, p2.y);
-          ctx.strokeStyle = `rgba(239, 68, 68, ${alpha * 0.75})`;
-          ctx.lineWidth = outerWidth;
+          ctx.moveTo(p1.x - 3.5, p1.y + 1.5);
+          ctx.lineTo(p2.x - 3.5, p2.y + 1.5);
+          ctx.strokeStyle = `rgba(0, 240, 255, ${life * 0.8})`;
+          ctx.lineWidth = widthVal + 4;
           ctx.lineCap = 'round';
           ctx.lineJoin = 'round';
-          ctx.shadowBlur = 18 * life;
-          ctx.shadowColor = '#EF4444';
+          ctx.shadowBlur = 14 * life;
+          ctx.shadowColor = '#00F0FF';
           ctx.stroke();
+        }
 
-          // Layer 2: Electric Cobalt Blue Energy Beam
+        // Pass B: Chromatic Aberration - Neon Magenta/Crimson Channel Offset (+3.5px)
+        for (let i = 1; i < trailPoints.length; i++) {
+          const p1 = trailPoints[i - 1];
+          const p2 = trailPoints[i];
+          const age = (now - p2.time) / TRAIL_DURATION;
+          const life = Math.max(0, 1 - age);
+          const widthVal = life * 22 + 2;
+
+          ctx.beginPath();
+          ctx.moveTo(p1.x + 3.5, p1.y - 1.5);
+          ctx.lineTo(p2.x + 3.5, p2.y - 1.5);
+          ctx.strokeStyle = `rgba(255, 0, 85, ${life * 0.85})`;
+          ctx.lineWidth = widthVal + 4;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          ctx.shadowBlur = 14 * life;
+          ctx.shadowColor = '#FF0055';
+          ctx.stroke();
+        }
+
+        // Pass C: Main Multiverse Core Tear - Revealing the radiant dimension underneath
+        for (let i = 1; i < trailPoints.length; i++) {
+          const p1 = trailPoints[i - 1];
+          const p2 = trailPoints[i];
+          const age = (now - p2.time) / TRAIL_DURATION;
+          const life = Math.max(0, 1 - age);
+          const coreWidth = life * 14 + 1.5;
+
+          // Electric Spidey Blue/Purple dimension beam
           ctx.beginPath();
           ctx.moveTo(p1.x, p1.y);
           ctx.lineTo(p2.x, p2.y);
-          ctx.strokeStyle = `rgba(59, 130, 246, ${alpha * 0.9})`;
-          ctx.lineWidth = midWidth;
+          ctx.strokeStyle = `rgba(59, 130, 246, ${life * 0.95})`;
+          ctx.lineWidth = coreWidth;
           ctx.lineCap = 'round';
           ctx.lineJoin = 'round';
-          ctx.shadowBlur = 10 * life;
+          ctx.shadowBlur = 8 * life;
           ctx.shadowColor = '#3B82F6';
           ctx.stroke();
 
-          // Layer 3: Pure White Web-Shooter Silk Core
-          if (life > 0.25) {
+          // Blinding white dimension rupture slit
+          if (life > 0.2) {
             ctx.beginPath();
             ctx.moveTo(p1.x, p1.y);
             ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(255, 255, 255, ${(life - 0.25) * 1.3})`;
-            ctx.lineWidth = coreWidth;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            ctx.shadowBlur = 6 * life;
-            ctx.shadowColor = '#FFFFFF';
+            ctx.strokeStyle = `rgba(255, 255, 255, ${(life - 0.2) * 1.3})`;
+            ctx.lineWidth = Math.max(0.8, coreWidth * 0.35);
             ctx.stroke();
           }
         }
 
-        // Web filament micro-strands connecting consecutive nodes (like organic spider webbing)
+        // Pass D: Comic-Book Ben-Day Halftone Dot Matrix inside the tear
+        for (let i = 0; i < trailPoints.length; i += 2) {
+          const pt = trailPoints[i];
+          const age = (now - pt.time) / TRAIL_DURATION;
+          const life = Math.max(0, 1 - age);
+
+          if (life > 0.25) {
+            // 3-4 small halftone dots revealed through the rift
+            const dotOffsets = [
+              { dx: -7, dy: -5, col: '#00F0FF', r: 1.8 },
+              { dx: 6, dy: 5, col: '#FF0055', r: 1.8 },
+              { dx: 2, dy: -6, col: '#FFE600', r: 1.4 },
+              { dx: -4, dy: 6, col: '#FFFFFF', r: 1.5 },
+            ];
+
+            for (let d = 0; d < dotOffsets.length; d++) {
+              const dot = dotOffsets[d];
+              ctx.beginPath();
+              ctx.arc(
+                pt.x + dot.dx * life,
+                pt.y + dot.dy * life,
+                dot.r * life,
+                0,
+                Math.PI * 2
+              );
+              ctx.fillStyle = dot.col;
+              ctx.globalAlpha = life * 0.85;
+              ctx.fill();
+            }
+          }
+        }
+
+        // Pass E: Web-Filament Tethers (Spidey silk holding the dimensional rift)
         for (let i = 2; i < trailPoints.length; i += 2) {
           const pPrev = trailPoints[i - 2];
           const pCurr = trailPoints[i];
           const age = (now - pCurr.time) / TRAIL_DURATION;
           const life = Math.max(0, 1 - age);
+
           if (life > 0.35) {
             ctx.beginPath();
-            ctx.moveTo(pPrev.x, pPrev.y);
-            ctx.lineTo(pCurr.x, pCurr.y);
-            ctx.strokeStyle = `rgba(255, 255, 255, ${life * 0.3})`;
-            ctx.lineWidth = 0.8;
+            ctx.moveTo(pPrev.x + pPrev.jitterX, pPrev.y + pPrev.jitterY);
+            ctx.lineTo(pCurr.x + pCurr.jitterX, pCurr.y + pCurr.jitterY);
+            ctx.strokeStyle = `rgba(255, 255, 255, ${life * 0.4})`;
+            ctx.lineWidth = 0.9;
             ctx.stroke();
           }
         }
@@ -255,27 +306,34 @@ export default function MathCanvasBackground() {
         ctx.restore();
       }
 
-      // 6. Render Floating Spider-Man Micro-Sparks (Red, Blue, White)
-      if (trailSparks.length > 0) {
+      // 6. RENDER SPIDER-VERSE GLITCH BLOCKS (Rectangular chromatic fragments jittering)
+      if (glitchBlocks.length > 0) {
         ctx.save();
-        for (let i = 0; i < trailSparks.length; i++) {
-          const s = trailSparks[i];
-          const age = (now - s.time) / TRAIL_DURATION;
+        for (let i = 0; i < glitchBlocks.length; i++) {
+          const b = glitchBlocks[i];
+          const age = (now - b.time) / TRAIL_DURATION;
           const life = Math.max(0, 1 - age);
 
-          // Physical gentle dispersion
-          s.x += s.vx;
-          s.y += s.vy;
-          s.vx *= 0.97;
-          s.vy *= 0.97;
+          // Authentic Spider-Verse horizontal frame-stutter jitter
+          b.x += b.vx + (Math.random() - 0.5) * 3;
+          b.y += b.vy;
+          b.vx *= 0.96;
+          b.vy *= 0.96;
 
-          ctx.beginPath();
-          ctx.arc(s.x, s.y, s.size * (0.3 + 0.7 * life), 0, Math.PI * 2);
-          ctx.fillStyle = s.color;
-          ctx.globalAlpha = life * 0.95;
+          const blockW = b.w * (0.3 + 0.7 * life);
+          const blockH = b.h * (0.3 + 0.7 * life);
+
+          // Draw chromatic glitch block
+          ctx.fillStyle = b.color;
+          ctx.globalAlpha = life * 0.9;
           ctx.shadowBlur = 8 * life;
-          ctx.shadowColor = s.color;
-          ctx.fill();
+          ctx.shadowColor = b.color;
+          ctx.fillRect(b.x - blockW / 2, b.y - blockH / 2, blockW, blockH);
+
+          // 1px black outline for authentic comic book ink finish
+          ctx.strokeStyle = 'rgba(0, 0, 0, 0.6)';
+          ctx.lineWidth = 0.8;
+          ctx.strokeRect(b.x - blockW / 2, b.y - blockH / 2, blockW, blockH);
         }
         ctx.restore();
       }
@@ -317,7 +375,7 @@ export default function MathCanvasBackground() {
         }}
       />
 
-      {/* Smooth Canvas Rendering Layer with Spider-Man 1s Luminous Trail */}
+      {/* Smooth Canvas Rendering Layer with Spider-Verse Multiverse Dimensional Tear */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full pointer-events-none"
