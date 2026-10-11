@@ -54,10 +54,15 @@ export function ExamProvider({ children }) {
   });
 
   const [showOnboardingModal, setShowOnboardingModal] = useState(() => {
-    if (typeof window !== 'undefined' && window.location.search.includes('skip_modal')) {
-      return false;
+    if (typeof window !== 'undefined') {
+      if (window.location.search.includes('skip_modal')) return false;
+      if (window.location.search.includes('choose_track')) return true;
+      // Show on entry if not dismissed in the current session
+      const dismissed = sessionStorage.getItem('socratic_onboarded_dismissed');
+      if (dismissed) return false;
+      return true;
     }
-    return !localStorage.getItem('socratic_target_exam');
+    return true;
   });
 
   // User Profile & EXP State
@@ -109,6 +114,9 @@ export function ExamProvider({ children }) {
   const selectExam = (exam) => {
     setTargetExam(exam);
     localStorage.setItem('socratic_target_exam', exam);
+    try {
+      sessionStorage.setItem('socratic_onboarded_dismissed', 'true');
+    } catch (e) {}
     setShowOnboardingModal(false);
 
     // Scroll page to the very beginning immediately

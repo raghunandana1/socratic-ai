@@ -9,7 +9,7 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [examDropdownOpen, setExamDropdownOpen] = useState(false);
 
-  const { targetExam, setTargetExam } = useExam();
+  const { targetExam, setTargetExam, setShowOnboardingModal } = useExam();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -84,7 +84,7 @@ export default function Navbar() {
                 />
                 
                 {/* Dropdown Menu Container */}
-                <div className="absolute top-full left-0 mt-2 w-52 bg-[#1E232A] border-3 border-black rounded-none p-1.5 shadow-[5px_5px_0px_#000] z-50 pixel-cut-corners">
+                <div className="absolute top-full left-0 mt-2 w-56 bg-[#1E232A] border-3 border-black rounded-none p-1.5 shadow-[5px_5px_0px_#000] z-50 pixel-cut-corners">
                   <div className="text-[9px] font-pixel text-slate-300 px-2 py-1.5 uppercase tracking-wider border-b-2 border-black mb-1 flex items-center justify-between bg-[#14181F]">
                     <span>Select Track</span>
                     <span className="w-1.5 h-1.5 bg-[#EF4444] animate-pulse" />
@@ -106,6 +106,16 @@ export default function Navbar() {
                       {targetExam === ex && <PixelCheck className="w-3.5 h-3.5 text-black" />}
                     </button>
                   ))}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setExamDropdownOpen(false);
+                      setShowOnboardingModal(true);
+                    }}
+                    className="w-full text-center mt-1 pt-1.5 border-t-2 border-black text-[9px] font-pixel text-slate-300 hover:text-white hover:underline block"
+                  >
+                    Open Track Overview Modal ➔
+                  </button>
                 </div>
               </>
             )}
