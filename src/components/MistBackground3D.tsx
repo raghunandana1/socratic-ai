@@ -15,28 +15,46 @@ export interface MistBackground3DProps {
   className?: string;
 }
 
-// Extrusion settings for smooth, beveled mathematical 3D solids
+// 4-step discrete gradient map generator for MeshToonMaterial
+function createToonGradientTexture(hexColors: number[]): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  canvas.width = hexColors.length;
+  canvas.height = 1;
+  const ctx = canvas.getContext('2d');
+  if (ctx) {
+    hexColors.forEach((color, i) => {
+      ctx.fillStyle = `#${color.toString(16).padStart(6, '0')}`;
+      ctx.fillRect(i, 0, 1, 1);
+    });
+  }
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.minFilter = THREE.NearestFilter;
+  texture.magFilter = THREE.NearestFilter;
+  texture.generateMipmaps = false;
+  return texture;
+}
+
+// Extrusion settings for crisp, beveled mathematical arcade glyphs
 const GLYPH_EXTRUDE_CONFIG = {
-  depth: 0.36,
+  depth: 0.32,
   bevelEnabled: true,
-  bevelThickness: 0.09,
-  bevelSize: 0.07,
-  bevelSegments: 4,
-  curveSegments: 24
+  bevelThickness: 0.08,
+  bevelSize: 0.06,
+  bevelSegments: 2
 };
 
 // 1. Delta (Δ): Isometric hollow triangle with inner cutout
 function buildDeltaGeometry(): THREE.BufferGeometry {
   const shape = new THREE.Shape();
-  shape.moveTo(0, 1.3);
-  shape.lineTo(1.18, -0.9);
-  shape.lineTo(-1.18, -0.9);
+  shape.moveTo(0, 1.25);
+  shape.lineTo(1.15, -0.9);
+  shape.lineTo(-1.15, -0.9);
   shape.closePath();
 
   const hole = new THREE.Path();
-  hole.moveTo(0, 0.58);
-  hole.lineTo(-0.54, -0.52);
-  hole.lineTo(0.54, -0.52);
+  hole.moveTo(0, 0.55);
+  hole.lineTo(-0.52, -0.52);
+  hole.lineTo(0.52, -0.52);
   hole.closePath();
   shape.holes.push(hole);
 
@@ -48,20 +66,20 @@ function buildDeltaGeometry(): THREE.BufferGeometry {
 // 2. Pi (π): Classical Greek Pi with top bar serifs and distinct pillars
 function buildPiGeometry(): THREE.BufferGeometry {
   const shape = new THREE.Shape();
-  shape.moveTo(-1.08, 1.05);
-  shape.lineTo(1.08, 1.05);
-  shape.lineTo(1.08, 0.72);
-  shape.lineTo(0.7, 0.72);
-  shape.lineTo(0.7, -0.78);
-  shape.lineTo(0.9, -0.85);
-  shape.lineTo(0.9, -1.05);
+  shape.moveTo(-1.05, 1.05);
+  shape.lineTo(1.05, 1.05);
+  shape.lineTo(1.05, 0.72);
+  shape.lineTo(0.68, 0.72);
+  shape.lineTo(0.68, -0.78);
+  shape.lineTo(0.88, -0.85);
+  shape.lineTo(0.88, -1.05);
   shape.lineTo(0.32, -1.05);
   shape.lineTo(0.32, 0.72);
   shape.lineTo(-0.25, 0.72);
   shape.lineTo(-0.25, -1.05);
-  shape.lineTo(-0.7, -1.05);
-  shape.lineTo(-0.7, 0.72);
-  shape.lineTo(-1.08, 0.72);
+  shape.lineTo(-0.68, -1.05);
+  shape.lineTo(-0.68, 0.72);
+  shape.lineTo(-1.05, 0.72);
   shape.closePath();
 
   const geom = new THREE.ExtrudeGeometry(shape, GLYPH_EXTRUDE_CONFIG);
@@ -69,7 +87,7 @@ function buildPiGeometry(): THREE.BufferGeometry {
   return geom;
 }
 
-// 3. Sigma (Σ): Classical summation sign with sharp angle vertices
+// 3. Sigma (Σ): Classical summation sign with sharp 45-degree angle vertices
 function buildSigmaGeometry(): THREE.BufferGeometry {
   const shape = new THREE.Shape();
   shape.moveTo(-0.95, 1.05);
@@ -81,7 +99,7 @@ function buildSigmaGeometry(): THREE.BufferGeometry {
   shape.lineTo(0.95, -0.7);
   shape.lineTo(0.95, -1.05);
   shape.lineTo(-0.95, -1.05);
-  shape.lineTo(-0.05, 0.0);
+  shape.lineTo(-0.1, 0.0);
   shape.closePath();
 
   const geom = new THREE.ExtrudeGeometry(shape, GLYPH_EXTRUDE_CONFIG);
@@ -89,20 +107,20 @@ function buildSigmaGeometry(): THREE.BufferGeometry {
   return geom;
 }
 
-// 4. Integral (∫): Flowing calculus integral symbol
+// 4. Integral (∫): Fluid calculus integral ribbon with terminal hooks
 function buildIntegralGeometry(): THREE.BufferGeometry {
   const shape = new THREE.Shape();
-  shape.moveTo(-0.35, 1.25);
-  shape.bezierCurveTo(-0.05, 1.35, 0.55, 1.35, 0.55, 0.95);
-  shape.bezierCurveTo(0.55, 0.65, 0.25, 0.55, 0.1, 0.4);
-  shape.lineTo(-0.1, -0.4);
-  shape.bezierCurveTo(-0.25, -0.55, -0.55, -0.65, -0.55, -0.95);
-  shape.bezierCurveTo(-0.55, -1.35, 0.05, -1.35, 0.35, -1.25);
-  shape.lineTo(0.28, -0.95);
-  shape.bezierCurveTo(0.08, -1.05, -0.25, -1.05, -0.25, -0.85);
-  shape.bezierCurveTo(-0.25, -0.65, -0.05, -0.5, 0.15, -0.3);
-  shape.lineTo(0.35, 0.5);
-  shape.bezierCurveTo(0.55, 0.7, 0.25, 1.05, -0.28, 0.95);
+  shape.moveTo(0.12, 1.25);
+  shape.quadraticCurveTo(0.68, 1.25, 0.68, 0.85);
+  shape.lineTo(0.36, 0.85);
+  shape.quadraticCurveTo(0.36, 1.0, 0.12, 1.0);
+  shape.lineTo(0.12, -0.7);
+  shape.quadraticCurveTo(0.12, -1.0, -0.2, -1.0);
+  shape.lineTo(-0.48, -1.0);
+  shape.lineTo(-0.48, -1.25);
+  shape.quadraticCurveTo(0.2, -1.25, 0.36, -0.7);
+  shape.lineTo(0.36, 0.95);
+  shape.quadraticCurveTo(0.36, 1.25, 0.12, 1.25);
   shape.closePath();
 
   const geom = new THREE.ExtrudeGeometry(shape, GLYPH_EXTRUDE_CONFIG);
@@ -110,20 +128,21 @@ function buildIntegralGeometry(): THREE.BufferGeometry {
   return geom;
 }
 
-// 5. Square Root Radical (√x)
+// 5. Square Root (√): Sharp radical checkmark with extended top roof
 function buildSqrtGeometry(): THREE.BufferGeometry {
   const shape = new THREE.Shape();
-  shape.moveTo(-1.15, -0.15);
-  shape.lineTo(-0.85, -0.15);
-  shape.lineTo(-0.62, -0.85);
-  shape.lineTo(-0.22, 1.05);
-  shape.lineTo(1.15, 1.05);
-  shape.lineTo(1.15, 0.75);
-  shape.lineTo(0.05, 0.75);
-  shape.lineTo(-0.48, -0.95);
-  shape.lineTo(-0.75, -0.95);
-  shape.lineTo(-0.95, -0.45);
-  shape.lineTo(-1.15, -0.45);
+  shape.moveTo(-1.25, 0.05);
+  shape.lineTo(-0.95, -0.28);
+  shape.lineTo(-0.72, -0.28);
+  shape.lineTo(-0.35, -1.15);
+  shape.lineTo(-0.06, -1.15);
+  shape.lineTo(0.42, 1.15);
+  shape.lineTo(1.25, 1.15);
+  shape.lineTo(1.25, 0.88);
+  shape.lineTo(0.56, 0.88);
+  shape.lineTo(0.16, -0.72);
+  shape.lineTo(-0.25, -0.72);
+  shape.lineTo(-0.55, 0.05);
   shape.closePath();
 
   const geom = new THREE.ExtrudeGeometry(shape, GLYPH_EXTRUDE_CONFIG);
@@ -131,175 +150,241 @@ function buildSqrtGeometry(): THREE.BufferGeometry {
   return geom;
 }
 
-// 6. Infinity (∞): Lemniscate
-function buildInfinityGeometry(): THREE.BufferGeometry {
+// 6. Plus (+): Clean arcade cross with beveled arms
+function buildPlusGeometry(): THREE.BufferGeometry {
   const shape = new THREE.Shape();
-  const a = 1.05;
-  const numPts = 64;
-
-  const pts: THREE.Vector2[] = [];
-  for (let i = 0; i < numPts; i++) {
-    const t = (i / numPts) * Math.PI * 2;
-    const denom = 1 + Math.sin(t) * Math.sin(t);
-    const x = (a * Math.cos(t)) / denom;
-    const y = (a * Math.sin(t) * Math.cos(t)) / denom;
-    pts.push(new THREE.Vector2(x, y));
-  }
-
-  shape.moveTo(pts[0].x, pts[0].y);
-  for (let i = 1; i < pts.length; i++) {
-    shape.lineTo(pts[i].x, pts[i].y);
-  }
+  const w = 0.34;
+  const l = 0.95;
+  shape.moveTo(-w, l);
+  shape.lineTo(w, l);
+  shape.lineTo(w, w);
+  shape.lineTo(l, w);
+  shape.lineTo(l, -w);
+  shape.lineTo(w, -w);
+  shape.lineTo(w, -l);
+  shape.lineTo(-w, -l);
+  shape.lineTo(-w, -w);
+  shape.lineTo(-l, -w);
+  shape.lineTo(-l, w);
+  shape.lineTo(-w, w);
   shape.closePath();
 
-  const geom = new THREE.ExtrudeGeometry(shape, {
-    depth: 0.32,
-    bevelEnabled: true,
-    bevelThickness: 0.08,
-    bevelSize: 0.06,
-    bevelSegments: 3
-  });
+  const geom = new THREE.ExtrudeGeometry(shape, GLYPH_EXTRUDE_CONFIG);
   geom.center();
   return geom;
 }
 
-// 7. 4D Hypercube / Tesseract
-function buildTesseractGroup(
-  outerMat: THREE.Material,
-  innerMat: THREE.Material,
-  edgeMat: THREE.Material
-): { group: THREE.Group; innerGroup: THREE.Group } {
+// 7. Infinity (∞): Mathematical figure-8 lemniscate
+function buildInfinityGeometry(): THREE.BufferGeometry {
+  const shape = new THREE.Shape();
+  const segments = 40;
+  const a = 1.05;
+  for (let s = 0; s <= segments; s++) {
+    const t = (s / segments) * Math.PI * 2;
+    const denom = 1 + Math.sin(t) * Math.sin(t);
+    const x = ((a * Math.cos(t)) / denom) * 1.45;
+    const y = ((a * Math.sin(t) * Math.cos(t)) / denom) * 1.45;
+    if (s === 0) shape.moveTo(x, y);
+    else shape.lineTo(x, y);
+  }
+  shape.closePath();
+
+  const geom = new THREE.ExtrudeGeometry(shape, GLYPH_EXTRUDE_CONFIG);
+  geom.center();
+  return geom;
+}
+
+// 8. Tesseract (4D Hypercube Wireframe): Outer cube with concentric inner cube & 8 corner struts
+function buildTesseractGroup(mat: THREE.Material, edgeMat: THREE.Material): { group: THREE.Group; innerGroup: THREE.Group } {
   const group = new THREE.Group();
-
-  const outerGeom = new THREE.BoxGeometry(1.9, 1.9, 1.9);
-  const outerMesh = new THREE.Mesh(outerGeom, outerMat);
-  const outerWire = new THREE.LineSegments(new THREE.EdgesGeometry(outerGeom), edgeMat);
-  outerMesh.add(outerWire);
-  group.add(outerMesh);
-
   const innerGroup = new THREE.Group();
-  const innerGeom = new THREE.BoxGeometry(0.95, 0.95, 0.95);
-  const innerMesh = new THREE.Mesh(innerGeom, innerMat);
-  const innerWire = new THREE.LineSegments(new THREE.EdgesGeometry(innerGeom), edgeMat);
-  innerMesh.add(innerWire);
-  innerGroup.add(innerMesh);
+
+  const outerGeom = new THREE.BoxGeometry(1.5, 1.5, 1.5);
+  const outerMesh = new THREE.Mesh(outerGeom, mat);
+  const outerEdges = new THREE.LineSegments(new THREE.EdgesGeometry(outerGeom), edgeMat);
+  group.add(outerMesh, outerEdges);
+
+  const innerGeom = new THREE.BoxGeometry(0.75, 0.75, 0.75);
+  const innerMesh = new THREE.Mesh(innerGeom, mat);
+  const innerEdges = new THREE.LineSegments(new THREE.EdgesGeometry(innerGeom), edgeMat);
+  innerGroup.add(innerMesh, innerEdges);
   group.add(innerGroup);
 
   const strutGeom = new THREE.BufferGeometry();
-  const vOuter = [
-    [-0.95, -0.95, -0.95], [0.95, -0.95, -0.95], [0.95, 0.95, -0.95], [-0.95, 0.95, -0.95],
-    [-0.95, -0.95,  0.95], [0.95, -0.95,  0.95], [0.95, 0.95,  0.95], [-0.95, 0.95,  0.95]
-  ];
-  const vInner = vOuter.map(([x, y, z]) => [x * 0.5, y * 0.5, z * 0.5]);
-  const strutPos: number[] = [];
-  for (let i = 0; i < 8; i++) {
-    strutPos.push(...vOuter[i], ...vInner[i]);
-  }
-  strutGeom.setAttribute('position', new THREE.Float32BufferAttribute(strutPos, 3));
+  const strutPositions = new Float32Array([
+    -0.75, -0.75, -0.75,  -0.375, -0.375, -0.375,
+     0.75, -0.75, -0.75,   0.375, -0.375, -0.375,
+    -0.75,  0.75, -0.75,  -0.375,  0.375, -0.375,
+     0.75,  0.75, -0.75,   0.375,  0.375, -0.375,
+    -0.75, -0.75,  0.75,  -0.375, -0.375,  0.375,
+     0.75, -0.75,  0.75,   0.375, -0.375,  0.375,
+    -0.75,  0.75,  0.75,  -0.375,  0.375,  0.375,
+     0.75,  0.75,  0.75,   0.375,  0.375,  0.375
+  ]);
+  strutGeom.setAttribute('position', new THREE.BufferAttribute(strutPositions, 3));
   const struts = new THREE.LineSegments(strutGeom, edgeMat);
   group.add(struts);
 
   return { group, innerGroup };
 }
 
-// 8. Quantum Atomic Orbital System
-function buildQuantumOrbitalGroup(
-  ringMat: THREE.Material,
-  coreMat: THREE.Material,
-  edgeMat: THREE.Material
-): { group: THREE.Group; innerGroup: THREE.Group } {
+// 9. Gyroscope / Orbital Kinematics: Dual concentric gimbal rings with central diamond
+function buildGyroscopeGroup(mat: THREE.Material, edgeMat: THREE.Material): { group: THREE.Group; innerGroup: THREE.Group } {
   const group = new THREE.Group();
-
-  // Nucleus: Floating glowing core
-  const nucleusGeom = new THREE.SphereGeometry(0.42, 24, 24);
-  const nucleus = new THREE.Mesh(nucleusGeom, coreMat);
-  group.add(nucleus);
-
   const innerGroup = new THREE.Group();
-  const angles = [
-    { x: 0, y: 0, z: 0 },
-    { x: Math.PI / 3, y: Math.PI / 4, z: 0 },
-    { x: -Math.PI / 3, y: -Math.PI / 4, z: Math.PI / 6 }
-  ];
 
-  angles.forEach(({ x, y, z }, idx) => {
-    const radius = 1.15 + idx * 0.22;
-    const ringGeom = new THREE.TorusGeometry(radius, 0.05, 16, 64);
-    const ring = new THREE.Mesh(ringGeom, ringMat);
-    ring.rotation.set(x, y, z);
-    const ringWire = new THREE.LineSegments(new THREE.EdgesGeometry(ringGeom), edgeMat);
-    ring.add(ringWire);
-    innerGroup.add(ring);
-  });
+  const outerGeom = new THREE.TorusGeometry(1.2, 0.08, 12, 32);
+  const outerMesh = new THREE.Mesh(outerGeom, mat);
+  const outerEdges = new THREE.LineSegments(new THREE.EdgesGeometry(outerGeom, 35), edgeMat);
+  group.add(outerMesh, outerEdges);
 
+  const innerGeom = new THREE.TorusGeometry(0.85, 0.07, 12, 32);
+  const innerMesh = new THREE.Mesh(innerGeom, mat);
+  const innerEdges = new THREE.LineSegments(new THREE.EdgesGeometry(innerGeom, 35), edgeMat);
+  innerGroup.add(innerMesh, innerEdges);
+  innerGroup.rotation.x = Math.PI / 2;
   group.add(innerGroup);
+
+  const coreGeom = new THREE.OctahedronGeometry(0.35, 0);
+  const coreMesh = new THREE.Mesh(coreGeom, mat);
+  const coreEdges = new THREE.LineSegments(new THREE.EdgesGeometry(coreGeom), edgeMat);
+  innerGroup.add(coreMesh, coreEdges);
+
   return { group, innerGroup };
 }
 
-// 9. Geodesic Icosahedron with floating glowing energy nucleus
-function buildIcosahedronGem(
-  gemMat: THREE.Material,
-  coreMat: THREE.Material,
-  edgeMat: THREE.Material
-): { group: THREE.Group; innerGroup: THREE.Group } {
+// 10. Atomic / Kepler Orbitals: 3 intersecting orbital rings around an icosahedron nucleus
+function buildAtomOrbitGroup(mat: THREE.Material, edgeMat: THREE.Material): { group: THREE.Group; innerGroup: THREE.Group } {
   const group = new THREE.Group();
-
-  const geom = new THREE.IcosahedronGeometry(1.25, 0);
-  const mesh = new THREE.Mesh(geom, gemMat);
-  const wire = new THREE.LineSegments(new THREE.EdgesGeometry(geom), edgeMat);
-  mesh.add(wire);
-  group.add(mesh);
-
   const innerGroup = new THREE.Group();
-  const coreGeom = new THREE.OctahedronGeometry(0.5, 0);
-  const coreMesh = new THREE.Mesh(coreGeom, coreMat);
-  innerGroup.add(coreMesh);
+
+  for (let a = 0; a < 3; a++) {
+    const ringGeom = new THREE.TorusGeometry(1.15, 0.06, 8, 36);
+    const ringMesh = new THREE.Mesh(ringGeom, mat);
+    const ringEdges = new THREE.LineSegments(new THREE.EdgesGeometry(ringGeom, 35), edgeMat);
+    const ringSub = new THREE.Group();
+    ringSub.add(ringMesh, ringEdges);
+    ringSub.rotation.x = Math.PI / 3;
+    ringSub.rotation.z = (a * Math.PI) / 3;
+    group.add(ringSub);
+  }
+
+  const nucleusGeom = new THREE.IcosahedronGeometry(0.35, 0);
+  const nucleus = new THREE.Mesh(nucleusGeom, mat);
+  const nucleusEdges = new THREE.LineSegments(new THREE.EdgesGeometry(nucleusGeom), edgeMat);
+  innerGroup.add(nucleus, nucleusEdges);
   group.add(innerGroup);
 
   return { group, innerGroup };
 }
 
-// 10. Chamfered Dodecahedron
-function buildDodecahedronGem(
-  gemMat: THREE.Material,
-  edgeMat: THREE.Material
-): { group: THREE.Group } {
+// 11. Nested Icosahedron Gem: Faceted icosahedron with inner counter-rotating octahedron
+function buildNestedIcosahedronGroup(mat: THREE.Material, edgeMat: THREE.Material): { group: THREE.Group; innerGroup: THREE.Group } {
   const group = new THREE.Group();
-  const geom = new THREE.DodecahedronGeometry(1.2, 0);
-  const mesh = new THREE.Mesh(geom, gemMat);
-  const wire = new THREE.LineSegments(new THREE.EdgesGeometry(geom), edgeMat);
-  mesh.add(wire);
-  group.add(mesh);
+  const innerGroup = new THREE.Group();
+
+  const outerGeom = new THREE.IcosahedronGeometry(1.15, 0);
+  const outerMesh = new THREE.Mesh(outerGeom, mat);
+  const outerEdges = new THREE.LineSegments(new THREE.EdgesGeometry(outerGeom), edgeMat);
+  group.add(outerMesh, outerEdges);
+
+  const innerGeom = new THREE.OctahedronGeometry(0.52, 0);
+  const innerMesh = new THREE.Mesh(innerGeom, mat);
+  const innerEdges = new THREE.LineSegments(new THREE.EdgesGeometry(innerGeom), edgeMat);
+  innerGroup.add(innerMesh, innerEdges);
+  group.add(innerGroup);
+
+  return { group, innerGroup };
+}
+
+// 12. Dodecahedron Polyhedron: 12-sided pentagonal gem
+function buildDodecahedronGroup(mat: THREE.Material, edgeMat: THREE.Material): { group: THREE.Group; innerGroup?: THREE.Group } {
+  const group = new THREE.Group();
+  const geom = new THREE.DodecahedronGeometry(1.1, 0);
+  const mesh = new THREE.Mesh(geom, mat);
+  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geom), edgeMat);
+  group.add(mesh, edges);
   return { group };
 }
 
-// 11. Torus Knot: 3D Topological Soliton
-function buildTorusKnotGem(
-  mat: THREE.Material,
-  edgeMat: THREE.Material
-): { group: THREE.Group } {
+// 13. Trefoil Knot: Smooth topological curve with neon contour
+function buildTrefoilKnotGroup(mat: THREE.Material, edgeMat: THREE.Material): { group: THREE.Group; innerGroup?: THREE.Group } {
   const group = new THREE.Group();
-  const geom = new THREE.TorusKnotGeometry(1.05, 0.32, 128, 32, 2, 3);
+  const geom = new THREE.TorusKnotGeometry(0.8, 0.22, 64, 12, 2, 3);
   const mesh = new THREE.Mesh(geom, mat);
-  const wire = new THREE.LineSegments(new THREE.EdgesGeometry(geom, 35), edgeMat);
-  mesh.add(wire);
-  group.add(mesh);
+  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geom, 25), edgeMat);
+  group.add(mesh, edges);
   return { group };
 }
 
-// 12. Trefoil Knot: Twisted 3D Loop
-function buildTrefoilGem(
-  mat: THREE.Material,
-  edgeMat: THREE.Material
-): { group: THREE.Group } {
-  const group = new THREE.Group();
-  const geom = new THREE.TorusKnotGeometry(1.15, 0.28, 128, 32, 3, 2);
-  const mesh = new THREE.Mesh(geom, mat);
-  const wire = new THREE.LineSegments(new THREE.EdgesGeometry(geom, 35), edgeMat);
-  mesh.add(wire);
-  group.add(mesh);
-  return { group };
-}
+// Screen post-processing shader: Clean, crisp cel-shaded arcade quantization with subtle CRT scanlines
+// ZERO muddy Bayer dither noise
+const PostShader = {
+  vertexShader: `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = vec4(position, 1.0);
+    }
+  `,
+  fragmentShader: `
+    uniform sampler2D tDiffuse;
+    uniform vec2 uResolution;
+    uniform float uVignette;
+    varying vec2 vUv;
+
+    void main() {
+      vec4 texColor = texture2D(tDiffuse, vUv);
+      vec3 col = texColor.rgb;
+
+      // Soft vignette
+      vec2 uvC = vUv - 0.5;
+      float vig = clamp(1.0 - dot(uvC, uvC) * uVignette, 0.0, 1.0);
+      col *= vig;
+
+      // Vertical void background gradient: #060913 (deep midnight) to #0a1532 (dark royal navy)
+      vec3 bgVoid = mix(vec3(0.024, 0.035, 0.075), vec3(0.039, 0.082, 0.196), clamp(1.0 - vUv.y, 0.0, 1.0));
+
+      // Subtle high-end arcade CRT scanline sheen (clean, no static noise)
+      float scanline = 0.96 + 0.04 * sin(gl_FragCoord.y * 1.5);
+
+      // Detect red/rose accent power-up objects vs dark blue/cyan math objects
+      bool isAccent = (col.r > col.b * 1.25 && col.r > 0.12) || (col.r > col.g * 1.25 && col.r > 0.12);
+
+      vec3 outCol;
+      if (isAccent) {
+        // Neon Ruby / Power-Up Arcade Ramp (clean, non-dithered cel steps)
+        float lum = dot(col, vec3(0.3, 0.5, 0.2));
+        if (lum < 0.04) {
+          outCol = bgVoid;
+        } else if (lum < 0.20) {
+          outCol = vec3(0.20, 0.02, 0.05);   // #33050d deep crimson
+        } else if (lum < 0.45) {
+          outCol = vec3(0.88, 0.11, 0.28);   // #e11d48 electric ruby
+        } else {
+          outCol = vec3(0.98, 0.44, 0.52);   // #fb7185 luminous rose highlight
+        }
+      } else {
+        // Old Dark Blue & Electric Cyan Vector Arcade Ramp
+        float lum = dot(col, vec3(0.2126, 0.7152, 0.0722));
+        if (lum < 0.04) {
+          outCol = bgVoid;                     // #060913 deep midnight void
+        } else if (lum < 0.16) {
+          outCol = vec3(0.031, 0.078, 0.188); // #081430 deep navy
+        } else if (lum < 0.32) {
+          outCol = vec3(0.114, 0.306, 0.847); // #1d4ed8 royal blue
+        } else if (lum < 0.55) {
+          outCol = vec3(0.231, 0.510, 0.965); // #3b82f6 electric blue
+        } else {
+          outCol = vec3(0.404, 0.820, 0.980); // #67e8f9 / #38bdf8 luminous cyan highlight
+        }
+      }
+
+      outCol *= scanline;
+      gl_FragColor = vec4(outCol, 1.0);
+    }
+  `
+};
 
 interface FloatingObjectItem {
   group: THREE.Group;
@@ -317,12 +402,14 @@ interface FloatingObjectItem {
 }
 
 export default function MistBackground3D({
-  objectCount = 26,
+  pixelSize = 2,
+  objectCount = 28,
   speed = 0.7,
   parallax = 1,
   repulsion = 1,
-  scrollDepth = 14,
+  scrollDepth = 12,
   accentRed = true,
+  selector = '[data-mist-source]',
   className = ''
 }: MistBackground3DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -330,485 +417,610 @@ export default function MistBackground3D({
   const [webglSupported, setWebglSupported] = useState<boolean>(true);
 
   const propsRef = useRef({
+    pixelSize,
     objectCount,
     speed,
     parallax,
     repulsion,
     scrollDepth,
-    accentRed
+    accentRed,
+    selector
   });
 
   useEffect(() => {
     propsRef.current = {
+      pixelSize,
       objectCount,
       speed,
       parallax,
       repulsion,
       scrollDepth,
-      accentRed
+      accentRed,
+      selector
     };
-  }, [objectCount, speed, parallax, repulsion, scrollDepth, accentRed]);
+  }, [pixelSize, objectCount, speed, parallax, repulsion, scrollDepth, accentRed, selector]);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    const container = containerRef.current;
-    if (!canvas || !container) return;
+    if (typeof window === 'undefined') return;
 
-    // Detect WebGL capability
-    const testCanvas = document.createElement('canvas');
-    const gl = testCanvas.getContext('webgl2') || testCanvas.getContext('webgl');
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+
+    // 1. Scene, Camera, Renderer Setup
+    const scene = new THREE.Scene();
+    const fogColor = 0x070e22;
+    scene.fog = new THREE.FogExp2(fogColor, 0.015);
+
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+    camera.position.set(0, 0, 10);
+
+    const gl =
+      canvas.getContext('webgl2') ||
+      canvas.getContext('webgl') ||
+      canvas.getContext('experimental-webgl');
+
     if (!gl) {
       setWebglSupported(false);
       return;
     }
 
-    let width = container.clientWidth || window.innerWidth;
-    let height = container.clientHeight || window.innerHeight;
+    if (typeof (gl as any).getShaderPrecisionFormat === 'function') {
+      const origPrecision = (gl as any).getShaderPrecisionFormat.bind(gl);
+      (gl as any).getShaderPrecisionFormat = (shaderType: number, precisionType: number) => {
+        const res = origPrecision(shaderType, precisionType);
+        return res || { rangeMin: 1, rangeMax: 1, precision: 23 };
+      };
+    }
 
-    // 1. Scene, Camera, Renderer Setup (Pure high-end 3D rendering pipeline)
-    const scene = new THREE.Scene();
-    const fogColor = 0x060913;
-    scene.fog = new THREE.FogExp2(fogColor, 0.012);
+    let renderer: THREE.WebGLRenderer | null = null;
+    try {
+      renderer = new THREE.WebGLRenderer({
+        canvas,
+        context: gl as WebGLRenderingContext,
+        antialias: true,
+        powerPreference: 'high-performance',
+        alpha: false
+      });
+      renderer.setPixelRatio(dpr);
+      renderer.setSize(width, height);
+      renderer.setClearColor(fogColor, 1);
+    } catch (err) {
+      console.error('WEBGL INIT ERROR:', err);
+      setWebglSupported(false);
+      return;
+    }
 
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    camera.position.set(0, 0, 18);
+    // 2. High-Precision Render Target & Post-Processing Screen Quad
+    let currentPixelSize = Math.max(1, propsRef.current.pixelSize);
+    let rtW = Math.max(128, Math.floor(width / currentPixelSize));
+    let rtH = Math.max(128, Math.floor(height / currentPixelSize));
 
-    const renderer = new THREE.WebGLRenderer({
-      canvas,
-      antialias: true,
-      alpha: true,
-      powerPreference: 'high-performance'
-    });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.25;
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-
-    // 2. High-Fidelity 3D Materials (Glass, Sapphire, Platinum Chrome & Glowing Cores)
-    const cyanGlassMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0x38bdf8,
-      emissive: 0x0369a1,
-      emissiveIntensity: 0.35,
-      roughness: 0.14,
-      metalness: 0.12,
-      transmission: 0.82,
-      thickness: 1.4,
-      ior: 1.52,
-      clearcoat: 1.0,
-      clearcoatRoughness: 0.1,
-      transparent: true,
-      opacity: 0.95
-    });
-
-    const sapphireMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0x1d4ed8,
-      emissive: 0x1e40af,
-      emissiveIntensity: 0.4,
-      roughness: 0.12,
-      metalness: 0.18,
-      transmission: 0.78,
-      thickness: 1.8,
-      ior: 1.58,
-      clearcoat: 0.9,
-      transparent: true,
-      opacity: 0.92
+    let renderTarget = new THREE.WebGLRenderTarget(rtW, rtH, {
+      minFilter: THREE.LinearFilter,
+      magFilter: THREE.NearestFilter,
+      format: THREE.RGBAFormat,
+      stencilBuffer: false
     });
 
-    const platinumChromeMaterial = new THREE.MeshStandardMaterial({
-      color: 0xe2e8f0,
-      emissive: 0x1e293b,
-      emissiveIntensity: 0.2,
-      roughness: 0.15,
-      metalness: 0.92
+    const postScene = new THREE.Scene();
+    const postCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    const postMaterial = new THREE.ShaderMaterial({
+      vertexShader: PostShader.vertexShader,
+      fragmentShader: PostShader.fragmentShader,
+      uniforms: {
+        tDiffuse: { value: renderTarget.texture },
+        uResolution: { value: new THREE.Vector2(rtW, rtH) },
+        uVignette: { value: 0.50 }
+      },
+      depthWrite: false,
+      depthTest: false
+    });
+    const postQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), postMaterial);
+    postScene.add(postQuad);
+
+    // 3. Shading & Materials (The Old Dark Blue & Cyan Palettes)
+    const coolToonTex = createToonGradientTexture([0x07152e, 0x1d4ed8, 0x3b82f6, 0x38bdf8]);
+    const redToonTex = createToonGradientTexture([0x33050d, 0x9f1239, 0xe11d48, 0xfb7185]);
+
+    const coolMaterial = new THREE.MeshToonMaterial({
+      color: 0xffffff,
+      gradientMap: coolToonTex
     });
 
-    const redRubyMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0xf43f5e,
-      emissive: 0xbe123c,
-      emissiveIntensity: 0.4,
-      roughness: 0.16,
-      metalness: 0.15,
-      transmission: 0.8,
-      thickness: 1.5,
-      ior: 1.54,
-      clearcoat: 1.0,
-      transparent: true,
-      opacity: 0.94
+    const redMaterial = new THREE.MeshToonMaterial({
+      color: 0xffffff,
+      gradientMap: redToonTex
     });
 
-    // Inner Glowing Core Material
-    const luminousCoreMaterial = new THREE.MeshBasicMaterial({
-      color: 0x38bdf8,
-      transparent: true,
-      opacity: 0.9
-    });
-
-    const luminousRedCoreMaterial = new THREE.MeshBasicMaterial({
-      color: 0xfb7185,
-      transparent: true,
-      opacity: 0.9
-    });
-
-    // Subtle Luminous Edge Wireframe
+    // Crisp Neon Outlines for Edge Highlighting
     const cyanEdgeMaterial = new THREE.LineBasicMaterial({
-      color: 0x67e8f9,
+      color: 0x38bdf8,
       transparent: true,
-      opacity: 0.45
+      opacity: 0.85
     });
 
     const rubyEdgeMaterial = new THREE.LineBasicMaterial({
-      color: 0xfb7185,
+      color: 0xf43f5e,
       transparent: true,
-      opacity: 0.5
+      opacity: 0.85
     });
 
-    // 3. Cinematic 3D Lighting Environment
+    // 4. Lighting Environment - Old Dark Blue & Cyan Vectors
     const keyLight = new THREE.DirectionalLight(0x38bdf8, 3.2);
     keyLight.position.set(16, 20, 14);
     scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0x1d4ed8, 2.4);
-    fillLight.position.set(-16, -14, -8);
+    const fillLight = new THREE.DirectionalLight(0x1e40af, 2.2);
+    fillLight.position.set(-14, -14, -8);
     scene.add(fillLight);
-
-    const rimLight = new THREE.DirectionalLight(0x93c5fd, 2.5);
-    rimLight.position.set(0, -10, -18);
-    scene.add(rimLight);
 
     const ambientLight = new THREE.AmbientLight(0x071228, 1.8);
     scene.add(ambientLight);
 
-    const accentPointLight = new THREE.PointLight(0x2563eb, 3.0, 36);
+    const accentPointLight = new THREE.PointLight(0x2563eb, 2.8, 36);
     accentPointLight.position.set(6, 2, -4);
     scene.add(accentPointLight);
 
-    // Interactive 3D Cursor Spotlight: dynamically casts specular reflections
-    const cursorLight = new THREE.PointLight(0x38bdf8, 4.0, 26);
+    // Dynamic cursor spotlight: casts electric cyan glow as mouse moves across shapes
+    const cursorLight = new THREE.PointLight(0x38bdf8, 3.5, 24);
     cursorLight.position.set(0, 0, 5);
     scene.add(cursorLight);
 
-    // 4. Generate 3D Mathematical & Physical Solitary Objects
-    const floatingObjects: FloatingObjectItem[] = [];
-    const baseCount = propsRef.current.objectCount;
-    let redObjectsCount = 0;
-
-    const geometryGenerators = [
-      () => {
-        const geom = buildDeltaGeometry();
-        const mesh = new THREE.Mesh(geom, cyanGlassMaterial);
-        const wire = new THREE.LineSegments(new THREE.EdgesGeometry(geom, 25), cyanEdgeMaterial);
-        mesh.add(wire);
-        const grp = new THREE.Group();
-        grp.add(mesh);
-        return { group: grp };
-      },
-      () => {
-        const geom = buildPiGeometry();
-        const mesh = new THREE.Mesh(geom, sapphireMaterial);
-        const wire = new THREE.LineSegments(new THREE.EdgesGeometry(geom, 25), cyanEdgeMaterial);
-        mesh.add(wire);
-        const grp = new THREE.Group();
-        grp.add(mesh);
-        return { group: grp };
-      },
-      () => {
-        const geom = buildSigmaGeometry();
-        const mesh = new THREE.Mesh(geom, platinumChromeMaterial);
-        const wire = new THREE.LineSegments(new THREE.EdgesGeometry(geom, 25), cyanEdgeMaterial);
-        mesh.add(wire);
-        const grp = new THREE.Group();
-        grp.add(mesh);
-        return { group: grp };
-      },
-      () => {
-        const geom = buildIntegralGeometry();
-        const mesh = new THREE.Mesh(geom, cyanGlassMaterial);
-        const wire = new THREE.LineSegments(new THREE.EdgesGeometry(geom, 25), cyanEdgeMaterial);
-        mesh.add(wire);
-        const grp = new THREE.Group();
-        grp.add(mesh);
-        return { group: grp };
-      },
-      () => {
-        const geom = buildSqrtGeometry();
-        const mesh = new THREE.Mesh(geom, sapphireMaterial);
-        const wire = new THREE.LineSegments(new THREE.EdgesGeometry(geom, 25), cyanEdgeMaterial);
-        mesh.add(wire);
-        const grp = new THREE.Group();
-        grp.add(mesh);
-        return { group: grp };
-      },
-      () => {
-        const geom = buildInfinityGeometry();
-        const mesh = new THREE.Mesh(geom, cyanGlassMaterial);
-        const wire = new THREE.LineSegments(new THREE.EdgesGeometry(geom, 25), cyanEdgeMaterial);
-        mesh.add(wire);
-        const grp = new THREE.Group();
-        grp.add(mesh);
-        return { group: grp };
-      },
-      () => buildTesseractGroup(cyanGlassMaterial, luminousCoreMaterial, cyanEdgeMaterial),
-      () => buildQuantumOrbitalGroup(cyanGlassMaterial, luminousCoreMaterial, cyanEdgeMaterial),
-      () => buildIcosahedronGem(cyanGlassMaterial, luminousCoreMaterial, cyanEdgeMaterial),
-      () => buildDodecahedronGem(sapphireMaterial, cyanEdgeMaterial),
-      () => buildTorusKnotGem(cyanGlassMaterial, cyanEdgeMaterial),
-      () => buildTrefoilGem(platinumChromeMaterial, cyanEdgeMaterial)
+    // 5. Shared Geometry Cache for Extruded Glyphs
+    const sharedGeometries: THREE.BufferGeometry[] = [
+      buildPiGeometry(),
+      buildSigmaGeometry(),
+      buildIntegralGeometry(),
+      buildDeltaGeometry(),
+      buildSqrtGeometry(),
+      buildPlusGeometry(),
+      buildInfinityGeometry()
     ];
 
-    for (let i = 0; i < baseCount; i++) {
-      const isRed = propsRef.current.accentRed && (redObjectsCount < 4) && (i % 7 === 0);
+    // 6. Spawn Floating 3D Objects (25-32 total, z from -2 to -38)
+    const objects: FloatingObjectItem[] = [];
+    const targetCount = Math.max(18, Math.min(36, propsRef.current.objectCount));
+    const raycastTargets: THREE.Object3D[] = [];
+
+    function isInExclusionZone(x: number, y: number, z: number): boolean {
+      if (z > -12) {
+        if (x >= -8.5 && x <= 0.8 && y >= -3.5 && y <= 3.8) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    let redObjectsCount = 0;
+    const maxRedObjects = 5;
+
+    for (let i = 0; i < targetCount; i++) {
+      const isRed = propsRef.current.accentRed && redObjectsCount < maxRedObjects && (i % 6 === 2);
       if (isRed) redObjectsCount++;
 
-      const genIndex = i % geometryGenerators.length;
-      let objResult: { group: THREE.Group; innerGroup?: THREE.Group };
+      const mat = isRed ? redMaterial : coolMaterial;
+      const edgeMat = isRed ? rubyEdgeMaterial : cyanEdgeMaterial;
 
-      if (isRed) {
-        // Build red ruby accent solid
-        if (genIndex === 6) {
-          objResult = buildTesseractGroup(redRubyMaterial, luminousRedCoreMaterial, rubyEdgeMaterial);
-        } else if (genIndex === 8) {
-          objResult = buildIcosahedronGem(redRubyMaterial, luminousRedCoreMaterial, rubyEdgeMaterial);
-        } else {
-          const geom = buildDeltaGeometry();
-          const mesh = new THREE.Mesh(geom, redRubyMaterial);
-          const wire = new THREE.LineSegments(new THREE.EdgesGeometry(geom, 25), rubyEdgeMaterial);
-          mesh.add(wire);
-          const grp = new THREE.Group();
-          grp.add(mesh);
-          objResult = { group: grp };
-        }
+      let group: THREE.Group;
+      let innerGroup: THREE.Group | undefined;
+
+      // Type 0-6: Extruded mathematical glyphs
+      // Type 7: Tesseract (4D Hypercube)
+      // Type 8: Gyroscope (Concentric Rotational Rings)
+      // Type 9: Kepler Atomic Orbitals
+      // Type 10: Nested Icosahedron Gem
+      // Type 11: Chamfered Dodecahedron
+      // Type 12: Trefoil Knot
+      const typeChoice = i % 13;
+
+      if (typeChoice < 7) {
+        const geom = sharedGeometries[typeChoice];
+        group = new THREE.Group();
+        const mesh = new THREE.Mesh(geom, mat);
+        const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geom, 35), edgeMat);
+        group.add(mesh, edges);
+      } else if (typeChoice === 7) {
+        const res = buildTesseractGroup(mat, edgeMat);
+        group = res.group;
+        innerGroup = res.innerGroup;
+      } else if (typeChoice === 8) {
+        const res = buildGyroscopeGroup(mat, edgeMat);
+        group = res.group;
+        innerGroup = res.innerGroup;
+      } else if (typeChoice === 9) {
+        const res = buildAtomOrbitGroup(mat, edgeMat);
+        group = res.group;
+        innerGroup = res.innerGroup;
+      } else if (typeChoice === 10) {
+        const res = buildNestedIcosahedronGroup(mat, edgeMat);
+        group = res.group;
+        innerGroup = res.innerGroup;
+      } else if (typeChoice === 11) {
+        const res = buildDodecahedronGroup(mat, edgeMat);
+        group = res.group;
       } else {
-        objResult = geometryGenerators[genIndex]();
+        const res = buildTrefoilKnotGroup(mat, edgeMat);
+        group = res.group;
       }
 
-      const { group, innerGroup } = objResult;
+      // Invisible raycasting sphere for smooth mouse interaction
+      const raySphere = new THREE.Mesh(
+        new THREE.SphereGeometry(1.6, 8, 8),
+        new THREE.MeshBasicMaterial({ visible: false })
+      );
+      raySphere.userData = { parentIndex: i };
+      group.add(raySphere);
+      raycastTargets.push(raySphere);
 
-      // Distribute in a 3D spherical volume around viewport
-      const angle = (i / baseCount) * Math.PI * 2 + (Math.random() - 0.5) * 0.4;
-      const radius = 6.0 + Math.random() * 8.5;
-      const x = Math.cos(angle) * radius;
-      const y = Math.sin(angle) * (radius * 0.65) + (Math.random() - 0.5) * 4;
-      const z = (Math.random() - 0.5) * 16 - 2;
+      // Determine depth & spread
+      const depthRatio = i / (targetCount - 1);
+      const z = -2 - depthRatio * 36;
+      const visibleHeightAtZ = 2 * Math.tan((45 * Math.PI) / 360) * (10 - z);
+      const visibleWidthAtZ = visibleHeightAtZ * (width / height);
 
-      group.position.set(x, y, z);
-      const scale = 0.55 + Math.random() * 0.45;
-      group.scale.setScalar(scale);
+      let x = 0;
+      let y = 0;
+      let attempts = 0;
 
-      group.rotation.set(
+      do {
+        x = (Math.random() - 0.5) * (visibleWidthAtZ * 0.92);
+        y = (Math.random() - 0.5) * (visibleHeightAtZ * 0.85);
+        attempts++;
+      } while (isInExclusionZone(x, y, z) && attempts < 20);
+
+      if (isInExclusionZone(x, y, z)) {
+        x = 2.2 + Math.random() * 7.5;
+      }
+
+      const anchor = new THREE.Vector3(x, y, z);
+      group.position.copy(anchor);
+
+      const baseRotation = new THREE.Euler(
         Math.random() * Math.PI * 2,
         Math.random() * Math.PI * 2,
         Math.random() * Math.PI * 2
       );
+      group.rotation.copy(baseRotation);
 
       scene.add(group);
 
-      floatingObjects.push({
+      objects.push({
         group,
         innerGroup,
-        anchor: new THREE.Vector3(x, y, z),
+        anchor: anchor.clone(),
         velocity: new THREE.Vector3(0, 0, 0),
-        angularVelocity: new THREE.Vector3(
-          (Math.random() - 0.5) * 0.015,
-          (Math.random() - 0.5) * 0.018,
-          (Math.random() - 0.5) * 0.012
-        ),
-        baseRotation: group.rotation.clone(),
-        driftSpeed: 0.3 + Math.random() * 0.6,
+        angularVelocity: new THREE.Vector3(0, 0, 0),
+        baseRotation,
+        driftSpeed: 0.25 + Math.random() * 0.45,
         driftPhase: Math.random() * Math.PI * 2,
         isRed,
-        expansion: 1,
+        expansion: 0,
         expansionVel: 0,
         hitCooldown: 0
       });
     }
 
-    // 5. Volumetric 3D Cosmic Dust (Knowledge Motes)
-    const motesCount = 280;
-    const motePositions = new Float32Array(motesCount * 3);
-    for (let i = 0; i < motesCount; i++) {
-      motePositions[i * 3 + 0] = (Math.random() - 0.5) * 36;
-      motePositions[i * 3 + 1] = (Math.random() - 0.5) * 30;
-      motePositions[i * 3 + 2] = (Math.random() - 0.5) * 26 - 4;
+    // 7. Ambient Dust Motes (Crisp glowing particle constellation)
+    const moteCount = 180;
+    const motePositions = new Float32Array(moteCount * 3);
+    for (let m = 0; m < moteCount; m++) {
+      motePositions[m * 3 + 0] = (Math.random() - 0.5) * 44;
+      motePositions[m * 3 + 1] = (Math.random() - 0.5) * 32;
+      motePositions[m * 3 + 2] = -2 - Math.random() * 36;
     }
+
     const motesGeometry = new THREE.BufferGeometry();
     motesGeometry.setAttribute('position', new THREE.BufferAttribute(motePositions, 3));
     const motesMaterial = new THREE.PointsMaterial({
       color: 0x38bdf8,
-      size: 0.12,
+      size: 1.8,
       transparent: true,
-      opacity: 0.55,
-      blending: THREE.AdditiveBlending
+      opacity: 0.40,
+      sizeAttenuation: false
     });
     const motesPoints = new THREE.Points(motesGeometry, motesMaterial);
     scene.add(motesPoints);
 
-    // 6. Interaction State (Mouse & Scroll)
-    const mouse = { x: 0, y: 0, targetX: 0, targetY: 0, worldPos: new THREE.Vector3(0, 0, 0) };
-    let scrollY = window.scrollY || 0;
-    let targetScrollY = scrollY;
+    // 8. Interaction States: Cursor, Parallax, Repulsion, Shockwave
+    const cursor = { x: 0, y: 0 };
+    const prevCursor = { x: 0, y: 0 };
+    let cursorVelocity = 0;
+    const raycaster = new THREE.Raycaster();
+    const mouseNDC = new THREE.Vector2(0, 0);
 
-    const onMouseMove = (e: MouseEvent) => {
-      const rect = container.getBoundingClientRect();
-      const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      const ny = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
-      mouse.targetX = nx;
-      mouse.targetY = ny;
-
-      // Project mouse into 3D world space at z = 0
-      const vec = new THREE.Vector3(nx, ny, 0.5);
-      vec.unproject(camera);
-      vec.sub(camera.position).normalize();
-      const distance = -camera.position.z / vec.z;
-      mouse.worldPos.copy(camera.position).add(vec.multiplyScalar(distance));
+    const shockwave = {
+      active: false,
+      origin: new THREE.Vector3(0, 0, -8),
+      radius: 0,
+      maxRadius: 36,
+      speed: 18.0
     };
 
-    const onScroll = () => {
-      targetScrollY = window.scrollY || 0;
+    let targetCameraZ = 10;
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const handleScroll = () => {
+      const scrollY = window.scrollY || window.pageYOffset || 0;
+      const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      const scrollProgress = Math.min(1, Math.max(0, scrollY / maxScroll));
+      targetCameraZ = 10 - scrollProgress * propsRef.current.scrollDepth;
+    };
+
+    const onPointerMove = (e: PointerEvent) => {
+      cursor.x = (e.clientX / window.innerWidth) * 2 - 1;
+      cursor.y = -(e.clientY / window.innerHeight) * 2 + 1;
+      mouseNDC.set(cursor.x, cursor.y);
+    };
+
+    const onPointerDown = (e: PointerEvent) => {
+      mouseNDC.set((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
+      raycaster.setFromCamera(mouseNDC, camera);
+      const intersects = raycaster.intersectObjects(raycastTargets, true);
+
+      if (intersects.length > 0) {
+        shockwave.origin.copy(intersects[0].point);
+      } else {
+        const point3D = raycaster.ray.origin
+          .clone()
+          .add(raycaster.ray.direction.clone().multiplyScalar(14.0));
+        shockwave.origin.copy(point3D);
+      }
+
+      shockwave.active = true;
+      shockwave.radius = 0.2;
+
+      objects.forEach((obj) => {
+        obj.hitCooldown = 0;
+      });
     };
 
     const onResize = () => {
-      width = container.clientWidth || window.innerWidth;
-      height = container.clientHeight || window.innerHeight;
+      width = window.innerWidth;
+      height = window.innerHeight;
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
-      renderer.setSize(width, height);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      if (renderer) {
+        renderer.setSize(width, height);
+      }
+
+      currentPixelSize = Math.max(1, propsRef.current.pixelSize);
+      rtW = Math.max(128, Math.floor(width / currentPixelSize));
+      rtH = Math.max(128, Math.floor(height / currentPixelSize));
+
+      renderTarget.dispose();
+      renderTarget = new THREE.WebGLRenderTarget(rtW, rtH, {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.NearestFilter,
+        format: THREE.RGBAFormat,
+        stencilBuffer: false
+      });
+      postMaterial.uniforms.tDiffuse.value = renderTarget.texture;
+      postMaterial.uniforms.uResolution.value.set(rtW, rtH);
     };
 
-    window.addEventListener('mousemove', onMouseMove, { passive: true });
-    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
+    window.addEventListener('pointerdown', onPointerDown, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('resize', onResize);
 
-    // 7. High-Performance Animation Loop
-    let animationId: number;
+    // 9. Animation Loop
+    let animId = 0;
+    let isTabVisible = !document.hidden;
+    const onVisibilityChange = () => {
+      isTabVisible = !document.hidden;
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
     let lastTime = performance.now();
+    const tempClosest = new THREE.Vector3();
 
-    const animate = (currentTime: number) => {
-      animationId = requestAnimationFrame(animate);
+    const animate = (now: number) => {
+      animId = requestAnimationFrame(animate);
+      if (!isTabVisible) return;
 
-      const delta = Math.min((currentTime - lastTime) / 1000, 0.1);
-      lastTime = currentTime;
+      const rawDt = (now - lastTime) / 1000;
+      lastTime = now;
+      const dt = Math.min(rawDt, 0.05);
+      const simSpeed = propsRef.current.speed;
 
-      // Smooth lerp mouse & scroll
-      mouse.x += (mouse.targetX - mouse.x) * 0.08;
-      mouse.y += (mouse.targetY - mouse.y) * 0.08;
-      scrollY += (targetScrollY - scrollY) * 0.08;
+      // Cursor velocity
+      const cursorDx = cursor.x - prevCursor.x;
+      const cursorDy = cursor.y - prevCursor.y;
+      cursorVelocity = Math.sqrt(cursorDx * cursorDx + cursorDy * cursorDy) / Math.max(dt, 0.001);
+      prevCursor.x = cursor.x;
+      prevCursor.y = cursor.y;
 
-      // Camera parallax & scroll depth travel
-      const maxScroll = Math.max(document.body.scrollHeight - window.innerHeight, 1);
-      const scrollRatio = scrollY / maxScroll;
-      const scrollZ = scrollRatio * propsRef.current.scrollDepth;
+      // Camera Parallax
+      if (!prefersReducedMotion) {
+        const targetCamX = cursor.x * 2.5 * propsRef.current.parallax;
+        const targetCamY = cursor.y * 1.5 * propsRef.current.parallax;
+        camera.position.x += (targetCamX - camera.position.x) * 0.05;
+        camera.position.y += (targetCamY - camera.position.y) * 0.05;
+        camera.rotation.y = -targetCamX * 0.018 * propsRef.current.parallax;
+        camera.rotation.x = targetCamY * 0.018 * propsRef.current.parallax;
+      }
 
-      camera.position.x = mouse.x * 2.0 * propsRef.current.parallax;
-      camera.position.y = mouse.y * 1.5 * propsRef.current.parallax - scrollRatio * 6;
-      camera.position.z = 18 - scrollZ * 0.6;
-      camera.lookAt(0, -scrollRatio * 6, 0);
+      camera.position.z += (targetCameraZ - camera.position.z) * 0.06;
 
-      // Move 3D cursor light
-      cursorLight.position.x = mouse.worldPos.x;
-      cursorLight.position.y = mouse.worldPos.y;
-      cursorLight.position.z = 4.5;
+      // Cursor Spotlight Tracking
+      raycaster.setFromCamera(mouseNDC, camera);
+      const cursorRay = raycaster.ray;
+      const cursor3DFocus = cursorRay.origin.clone().add(cursorRay.direction.clone().multiplyScalar(14.0));
+      cursorLight.position.lerp(cursor3DFocus, 0.20);
 
-      // Slowly rotate cosmic knowledge dust motes
-      motesPoints.rotation.y += 0.0008;
-      motesPoints.rotation.x += 0.0004;
+      // Shockwave
+      if (shockwave.active) {
+        shockwave.radius += shockwave.speed * dt;
+        if (shockwave.radius > shockwave.maxRadius) {
+          shockwave.active = false;
+        }
+      }
 
-      // Animate each floating 3D object
-      floatingObjects.forEach((obj, idx) => {
-        // Idle floating drift
-        const timeVal = currentTime * 0.001 * propsRef.current.speed * obj.driftSpeed + obj.driftPhase;
-        const driftOffsetX = Math.sin(timeVal) * 0.45;
-        const driftOffsetY = Math.cos(timeVal * 0.8) * 0.45;
-        const driftOffsetZ = Math.sin(timeVal * 0.5) * 0.6;
+      // Update 3D Floating Artifacts with Spring Physics & Dynamic Reaction
+      const activeObjects = Math.min(objects.length, propsRef.current.objectCount);
 
-        const targetPos = new THREE.Vector3(
-          obj.anchor.x + driftOffsetX,
-          obj.anchor.y + driftOffsetY,
-          obj.anchor.z + driftOffsetZ
+      for (let i = 0; i < objects.length; i++) {
+        const obj = objects[i];
+        if (i >= activeObjects) {
+          obj.group.visible = false;
+          continue;
+        }
+        obj.group.visible = true;
+
+        // Ambient idle drift
+        const driftOffset = Math.sin(now * 0.001 * obj.driftSpeed * simSpeed + obj.driftPhase) * 0.32;
+        const currentTargetPos = obj.anchor.clone();
+        currentTargetPos.y += driftOffset;
+
+        // Proximity calculation
+        cursorRay.closestPointToPoint(obj.group.position, tempClosest);
+        const distToRay = obj.group.position.distanceTo(tempClosest);
+        const R_INTERACT = 5.5;
+        let proximity = 0;
+        if (distToRay < R_INTERACT) {
+          proximity = 1.0 - (distToRay / R_INTERACT);
+        }
+        const smoothProximity = proximity * proximity * (3.0 - 2.0 * proximity);
+
+        // Second-order spring expansion
+        const targetExpansion = smoothProximity * 1.25;
+        const springK = 26.0;
+        const damping = 6.2;
+        const forceExp = (targetExpansion - obj.expansion) * springK - obj.expansionVel * damping;
+        obj.expansionVel += forceExp * dt;
+        obj.expansion += obj.expansionVel * dt;
+        if (obj.expansion < 0) {
+          obj.expansion = 0;
+          obj.expansionVel = 0;
+        }
+
+        // Elastic scaling & inner counter-rotation
+        const scaleVal = 1.0 + obj.expansion * 0.35;
+        obj.group.scale.set(scaleVal, scaleVal, scaleVal);
+
+        if (obj.innerGroup) {
+          // Inner core spins counter-clockwise faster when approached
+          obj.innerGroup.rotation.y += (0.015 + smoothProximity * 0.06);
+          obj.innerGroup.rotation.x += (0.010 + smoothProximity * 0.04);
+        }
+
+        // Repulsion physics
+        if (!prefersReducedMotion && propsRef.current.repulsion > 0 && proximity > 0.001) {
+          const repelDir = obj.group.position.clone().sub(tempClosest).normalize();
+          const repelForce =
+            smoothProximity *
+            (3.8 + Math.min(cursorVelocity * 1.5, 7.0)) *
+            6.0 *
+            propsRef.current.repulsion;
+
+          obj.velocity.add(repelDir.multiplyScalar(repelForce * dt));
+          obj.angularVelocity.x += (Math.random() - 0.5) * repelForce * dt * 0.5;
+          obj.angularVelocity.y += (Math.random() - 0.5) * repelForce * dt * 0.5;
+        }
+
+        // Shockwave impulse
+        if (shockwave.active && obj.hitCooldown <= 0) {
+          const distToShock = obj.group.position.distanceTo(shockwave.origin);
+          if (Math.abs(distToShock - shockwave.radius) < 2.5) {
+            const shockDir = obj.group.position.clone().sub(shockwave.origin).normalize();
+            obj.velocity.add(shockDir.multiplyScalar(10.0));
+            obj.expansionVel += 8.0;
+            obj.angularVelocity.set(
+              (Math.random() - 0.5) * 8.0,
+              (Math.random() - 0.5) * 8.0,
+              (Math.random() - 0.5) * 8.0
+            );
+            obj.hitCooldown = 1.0;
+          }
+        }
+        if (obj.hitCooldown > 0) {
+          obj.hitCooldown -= dt;
+        }
+
+        // Integrate Velocity
+        const springAnchorK = 5.2;
+        const drag = 3.6;
+        const anchorForce = currentTargetPos.sub(obj.group.position).multiplyScalar(springAnchorK);
+        obj.velocity.add(anchorForce.multiplyScalar(dt));
+        obj.velocity.multiplyScalar(Math.max(0, 1 - drag * dt));
+        obj.group.position.addScaledVector(obj.velocity, dt);
+
+        // Integrate Rotation
+        const rotDrag = 2.4;
+        const rotRestoringK = 1.5;
+        const targetRot = new THREE.Vector3(
+          obj.baseRotation.x + now * 0.0003 * obj.driftSpeed * simSpeed,
+          obj.baseRotation.y + now * 0.0005 * obj.driftSpeed * simSpeed,
+          obj.baseRotation.z
         );
 
-        // Interactive 3D Cursor Proximity Physics
-        const diff = new THREE.Vector3().subVectors(obj.group.position, mouse.worldPos);
-        diff.z = 0; // Focus on 2D plane distance
-        const dist = diff.length();
-        const proxRadius = 4.5;
+        obj.angularVelocity.x += (targetRot.x - obj.group.rotation.x) * rotRestoringK * dt;
+        obj.angularVelocity.y += (targetRot.y - obj.group.rotation.y) * rotRestoringK * dt;
+        obj.angularVelocity.multiplyScalar(Math.max(0, 1 - rotDrag * dt));
 
-        if (dist < proxRadius && dist > 0.001) {
-          const force = (1.0 - dist / proxRadius) * 2.5 * propsRef.current.repulsion;
-          diff.normalize().multiplyScalar(force * delta * 6.0);
-          obj.velocity.add(diff);
+        obj.group.rotation.x += obj.angularVelocity.x * dt;
+        obj.group.rotation.y += obj.angularVelocity.y * dt;
+        obj.group.rotation.z += obj.angularVelocity.z * dt;
+      }
 
-          // Spring expansion & spin impulse
-          obj.expansionVel += force * 0.4;
-          obj.angularVelocity.x += (Math.random() - 0.5) * 0.02 * force;
-          obj.angularVelocity.y += (Math.random() - 0.5) * 0.02 * force;
-        }
+      // Twinkle ambient dust motes
+      motesPoints.rotation.y += 0.0003 * simSpeed;
+      motesPoints.rotation.x += 0.00015 * simSpeed;
 
-        // Spring return to anchor
-        const returnForce = new THREE.Vector3().subVectors(targetPos, obj.group.position).multiplyScalar(0.08);
-        obj.velocity.add(returnForce);
-        obj.velocity.multiplyScalar(0.90); // Damping
-        obj.group.position.add(obj.velocity);
-
-        // Rotation integration
-        obj.group.rotation.x += obj.angularVelocity.x;
-        obj.group.rotation.y += obj.angularVelocity.y;
-        obj.group.rotation.z += obj.angularVelocity.z;
-
-        // Inner nested 4D/gimbal rotation
-        if (obj.innerGroup) {
-          obj.innerGroup.rotation.x += obj.angularVelocity.x * 2.2;
-          obj.innerGroup.rotation.y += obj.angularVelocity.y * 2.6;
-          obj.innerGroup.rotation.z += obj.angularVelocity.z * 1.8;
-        }
-
-        // Spring scale dynamics on hover
-        const targetExpansion = 1.0;
-        const scaleSpring = (targetExpansion - obj.expansion) * 0.12;
-        obj.expansionVel += scaleSpring;
-        obj.expansionVel *= 0.82;
-        obj.expansion += obj.expansionVel;
-      });
-
-      // Direct, crisp WebGL render
-      renderer.render(scene, camera);
+      // Render Scene to Low-Res Render Target, then Pass to Post Screen Quad
+      if (renderer) {
+        renderer.setRenderTarget(renderTarget);
+        renderer.render(scene, camera);
+        renderer.setRenderTarget(null);
+        renderer.render(postScene, postCamera);
+      }
     };
 
-    animationId = requestAnimationFrame(animate);
+    animId = requestAnimationFrame(animate);
 
-    // 8. Cleanup on unmount
+    // Cleanup
     return () => {
-      cancelAnimationFrame(animationId);
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('scroll', onScroll);
+      cancelAnimationFrame(animId);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerdown', onPointerDown);
+      window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', onResize);
 
-      floatingObjects.forEach((obj) => {
-        scene.remove(obj.group);
-      });
-
-      scene.remove(motesPoints);
+      renderTarget.dispose();
+      postMaterial.dispose();
+      postQuad.geometry.dispose();
+      coolMaterial.dispose();
+      redMaterial.dispose();
+      cyanEdgeMaterial.dispose();
+      rubyEdgeMaterial.dispose();
+      coolToonTex.dispose();
+      redToonTex.dispose();
+      sharedGeometries.forEach((g) => g.dispose());
       motesGeometry.dispose();
       motesMaterial.dispose();
 
-      cyanGlassMaterial.dispose();
-      sapphireMaterial.dispose();
-      platinumChromeMaterial.dispose();
-      redRubyMaterial.dispose();
-      luminousCoreMaterial.dispose();
-      luminousRedCoreMaterial.dispose();
-      cyanEdgeMaterial.dispose();
-      rubyEdgeMaterial.dispose();
+      objects.forEach((obj) => {
+        scene.remove(obj.group);
+      });
 
-      renderer.dispose();
+      if (renderer) {
+        renderer.dispose();
+      }
     };
   }, []);
 
   if (!webglSupported) {
     return (
       <div
-        className={`fixed inset-0 z-0 pointer-events-none bg-gradient-to-b from-[#060813] to-[#0A132C] ${className}`}
+        className={`fixed inset-0 z-0 pointer-events-none bg-gradient-to-b from-[#060913] to-[#0a1532] ${className}`}
         aria-hidden="true"
       />
     );
@@ -823,6 +1035,12 @@ export default function MistBackground3D({
       <canvas
         ref={canvasRef}
         className="w-full h-full block"
+        style={{
+          imageRendering: 'pixelated',
+          width: '100vw',
+          height: '100vh',
+          pointerEvents: 'none'
+        }}
       />
     </div>
   );

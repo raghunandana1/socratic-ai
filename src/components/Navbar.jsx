@@ -48,32 +48,31 @@ export default function Navbar() {
   return (
     <header data-mist-source="true" className="fixed top-0 left-0 right-0 z-40 px-3 md:px-6 py-2.5 transition-all duration-300">
       <div
-        className="max-w-7xl mx-auto rounded-2xl transition-all duration-300 px-4 py-2 flex items-center justify-between relative"
+        className="max-w-7xl mx-auto rounded-none transition-all duration-300 px-4 py-2 flex items-center justify-between relative"
       >
-        {/* Modern 3D Glassmorphic Navigation Bar Chassis */}
-        <div className="absolute inset-0 bg-[#0B132B]/85 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-[0_15px_35px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.12)] -z-10 pointer-events-none" />
+        {/* Chassis Background Bezel with Stepped Pixel Corners */}
+        <div className="absolute inset-0 bg-[#DC2626] border-4 border-black shadow-[0_4px_0px_#000] pixel-cut-corners -z-10 pointer-events-none" />
 
         {/* Brand Logo & Target Exam Selector Badge */}
         <div className="flex items-center gap-3">
           <a
             href="#"
-            className="flex items-center gap-2 group focus:outline-none bg-[#0D1527]/90 border border-cyan-500/30 px-3.5 py-1.5 rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] hover:border-cyan-400 transition-all"
+            className="flex items-center gap-2 group focus:outline-none bg-[#0D1117] border-3 border-black px-3 py-1 shadow-[3px_3px_0px_#000] rounded-none hover:bg-black transition-colors"
           >
-            <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_10px_#38bdf8]" />
-            <span className="text-xs sm:text-sm font-bold tracking-tight text-white flex items-center gap-1 font-sans">
-              SOCRATIC<span className="text-cyan-400">AI</span>
+            <span className="w-2.5 h-2.5 bg-[#EF4444] border border-black shadow-[1px_1px_0px_#000]" />
+            <span className="text-xs sm:text-sm font-bold tracking-tight text-[#EF4444] flex items-center gap-1.5 font-pixel">
+              SOCRATIC<span className="text-white">AI</span>
             </span>
           </a>
 
-          {/* Active Target Exam Selector Dropdown Badge */}
+          {/* Active Target Exam Selector Dropdown Badge — Tactile White Bezel Tab */}
           <div className="relative hidden sm:block">
             <button
               onClick={() => setExamDropdownOpen(!examDropdownOpen)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-white text-xs font-semibold active:scale-95 transition-all shadow-[0_2px_10px_rgba(0,0,0,0.4)] cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1 rounded-none bg-white border-3 border-black text-black text-[10px] font-pixel font-bold hover:bg-[#FFFFFF] active:translate-x-0.5 active:translate-y-0.5 transition-all shadow-[3px_3px_0px_#000] cursor-pointer"
             >
-              <span className="text-cyan-300 font-medium">Track:</span>
               <span>{targetExam}</span>
-              <PixelChevronDown className="w-3 h-3 text-cyan-400" />
+              <PixelChevronDown className="w-2.5 h-2.5 text-black" />
             </button>
 
             {examDropdownOpen && (
@@ -85,10 +84,10 @@ export default function Navbar() {
                 />
                 
                 {/* Dropdown Menu Container */}
-                <div className="absolute top-full left-0 mt-2 w-56 bg-[#0D1527]/95 backdrop-blur-2xl border border-white/15 rounded-xl p-1.5 shadow-[0_20px_40px_rgba(0,0,0,0.8)] z-50">
-                  <div className="text-[10px] text-slate-300 px-2 py-1.5 uppercase tracking-wider border-b border-white/10 mb-1 flex items-center justify-between font-semibold">
+                <div className="absolute top-full left-0 mt-2 w-56 bg-[#1E232A] border-3 border-black rounded-none p-1.5 shadow-[5px_5px_0px_#000] z-50 pixel-cut-corners">
+                  <div className="text-[9px] font-pixel text-slate-300 px-2 py-1.5 uppercase tracking-wider border-b-2 border-black mb-1 flex items-center justify-between bg-[#14181F]">
                     <span>Select Track</span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_6px_#38bdf8]" />
+                    <span className="w-1.5 h-1.5 bg-[#EF4444] animate-pulse" />
                   </div>
                   {exams.map((ex) => (
                     <button
@@ -97,14 +96,14 @@ export default function Navbar() {
                         setTargetExam(ex);
                         setExamDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between transition-all my-0.5 border ${
+                      className={`w-full text-left px-3 py-2 rounded-none text-[10px] font-pixel font-bold flex items-center justify-between transition-all my-0.5 border ${
                         targetExam === ex
-                          ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
+                          ? 'bg-[#FFFFFF] text-black border-black shadow-[2px_2px_0px_#000]'
                           : 'text-slate-200 border-transparent hover:bg-white/10 hover:text-white'
                       }`}
                     >
-                      <span>{ex}</span>
-                      {targetExam === ex && <PixelCheck className="w-3.5 h-3.5 text-cyan-400" />}
+                      <span>{targetExam === ex ? `> ${ex}` : ex}</span>
+                      {targetExam === ex && <PixelCheck className="w-3.5 h-3.5 text-black" />}
                     </button>
                   ))}
                   <button
@@ -113,7 +112,7 @@ export default function Navbar() {
                       setExamDropdownOpen(false);
                       setShowOnboardingModal(true);
                     }}
-                    className="w-full text-center mt-1 pt-1.5 border-t border-white/10 text-[10px] text-slate-400 hover:text-cyan-300 hover:underline block"
+                    className="w-full text-center mt-1 pt-1.5 border-t-2 border-black text-[9px] font-pixel text-slate-300 hover:text-white hover:underline block"
                   >
                     Open Track Overview Modal ➔
                   </button>
@@ -133,7 +132,7 @@ export default function Navbar() {
                 e.preventDefault();
                 handleLinkClick(link.href);
               }}
-              className="text-xs uppercase tracking-wider text-slate-300 hover:text-cyan-400 transition-colors duration-150 py-1 flex items-center font-semibold"
+              className="text-[10px] font-pixel uppercase tracking-wider text-black hover:text-white transition-colors duration-150 py-1 flex items-center font-bold"
             >
               <span>{link.name}</span>
             </a>
@@ -145,17 +144,17 @@ export default function Navbar() {
           <MagneticButton
             variant="primary"
             onClick={() => handleLinkClick('#doubt-portal')}
-            className="!px-4 !py-2 !text-xs !bg-gradient-to-r !from-cyan-500 !to-blue-600 !text-white !rounded-xl !border !border-cyan-400/30 !shadow-[0_4px_15px_rgba(37,99,235,0.4)] hover:!shadow-[0_6px_25px_rgba(56,189,248,0.5)]"
+            className="!px-4 !py-2 !text-xs !bg-[#FFFFFF] !text-black !border-3 !border-black !shadow-[3px_3px_0px_#000]"
           >
             <span>Solve Now</span>
-            <PixelArrowRight className="w-3.5 h-3.5 text-white" />
+            <PixelArrowRight className="w-3.5 h-3.5 text-black" />
           </MagneticButton>
         </div>
 
         {/* Mobile Hamburger Toggle */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden text-white p-2 rounded-xl border border-white/15 bg-white/10 hover:bg-white/20"
+          className="md:hidden text-white p-2 border-2 border-black bg-white/10 hover:bg-white/20"
           aria-label="Toggle Navigation"
         >
           {mobileMenuOpen ? <PixelX className="w-4 h-4 text-white" /> : <PixelMenu className="w-4 h-4 text-white" />}
