@@ -70,17 +70,18 @@ export async function diagnoseDoubtWithGemini({
     exam: existingSession ? existingSession.exam : exam
   });
 
-  const candidateModels = ['gemini-3.8-flash', 'gemini-3.1-pro-preview', 'gemini-flash-latest'];
+  const rawModels = ['gemini-3.8-flash', 'gemini-flash-latest', 'gemini-3.1-pro-preview'];
   if (process.env.GEMINI_MODEL && process.env.GEMINI_MODEL.trim()) {
-    candidateModels.unshift(process.env.GEMINI_MODEL.trim());
+    rawModels.unshift(process.env.GEMINI_MODEL.trim());
   }
+  const candidateModels = [...new Set(rawModels)];
 
   const isKeyConfigured = apiKey && apiKey.trim() !== '' && !apiKey.includes('your_gemini_api_key_here');
 
   if (isKeyConfigured) {
     let lastApiError = null;
     for (const model of candidateModels) {
-      for (let attempt = 1; attempt <= 3; attempt++) {
+      for (let attempt = 1; attempt <= 2; attempt++) {
         try {
           const parts = [];
 
@@ -106,6 +107,7 @@ export async function diagnoseDoubtWithGemini({
           const response = await fetch(endpoint, {
             method: 'POST',
             headers: reqHeaders,
+            signal: AbortSignal.timeout(20000),
             body: JSON.stringify({
               system_instruction: {
                 parts: [{ text: systemInstruction }]
@@ -119,7 +121,10 @@ export async function diagnoseDoubtWithGemini({
               generation_config: {
                 response_mime_type: 'application/json',
                 temperature: 0.2,
-                max_output_tokens: 2048
+                max_output_tokens: 1024,
+                thinking_config: {
+                  thinking_budget: 0
+                }
               }
             })
           });
@@ -572,13 +577,17 @@ Analyze the image and return a strict JSON object with this schema:
             'Content-Type': 'application/json',
             'x-goog-api-key': apiKey
           },
+          signal: AbortSignal.timeout(20000),
           body: JSON.stringify({
             system_instruction: { parts: [{ text: systemInstruction }] },
             contents: [{ role: 'user', parts }],
             generation_config: {
               response_mime_type: 'application/json',
               temperature: 0.1,
-              max_output_tokens: 2048
+              max_output_tokens: 1024,
+              thinking_config: {
+                thinking_budget: 0
+              }
             }
           })
         });
