@@ -71,6 +71,23 @@ app.get('/api/v1/health', (req, res) => {
   });
 });
 
+// 1b. Models Inspection Route
+app.get('/api/v1/models', async (req, res) => {
+  try {
+    const apiKey = getApiKey();
+    if (!apiKey) return res.status(400).json({ error: 'No API key configured' });
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
+    const resp = await fetch(endpoint);
+    const data = await resp.json();
+    res.json({
+      status: resp.status,
+      models: data?.models ? data.models.map(m => ({ name: m.name.replace('models/', ''), supportedMethods: m.supportedGenerationMethods })) : data
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // 2. Syllabus Taxonomy Route
 app.get('/api/v1/taxonomy', (req, res) => {
   if (!taxonomyData) {

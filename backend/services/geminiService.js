@@ -86,6 +86,7 @@ export async function diagnoseDoubtWithGemini({
 
   if (isKeyConfigured) {
     let lastApiError = null;
+    const attemptedModelErrors = [];
     for (const model of candidateModels) {
       for (let attempt = 1; attempt <= 2; attempt++) {
         try {
@@ -154,7 +155,8 @@ export async function diagnoseDoubtWithGemini({
             if (isServiceBlocked) {
               lastApiError = `Google API Restriction (API_KEY_SERVICE_BLOCKED): Your key has restrictions on project 1062453820867. Please click "Create API Key" -> "Create API key in new project" on AI Studio (aistudio.google.com) to generate an unrestricted key (starts with AIzaSy...).`;
             } else {
-              lastApiError = `Google Gemini API Error (HTTP ${response.status}): ${parsedErrorMsg}`;
+              attemptedModelErrors.push(`[${model} HTTP ${response.status}]: ${parsedErrorMsg}`);
+              lastApiError = attemptedModelErrors.join(' \n');
             }
             break;
           }
@@ -182,7 +184,8 @@ export async function diagnoseDoubtWithGemini({
           });
         } catch (err) {
           console.error(`[Gemini Service] Error with model ${model} attempt ${attempt}:`, err.message);
-          lastApiError = err.message;
+          attemptedModelErrors.push(`[${model} Exception]: ${err.message}`);
+          lastApiError = attemptedModelErrors.join(' \n');
           if (attempt < 3) {
             await new Promise(r => setTimeout(r, 1000));
           }
