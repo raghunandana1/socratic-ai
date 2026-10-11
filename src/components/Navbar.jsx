@@ -51,7 +51,7 @@ export default function Navbar() {
         className="max-w-7xl mx-auto rounded-none transition-all duration-300 px-4 py-2 flex items-center justify-between relative"
       >
         {/* Chassis Background Bezel with Stepped Pixel Corners */}
-        <div className="absolute inset-0 bg-[#059669] border-4 border-black shadow-[0_4px_0px_#000] pixel-cut-corners -z-10 pointer-events-none" />
+        <div className="absolute inset-0 bg-[#DC2626] border-4 border-black shadow-[0_4px_0px_#000] pixel-cut-corners -z-10 pointer-events-none" />
 
         {/* Brand Logo & Target Exam Selector Badge */}
         <div className="flex items-center gap-3">

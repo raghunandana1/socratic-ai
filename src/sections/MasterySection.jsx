@@ -93,7 +93,7 @@ export default function MasterySection() {
 
         {/* Dashboard Mastery Console Chassis */}
         <div className="max-w-4xl mx-auto">
-          <div className="w-full bg-[#059669] border-4 border-black p-4 sm:p-6 shadow-[6px_6px_0px_#000] relative rounded-none">
+          <div className="w-full bg-[#DC2626] border-4 border-black p-4 sm:p-6 shadow-[6px_6px_0px_#000] relative rounded-none">
             
             {/* Header Bar */}
             <div className="flex items-center justify-between pb-3 mb-4 border-b-3 border-black">
@@ -239,7 +239,7 @@ export default function MasterySection() {
                           initial={{ width: 0 }}
                           animate={{ width: isInView ? `${subject.accuracy}%` : 0 }}
                           transition={{ duration: 1.2, delay: 0.2 + idx * 0.15, ease: "easeOut" }}
-                          className="h-full bg-[#059669]"
+                          className="h-full bg-[#DC2626]"
                         />
                       </div>
                     </div>

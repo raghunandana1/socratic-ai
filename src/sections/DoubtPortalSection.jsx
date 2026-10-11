@@ -155,7 +155,7 @@ function CognitiveMasteryCurveCard({
             <defs>
               <linearGradient id="socraticCurveGrad" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#06B6D4" stopOpacity="0.4" />
-                <stop offset="100%" stopColor="#059669" stopOpacity="0.0" />
+                <stop offset="100%" stopColor="#06B6D4" stopOpacity="0.0" />
               </linearGradient>
             </defs>
 
@@ -998,7 +998,7 @@ export default function DoubtPortalSection() {
 
         {/* Main Portal Console Chassis */}
         <div className="max-w-4xl mx-auto">
-          <div className="w-full bg-[#059669] border-4 border-black p-4 sm:p-6 shadow-[6px_6px_0px_#000] relative rounded-none">
+          <div className="w-full bg-[#DC2626] border-4 border-black p-4 sm:p-6 shadow-[6px_6px_0px_#000] relative rounded-none">
             
             {/* Chassis Top Bar */}
             <div className="flex flex-wrap items-center justify-between pb-3 mb-4 border-b-3 border-black gap-2">

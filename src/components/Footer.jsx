@@ -3,7 +3,7 @@ import { PixelGithub, PixelTwitter, PixelLinkedin } from './PixelIcon';
 
 export default function Footer() {
   return (
-    <footer id="footer" className="border-t-4 border-black bg-[#059669] py-12 px-4 md:px-8 relative z-10 text-black">
+    <footer id="footer" className="border-t-4 border-black bg-[#DC2626] py-12 px-4 md:px-8 relative z-10 text-black">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8">
         
         {/* Brand Column */}

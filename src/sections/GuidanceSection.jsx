@@ -78,7 +78,7 @@ export default function GuidanceSection() {
         <div className="max-w-4xl mx-auto">
           <motion.div style={{ y: cardY }}>
             {/* Outer Retro Red Bezel */}
-            <div className="bg-[#059669] border-4 border-black p-4 sm:p-6 shadow-[6px_6px_0px_#000] relative rounded-none pixel-cut-corners">
+            <div className="bg-[#DC2626] border-4 border-black p-4 sm:p-6 shadow-[6px_6px_0px_#000] relative rounded-none pixel-cut-corners">
             
               {/* Chassis Header Bar */}
               <div className="flex items-center justify-between pb-3 mb-4 border-b-3 border-black">

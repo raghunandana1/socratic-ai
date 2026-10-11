@@ -342,13 +342,13 @@ const PostShader = {
       float vig = clamp(1.0 - dot(uvC, uvC) * uVignette, 0.0, 1.0);
       col *= vig;
 
-      // Vertical void background gradient: #060809 (top) to #08120e (bottom)
-      vec3 bgVoid = mix(vec3(0.024, 0.031, 0.035), vec3(0.031, 0.071, 0.055), clamp(1.0 - vUv.y, 0.0, 1.0));
+      // Vertical void background gradient: #060913 (deep midnight) to #0a1532 (dark royal navy)
+      vec3 bgVoid = mix(vec3(0.024, 0.035, 0.075), vec3(0.039, 0.082, 0.196), clamp(1.0 - vUv.y, 0.0, 1.0));
 
       // Subtle high-end arcade CRT scanline sheen (clean, no static noise)
       float scanline = 0.96 + 0.04 * sin(gl_FragCoord.y * 1.5);
 
-      // Detect red/rose accent power-up objects vs emerald/mint math objects
+      // Detect red/rose accent power-up objects vs dark blue/cyan math objects
       bool isAccent = (col.r > col.b * 1.25 && col.r > 0.12) || (col.r > col.g * 1.25 && col.r > 0.12);
 
       vec3 outCol;
@@ -365,18 +365,18 @@ const PostShader = {
           outCol = vec3(0.98, 0.44, 0.52);   // #fb7185 luminous rose highlight
         }
       } else {
-        // Emerald & Mint Vector Arcade Ramp (sharp, clean geometric facets)
+        // Old Dark Blue & Electric Cyan Vector Arcade Ramp
         float lum = dot(col, vec3(0.2126, 0.7152, 0.0722));
         if (lum < 0.04) {
-          outCol = bgVoid;                     // #060809 obsidian void
+          outCol = bgVoid;                     // #060913 deep midnight void
         } else if (lum < 0.16) {
-          outCol = vec3(0.016, 0.15, 0.11);   // #04261c deep forest jade
+          outCol = vec3(0.031, 0.078, 0.188); // #081430 deep navy
         } else if (lum < 0.32) {
-          outCol = vec3(0.02, 0.59, 0.41);    // #059669 vivid emerald
+          outCol = vec3(0.114, 0.306, 0.847); // #1d4ed8 royal blue
         } else if (lum < 0.55) {
-          outCol = vec3(0.06, 0.73, 0.51);    // #10b981 brilliant jade
+          outCol = vec3(0.231, 0.510, 0.965); // #3b82f6 electric blue
         } else {
-          outCol = vec3(0.43, 0.91, 0.72);    // #6ee7b7 electric mint highlight
+          outCol = vec3(0.404, 0.820, 0.980); // #67e8f9 / #38bdf8 luminous cyan highlight
         }
       }
 
@@ -452,7 +452,7 @@ export default function MistBackground3D({
 
     // 1. Scene, Camera, Renderer Setup
     const scene = new THREE.Scene();
-    const fogColor = 0x060809;
+    const fogColor = 0x070e22;
     scene.fog = new THREE.FogExp2(fogColor, 0.015);
 
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
@@ -522,8 +522,8 @@ export default function MistBackground3D({
     const postQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), postMaterial);
     postScene.add(postQuad);
 
-    // 3. Shading & Materials (Rich Arcade Cell Palettes)
-    const coolToonTex = createToonGradientTexture([0x04261c, 0x059669, 0x10b981, 0x6ee7b7]);
+    // 3. Shading & Materials (The Old Dark Blue & Cyan Palettes)
+    const coolToonTex = createToonGradientTexture([0x07152e, 0x1d4ed8, 0x3b82f6, 0x38bdf8]);
     const redToonTex = createToonGradientTexture([0x33050d, 0x9f1239, 0xe11d48, 0xfb7185]);
 
     const coolMaterial = new THREE.MeshToonMaterial({
@@ -537,8 +537,8 @@ export default function MistBackground3D({
     });
 
     // Crisp Neon Outlines for Edge Highlighting
-    const mintEdgeMaterial = new THREE.LineBasicMaterial({
-      color: 0x6ee7b7,
+    const cyanEdgeMaterial = new THREE.LineBasicMaterial({
+      color: 0x38bdf8,
       transparent: true,
       opacity: 0.85
     });
@@ -549,24 +549,24 @@ export default function MistBackground3D({
       opacity: 0.85
     });
 
-    // 4. Lighting Environment - Vibrant Arcade Vectors
-    const keyLight = new THREE.DirectionalLight(0x34d399, 3.2);
+    // 4. Lighting Environment - Old Dark Blue & Cyan Vectors
+    const keyLight = new THREE.DirectionalLight(0x38bdf8, 3.2);
     keyLight.position.set(16, 20, 14);
     scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0x064e3b, 2.2);
+    const fillLight = new THREE.DirectionalLight(0x1e40af, 2.2);
     fillLight.position.set(-14, -14, -8);
     scene.add(fillLight);
 
-    const ambientLight = new THREE.AmbientLight(0x081e18, 1.8);
+    const ambientLight = new THREE.AmbientLight(0x071228, 1.8);
     scene.add(ambientLight);
 
-    const accentPointLight = new THREE.PointLight(0x10b981, 2.8, 36);
+    const accentPointLight = new THREE.PointLight(0x2563eb, 2.8, 36);
     accentPointLight.position.set(6, 2, -4);
     scene.add(accentPointLight);
 
-    // Dynamic cursor spotlight: casts electric mint glow as mouse moves across shapes
-    const cursorLight = new THREE.PointLight(0x6ee7b7, 3.5, 24);
+    // Dynamic cursor spotlight: casts electric cyan glow as mouse moves across shapes
+    const cursorLight = new THREE.PointLight(0x38bdf8, 3.5, 24);
     cursorLight.position.set(0, 0, 5);
     scene.add(cursorLight);
 
@@ -603,7 +603,7 @@ export default function MistBackground3D({
       if (isRed) redObjectsCount++;
 
       const mat = isRed ? redMaterial : coolMaterial;
-      const edgeMat = isRed ? rubyEdgeMaterial : mintEdgeMaterial;
+      const edgeMat = isRed ? rubyEdgeMaterial : cyanEdgeMaterial;
 
       let group: THREE.Group;
       let innerGroup: THREE.Group | undefined;
@@ -716,7 +716,7 @@ export default function MistBackground3D({
     const motesGeometry = new THREE.BufferGeometry();
     motesGeometry.setAttribute('position', new THREE.BufferAttribute(motePositions, 3));
     const motesMaterial = new THREE.PointsMaterial({
-      color: 0x34d399,
+      color: 0x38bdf8,
       size: 1.8,
       transparent: true,
       opacity: 0.40,
@@ -999,7 +999,7 @@ export default function MistBackground3D({
       postQuad.geometry.dispose();
       coolMaterial.dispose();
       redMaterial.dispose();
-      mintEdgeMaterial.dispose();
+      cyanEdgeMaterial.dispose();
       rubyEdgeMaterial.dispose();
       coolToonTex.dispose();
       redToonTex.dispose();
@@ -1020,7 +1020,7 @@ export default function MistBackground3D({
   if (!webglSupported) {
     return (
       <div
-        className={`fixed inset-0 z-0 pointer-events-none bg-gradient-to-b from-[#060809] to-[#08120e] ${className}`}
+        className={`fixed inset-0 z-0 pointer-events-none bg-gradient-to-b from-[#060913] to-[#0a1532] ${className}`}
         aria-hidden="true"
       />
     );
