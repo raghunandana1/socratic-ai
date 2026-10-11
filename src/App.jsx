@@ -54,7 +54,7 @@ function MainAppContent() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-[#1250D8] text-[#F8FAFC] font-sans selection:bg-white selection:text-black overflow-x-hidden bg-noise">
+    <div className="relative min-h-screen bg-[radial-gradient(ellipse_at_top,_#1E40AF_0%,_#112970_60%,_#071233_100%)] text-[#F8FAFC] font-sans selection:bg-white selection:text-black overflow-x-hidden bg-noise">
       {/* Onboarding Target Exam Selection Modal */}
       <OnboardingModal />
 
