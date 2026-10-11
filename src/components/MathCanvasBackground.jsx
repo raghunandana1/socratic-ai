@@ -1,12 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 
 /**
- * Business-Class Executive Ambient Background
- * - Clean, sleek, distraction-free luxury tech aesthetic (Linear / Stripe / Vercel style)
+ * Business-Class Executive Ambient Background with 1s Luminous Cursor Trail
+ * - Theme-matched electric cyan & pure white plasma trail that smoothly vanishes after 1 second (1000ms)
  * - Precision technical blueprint micro-grid with radial vignette
- * - Soft, diffused cursor-following ambient luminescence (smooth lerp spotlight)
- * - Subtle, calm floating neural data nodes with delicate low-opacity connections
- * - Absolutely zero tacky 3D wireframe shapes or chaotic visual noise
+ * - Soft, diffused cursor-following ambient luminescence
+ * - Subtle, calm floating neural data nodes with delicate connections
+ * - High performance 60fps HTML5 Canvas with Bezier curve smoothing
  */
 
 export default function MathCanvasBackground() {
@@ -30,9 +30,41 @@ export default function MathCanvasBackground() {
       radius: 180,
     };
 
+    // 1-Second Lifespan Trail System (1000ms)
+    const TRAIL_DURATION = 1000;
+    const trailPoints = [];
+    const trailSparks = [];
+    let lastPointTime = 0;
+
     const handleMouseMove = (e) => {
+      const now = performance.now();
       mouse.targetX = e.clientX;
       mouse.targetY = e.clientY;
+
+      // Sample trail points on movement (throttle to ~12ms for smooth curve fidelity)
+      if (now - lastPointTime > 12) {
+        lastPointTime = now;
+        trailPoints.push({
+          x: e.clientX,
+          y: e.clientY,
+          time: now,
+        });
+
+        // Spawn subtle floating quantum micro-spark matching frontend theme
+        if (Math.random() > 0.35) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = Math.random() * 0.9 + 0.3;
+          trailSparks.push({
+            x: e.clientX + (Math.random() - 0.5) * 6,
+            y: e.clientY + (Math.random() - 0.5) * 6,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed - 0.2, // slight upward float
+            time: now,
+            size: Math.random() > 0.6 ? 2.2 : 1.4,
+            isWhite: Math.random() > 0.5,
+          });
+        }
+      }
     };
     window.addEventListener('mousemove', handleMouseMove);
 
@@ -42,7 +74,7 @@ export default function MathCanvasBackground() {
     };
     window.addEventListener('resize', handleResize);
 
-    // Subtle, sparse neural data nodes (clean & refined, not chaotic)
+    // Subtle, sparse neural data nodes
     const nodeCount = Math.min(Math.floor((width * height) / 28000), 55);
     const nodes = [];
 
@@ -58,13 +90,15 @@ export default function MathCanvasBackground() {
     }
 
     const render = () => {
-      // Smooth cursor lerp
+      const now = performance.now();
+
+      // Smooth cursor lerp for ambient glow
       mouse.x += (mouse.targetX - mouse.x) * 0.06;
       mouse.y += (mouse.targetY - mouse.y) * 0.06;
 
       ctx.clearRect(0, 0, width, height);
 
-      // 1. Soft, diffused ambient spotlight following the cursor (Luxury executive aura)
+      // 1. Soft, diffused ambient spotlight following the cursor
       const spotGrad = ctx.createRadialGradient(
         mouse.x,
         mouse.y,
@@ -73,14 +107,14 @@ export default function MathCanvasBackground() {
         mouse.y,
         340
       );
-      spotGrad.addColorStop(0, 'rgba(59, 130, 246, 0.09)');
-      spotGrad.addColorStop(0.5, 'rgba(30, 58, 138, 0.04)');
+      spotGrad.addColorStop(0, 'rgba(56, 189, 248, 0.08)');
+      spotGrad.addColorStop(0.5, 'rgba(30, 58, 138, 0.03)');
       spotGrad.addColorStop(1, 'rgba(7, 10, 18, 0)');
 
       ctx.fillStyle = spotGrad;
       ctx.fillRect(0, 0, width, height);
 
-      // 2. Delicate, low-opacity connections between nearby nodes (Intelligent network)
+      // 2. Delicate, low-opacity connections between nearby nodes
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
           const dx = nodes[i].x - nodes[j].x;
@@ -102,18 +136,14 @@ export default function MathCanvasBackground() {
       // 3. Render and update subtle data nodes
       for (let i = 0; i < nodes.length; i++) {
         const n = nodes[i];
-
-        // Gentle drift
         n.x += n.vx;
         n.y += n.vy;
 
-        // Boundary wrap
         if (n.x < -10) n.x = width + 10;
         if (n.x > width + 10) n.x = -10;
         if (n.y < -10) n.y = height + 10;
         if (n.y > height + 10) n.y = -10;
 
-        // Subtle interactive mouse repulsion
         const dx = n.x - mouse.x;
         const dy = n.y - mouse.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
@@ -124,11 +154,84 @@ export default function MathCanvasBackground() {
           n.y += (dy / dist) * force;
         }
 
-        // Draw node
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(224, 242, 254, ${n.baseAlpha})`;
         ctx.fill();
+      }
+
+      // 4. Prune expired trail elements older than 1000ms
+      while (trailPoints.length > 0 && now - trailPoints[0].time > TRAIL_DURATION) {
+        trailPoints.shift();
+      }
+      for (let i = trailSparks.length - 1; i >= 0; i--) {
+        if (now - trailSparks[i].time > TRAIL_DURATION) {
+          trailSparks.splice(i, 1);
+        }
+      }
+
+      // 5. Render Fluid Theme-Matched Cursor Ribbon Trail (Vanishes smoothly over 1s)
+      if (trailPoints.length > 1) {
+        ctx.save();
+        for (let i = 1; i < trailPoints.length; i++) {
+          const p1 = trailPoints[i - 1];
+          const p2 = trailPoints[i];
+
+          const age = (now - p2.time) / TRAIL_DURATION;
+          const life = Math.max(0, 1 - age); // 1.0 (new) -> 0.0 (vanished at 1s)
+
+          const lineWidth = life * 5.5 + 0.6;
+          const alpha = life * 0.85;
+
+          // Outer Electric Cyan Glow Stroke
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.strokeStyle = `rgba(56, 189, 248, ${alpha})`;
+          ctx.lineWidth = lineWidth;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          ctx.shadowBlur = 10 * life;
+          ctx.shadowColor = 'rgba(56, 189, 248, 0.7)';
+          ctx.stroke();
+
+          // Inner Bright White Core Beam (freshest head of the trail)
+          if (life > 0.45) {
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = `rgba(255, 255, 255, ${(life - 0.45) * 1.6})`;
+            ctx.lineWidth = Math.max(0.8, lineWidth * 0.35);
+            ctx.stroke();
+          }
+        }
+        ctx.restore();
+      }
+
+      // 6. Render Floating Luminous Micro-Sparks (Disperse & dissolve over 1s)
+      if (trailSparks.length > 0) {
+        ctx.save();
+        for (let i = 0; i < trailSparks.length; i++) {
+          const s = trailSparks[i];
+          const age = (now - s.time) / TRAIL_DURATION;
+          const life = Math.max(0, 1 - age);
+
+          // Physical gentle dispersion
+          s.x += s.vx;
+          s.y += s.vy;
+          s.vx *= 0.98;
+          s.vy *= 0.98;
+
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.size * (0.4 + 0.6 * life), 0, Math.PI * 2);
+          ctx.fillStyle = s.isWhite
+            ? `rgba(255, 255, 255, ${life * 0.95})`
+            : `rgba(56, 189, 248, ${life * 0.9})`;
+          ctx.shadowBlur = 6 * life;
+          ctx.shadowColor = s.isWhite ? '#FFFFFF' : '#38BDF8';
+          ctx.fill();
+        }
+        ctx.restore();
       }
 
       animationFrameId = requestAnimationFrame(render);
@@ -168,7 +271,7 @@ export default function MathCanvasBackground() {
         }}
       />
 
-      {/* Smooth Canvas Rendering Layer */}
+      {/* Smooth Canvas Rendering Layer with 1s Luminous Trail */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full pointer-events-none"

@@ -13,29 +13,10 @@ const DEFAULT_ARROW_SVG = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/20
 export default function CustomCursor() {
   const [position, setPosition] = useState({ x: -100, y: -100 });
   const [isHovered, setIsHovered] = useState(false);
-  const [trail, setTrail] = useState([]);
-  const lastTrailTime = useRef(0);
 
   useEffect(() => {
     const handleMouseMove = (e) => {
-      const now = performance.now();
-      const newPos = { x: e.clientX, y: e.clientY };
-      setPosition(newPos);
-
-      // Spawn pixel spark every ~45ms
-      if (now - lastTrailTime.current > 45) {
-        lastTrailTime.current = now;
-        setTrail((prev) => [
-          ...prev.slice(-6),
-          {
-            id: now,
-            x: newPos.x + (Math.random() > 0.5 ? 4 : -2),
-            y: newPos.y + (Math.random() > 0.5 ? 6 : 2),
-            color: Math.random() > 0.5 ? '#FFFFFF' : '#EF4444',
-            size: Math.random() > 0.5 ? 3 : 2,
-          }
-        ]);
-      }
+      setPosition({ x: e.clientX, y: e.clientY });
     };
 
     const handleMouseOver = (e) => {
@@ -58,16 +39,9 @@ export default function CustomCursor() {
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseover', handleMouseOver);
 
-    // Periodic cleanup of trail
-    const trailInterval = setInterval(() => {
-      const now = performance.now();
-      setTrail((prev) => prev.filter((p) => now - p.id < 300));
-    }, 60);
-
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseover', handleMouseOver);
-      clearInterval(trailInterval);
     };
   }, []);
 
@@ -75,27 +49,6 @@ export default function CustomCursor() {
 
   return (
     <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden hidden md:block select-none">
-      {/* Trailing 8-bit Pixel Sparks */}
-      {trail.map((p) => {
-        const age = (performance.now() - p.id) / 300;
-        const opacity = Math.max(0, 1 - age);
-        return (
-          <div
-            key={p.id}
-            className="absolute border border-black"
-            style={{
-              left: `${p.x}px`,
-              top: `${p.y}px`,
-              width: `${p.size}px`,
-              height: `${p.size}px`,
-              backgroundColor: p.color,
-              opacity,
-              transform: `translate(-50%, -50%) scale(${1 - age * 0.4})`,
-            }}
-          />
-        );
-      })}
-
       {/* Main 16x16 Pixel Cursor Container */}
       <div
         className="absolute pointer-events-none"
