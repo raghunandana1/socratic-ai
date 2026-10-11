@@ -21,9 +21,9 @@ export default function ProblemSection() {
   const cardParallaxOffsets = [yCard1, yCard2, yCard3];
 
   const cardIcons = {
-    "01": <PixelWarning className="w-5 h-5 text-black" />,
-    "02": <PixelTerminal className="w-5 h-5 text-black" />,
-    "03": <PixelCpu className="w-5 h-5 text-black" />,
+    "01": <PixelWarning className="w-5 h-5 text-cyan-400" />,
+    "02": <PixelTerminal className="w-5 h-5 text-cyan-400" />,
+    "03": <PixelCpu className="w-5 h-5 text-cyan-400" />,
   };
 
   return (
@@ -35,31 +35,31 @@ export default function ProblemSection() {
           <motion.div
             initial={{ opacity: 1, y: 0 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-none bg-white text-black border-3 border-black text-[10px] font-pixel font-bold uppercase mb-4 shadow-[3px_3px_0px_#000]"
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-950/40 text-cyan-300 border border-cyan-500/30 text-xs font-semibold uppercase mb-4 shadow-[0_2px_10px_rgba(0,0,0,0.4)]"
           >
-            <span className="w-2 h-2 bg-[#EF4444] border border-black animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#38bdf8] animate-pulse" />
             <span>THE PROBLEM</span>
           </motion.div>
 
           <motion.h2
             initial={{ opacity: 1, y: 0 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight mb-4 font-pixel drop-shadow-[2px_2px_0px_#000]"
+            className="text-3xl sm:text-5xl font-bold tracking-tight text-white leading-tight mb-4 font-sans"
           >
             The problem isn't finding the answer. <br className="hidden sm:inline" />
-            <span className="text-white">It's knowing why you got it wrong.</span>
+            <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">It's knowing why you got it wrong.</span>
           </motion.h2>
 
           <motion.p
             initial={{ opacity: 1, y: 0 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-base sm:text-lg text-slate-100 font-sans leading-relaxed max-w-2xl mx-auto font-medium"
+            className="text-base sm:text-lg text-slate-300 font-sans leading-relaxed max-w-2xl mx-auto font-normal"
           >
             JEE & NEET demand deep diagnostic reasoning. Traditional coaching and generic AI LLMs have created three systemic traps:
           </motion.p>
         </div>
 
-        {/* 3 Arcade Console Cards Grid */}
+        {/* 3 Modern 3D Glass Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
           {PROBLEM_CARDS.map((card, index) => (
             <motion.div
@@ -68,29 +68,29 @@ export default function ProblemSection() {
               animate={{ opacity: 1, y: 0 }}
               className="h-full"
             >
-              <div data-mist-source="true" className="h-full bg-[#DC2626] border-4 border-black p-0 shadow-[5px_5px_0px_#000] flex flex-col justify-between overflow-hidden pixel-cut-corners">
-                {/* Console Bezel Header Bar */}
-                <div className="p-3.5 sm:p-4 flex items-center justify-between border-b-3 border-black bg-[#DC2626]">
-                  <span className="bg-white text-black px-2.5 py-1 border-2 border-black font-pixel text-[10px] font-bold shadow-[2px_2px_0px_#000]">
+              <div data-mist-source="true" className="h-full bg-[#0D1527]/85 backdrop-blur-2xl border border-white/10 rounded-2xl p-0 shadow-[0_20px_50px_rgba(0,0,0,0.6)] hover:border-cyan-400/40 hover:shadow-[0_25px_60px_rgba(0,0,0,0.8),0_0_25px_rgba(56,189,248,0.15)] transition-all flex flex-col justify-between overflow-hidden group">
+                {/* 3D Glass Header Bar */}
+                <div className="p-4 sm:p-5 flex items-center justify-between border-b border-white/10 bg-[#0B132B]/60">
+                  <span className="bg-cyan-500/15 text-cyan-300 px-3 py-1 rounded-full border border-cyan-500/30 text-xs font-semibold">
                     [0{index + 1}] {card.stat}
                   </span>
-                  <div className="p-2 bg-white border-2 border-black text-black shadow-[2px_2px_0px_#000]">
+                  <div className="p-2.5 rounded-xl border border-white/10 bg-white/5 text-cyan-400 group-hover:bg-cyan-500/20 transition-colors">
                     {cardIcons[card.id]}
                   </div>
                 </div>
 
-                {/* Console Screen Body */}
-                <div className="p-5 sm:p-6 bg-[#1E232A] flex-1 flex flex-col justify-between">
+                {/* Card Screen Body */}
+                <div className="p-6 bg-[#0D1527]/60 flex-1 flex flex-col justify-between">
                   <div>
-                    <h3 className="text-sm sm:text-base font-bold text-white mb-2.5 font-pixel tracking-wide">
+                    <h3 className="text-base sm:text-lg font-bold text-white mb-2.5 font-sans tracking-wide">
                       {card.title}
                     </h3>
-                    <p className="text-slate-100 text-sm sm:text-base leading-relaxed font-medium font-sans">
+                    <p className="text-slate-300 text-sm sm:text-base leading-relaxed font-normal font-sans">
                       {card.description}
                     </p>
                   </div>
-                  <div className="mt-5 pt-3 border-t-2 border-black">
-                    <span className="inline-block bg-white text-black px-2 py-0.5 border-2 border-black text-[9px] font-pixel font-bold shadow-[1px_1px_0px_#000]">
+                  <div className="mt-6 pt-4 border-t border-white/10">
+                    <span className="inline-block bg-white/5 text-slate-300 px-3 py-1 rounded-lg border border-white/10 text-xs font-semibold">
                       {card.tag}
                     </span>
                   </div>

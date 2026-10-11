@@ -998,37 +998,37 @@ export default function DoubtPortalSection() {
 
         {/* Main Portal Console Chassis */}
         <div className="max-w-4xl mx-auto">
-          <div className="w-full bg-[#DC2626] border-4 border-black p-4 sm:p-6 shadow-[6px_6px_0px_#000] relative rounded-none">
+          <div className="w-full bg-[#0D1527]/85 backdrop-blur-2xl border border-cyan-500/25 p-5 sm:p-7 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8),0_0_30px_rgba(56,189,248,0.12)] relative rounded-2xl">
             
             {/* Chassis Top Bar */}
-            <div className="flex flex-wrap items-center justify-between pb-3 mb-4 border-b-3 border-black gap-2">
+            <div className="flex flex-wrap items-center justify-between pb-3.5 mb-4 border-b border-white/10 gap-2">
               <div className="flex items-center gap-2">
-                <span className="w-3 h-3 bg-[#EF4444] border-2 border-black shadow-[1px_1px_0px_#000]" />
-                <span className="w-3 h-3 bg-[#FFFFFF] border-2 border-black shadow-[1px_1px_0px_#000]" />
-                <span className="w-3 h-3 bg-[#10B981] border-2 border-black shadow-[1px_1px_0px_#000]" />
-                <span className="text-[10px] font-pixel text-black font-bold uppercase ml-1">
+                <span className="w-3 h-3 rounded-full bg-rose-500 shadow-[0_0_8px_#f43f5e]" />
+                <span className="w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_8px_#fbbf24]" />
+                <span className="w-3 h-3 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
+                <span className="text-xs font-semibold text-cyan-300 uppercase tracking-wider ml-1">
                   Vision OCR &amp; Syllabus Detection
                 </span>
               </div>
               
               <button
                 onClick={() => setShowExportModal(true)}
-                className="text-[9px] font-pixel font-bold text-black flex items-center gap-1.5 px-2.5 py-1 bg-white border-2 border-black shadow-[2px_2px_0px_#000] hover:bg-slate-100 transition-all"
+                className="text-xs font-semibold text-slate-200 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 border border-white/10 transition-all cursor-pointer"
               >
-                <FileJson className="w-3.5 h-3.5 text-black" />
+                <FileJson className="w-3.5 h-3.5 text-cyan-400" />
                 <span>Export Session</span>
               </button>
             </div>
 
-            {/* Inner Slate Screen */}
-            <div className="bg-[#1E232A] border-3 border-black p-4 sm:p-6 shadow-[inset_0_0_20px_rgba(0,0,0,0.6)]">
+            {/* Inner Dark Screen */}
+            <div className="bg-[#080D1A]/90 border border-white/10 rounded-xl p-4 sm:p-6 shadow-[inset_0_2px_12px_rgba(0,0,0,0.7)]">
               {/* Form */}
               <form onSubmit={handleFormSubmit} className="space-y-6">
                 
                 {/* STEP 1: Doubt Input & Notebook Capture */}
                 <div>
-                  <div className="text-[10px] font-pixel font-bold text-[#EF4444] uppercase tracking-wider mb-3 flex items-center gap-2">
-                    <span className="px-1.5 py-0.5 bg-[#FFFFFF] text-black border-2 border-black text-[9px] font-pixel font-bold shadow-[1px_1px_0px_#000]">01</span>
+                  <div className="text-xs font-bold text-cyan-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <span className="px-2 py-0.5 bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 rounded-md text-xs font-bold">01</span>
                     Upload Working Snapshot or Enter Query
                   </div>
 

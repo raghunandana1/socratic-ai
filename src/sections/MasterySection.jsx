@@ -93,25 +93,25 @@ export default function MasterySection() {
 
         {/* Dashboard Mastery Console Chassis */}
         <div className="max-w-4xl mx-auto">
-          <div className="w-full bg-[#DC2626] border-4 border-black p-4 sm:p-6 shadow-[6px_6px_0px_#000] relative rounded-none">
+          <div className="w-full bg-[#0D1527]/85 backdrop-blur-2xl border border-cyan-500/25 p-5 sm:p-7 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8),0_0_30px_rgba(56,189,248,0.12)] relative rounded-2xl">
             
             {/* Header Bar */}
-            <div className="flex items-center justify-between pb-3 mb-4 border-b-3 border-black">
+            <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-white/10">
               <div className="flex items-center gap-2">
-                <span className="w-3 h-3 bg-[#EF4444] border-2 border-black shadow-[1px_1px_0px_#000]" />
-                <span className="w-3 h-3 bg-white border-2 border-black shadow-[1px_1px_0px_#000]" />
-                <span className="w-3 h-3 bg-[#10B981] border-2 border-black shadow-[1px_1px_0px_#000]" />
-                <span className="text-[10px] font-pixel text-black font-bold uppercase ml-1">
+                <span className="w-3 h-3 rounded-full bg-rose-500 shadow-[0_0_8px_#f43f5e]" />
+                <span className="w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_8px_#fbbf24]" />
+                <span className="w-3 h-3 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
+                <span className="text-xs font-semibold text-cyan-300 uppercase tracking-wider ml-1">
                   Mastery Console
                 </span>
               </div>
-              <div className="bg-[#0D1117] border-2 border-black px-2.5 py-0.5 text-[9px] font-pixel text-[#EF4444] font-bold shadow-[2px_2px_0px_#000]">
+              <div className="bg-[#080D1A] border border-cyan-500/30 px-3 py-1 text-xs font-semibold text-cyan-300 rounded-full shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
                 LEVEL 4 CALIBRATED
               </div>
             </div>
 
-            {/* Inner Slate Screen */}
-            <div className="bg-[#1E232A] border-3 border-black p-4 sm:p-6 shadow-[inset_0_0_20px_rgba(0,0,0,0.6)]">
+            {/* Inner Dark Screen */}
+            <div className="bg-[#080D1A]/90 border border-white/10 rounded-xl p-4 sm:p-6 shadow-[inset_0_2px_12px_rgba(0,0,0,0.7)]">
               {/* Dynamic Live Portal Event Banner */}
               {lastPortalActivity && (Date.now() - (lastPortalActivity.timestamp || 0) < 90000) && (
                 <motion.div
@@ -234,12 +234,12 @@ export default function MasterySection() {
                         </div>
                       </div>
 
-                      <div className="w-full h-3 bg-black overflow-hidden p-0.5 border-2 border-black">
+                      <div className="w-full h-2.5 bg-slate-900 overflow-hidden rounded-full p-0.5 border border-white/10">
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: isInView ? `${subject.accuracy}%` : 0 }}
                           transition={{ duration: 1.2, delay: 0.2 + idx * 0.15, ease: "easeOut" }}
-                          className="h-full bg-[#DC2626]"
+                          className="h-full bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full shadow-[0_0_10px_#38bdf8]"
                         />
                       </div>
                     </div>
