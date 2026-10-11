@@ -1,12 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 
 /**
- * Business-Class Executive Ambient Background with 1s Luminous Cursor Trail
- * - Theme-matched electric cyan & pure white plasma trail that smoothly vanishes after 1 second (1000ms)
+ * Business-Class Executive Ambient Background with Spider-Man Web & Energy Trail
+ * - Signature Spider-Man Palette: Crimson Red (#EF4444), Electric Cobalt Blue (#3B82F6), and Web Silk White (#FFFFFF)
+ * - Significantly wider, bold luminous ribbon (tapering from ~20px down to ~2px)
+ * - Delicate web-filament strands connecting points like authentic web-fluid
+ * - Exactly 1-second lifespan (1000ms) with smooth fading dissipation
  * - Precision technical blueprint micro-grid with radial vignette
- * - Soft, diffused cursor-following ambient luminescence
  * - Subtle, calm floating neural data nodes with delicate connections
- * - High performance 60fps HTML5 Canvas with Bezier curve smoothing
  */
 
 export default function MathCanvasBackground() {
@@ -41,8 +42,8 @@ export default function MathCanvasBackground() {
       mouse.targetX = e.clientX;
       mouse.targetY = e.clientY;
 
-      // Sample trail points on movement (throttle to ~12ms for smooth curve fidelity)
-      if (now - lastPointTime > 12) {
+      // Sample trail points on movement (throttle to ~10ms for smooth curve fidelity)
+      if (now - lastPointTime > 10) {
         lastPointTime = now;
         trailPoints.push({
           x: e.clientX,
@@ -50,18 +51,27 @@ export default function MathCanvasBackground() {
           time: now,
         });
 
-        // Spawn subtle floating quantum micro-spark matching frontend theme
-        if (Math.random() > 0.35) {
+        // Spawn Spider-Man Web & Energy Sparks (Red, Blue, White)
+        const sparkCount = Math.random() > 0.4 ? 2 : 1;
+        for (let k = 0; k < sparkCount; k++) {
           const angle = Math.random() * Math.PI * 2;
-          const speed = Math.random() * 0.9 + 0.3;
+          const speed = Math.random() * 1.3 + 0.4;
+          const colorRand = Math.random();
+          const sparkColor =
+            colorRand > 0.6
+              ? '#EF4444' // Crimson Spidey Red
+              : colorRand > 0.25
+              ? '#3B82F6' // Electric Cobalt Blue
+              : '#FFFFFF'; // Pure Web Silk White
+
           trailSparks.push({
-            x: e.clientX + (Math.random() - 0.5) * 6,
-            y: e.clientY + (Math.random() - 0.5) * 6,
+            x: e.clientX + (Math.random() - 0.5) * 8,
+            y: e.clientY + (Math.random() - 0.5) * 8,
             vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed - 0.2, // slight upward float
+            vy: Math.sin(angle) * speed - 0.25, // slight upward float
             time: now,
-            size: Math.random() > 0.6 ? 2.2 : 1.4,
-            isWhite: Math.random() > 0.5,
+            size: Math.random() * 2.2 + 1.6,
+            color: sparkColor,
           });
         }
       }
@@ -98,7 +108,7 @@ export default function MathCanvasBackground() {
 
       ctx.clearRect(0, 0, width, height);
 
-      // 1. Soft, diffused ambient spotlight following the cursor
+      // 1. Soft, diffused ambient spotlight following the cursor (Spidey Red & Blue aura)
       const spotGrad = ctx.createRadialGradient(
         mouse.x,
         mouse.y,
@@ -107,8 +117,9 @@ export default function MathCanvasBackground() {
         mouse.y,
         340
       );
-      spotGrad.addColorStop(0, 'rgba(56, 189, 248, 0.08)');
-      spotGrad.addColorStop(0.5, 'rgba(30, 58, 138, 0.03)');
+      spotGrad.addColorStop(0, 'rgba(239, 68, 68, 0.06)');
+      spotGrad.addColorStop(0.35, 'rgba(59, 130, 246, 0.04)');
+      spotGrad.addColorStop(0.7, 'rgba(30, 58, 138, 0.02)');
       spotGrad.addColorStop(1, 'rgba(7, 10, 18, 0)');
 
       ctx.fillStyle = spotGrad;
@@ -170,7 +181,7 @@ export default function MathCanvasBackground() {
         }
       }
 
-      // 5. Render Fluid Theme-Matched Cursor Ribbon Trail (Vanishes smoothly over 1s)
+      // 5. Render Spider-Man Dual-Tone Web & Energy Ribbon Trail (1s vanish, wide width)
       if (trailPoints.length > 1) {
         ctx.save();
         for (let i = 1; i < trailPoints.length; i++) {
@@ -180,35 +191,71 @@ export default function MathCanvasBackground() {
           const age = (now - p2.time) / TRAIL_DURATION;
           const life = Math.max(0, 1 - age); // 1.0 (new) -> 0.0 (vanished at 1s)
 
-          const lineWidth = life * 5.5 + 0.6;
-          const alpha = life * 0.85;
+          // Substantially wider width: starts at ~20px at head, tapers to ~2px at tail
+          const outerWidth = life * 19 + 2;
+          const midWidth = life * 11 + 1.5;
+          const coreWidth = life * 4 + 0.8;
+          const alpha = life * 0.9;
 
-          // Outer Electric Cyan Glow Stroke
+          // Layer 1: Wide Spidey Crimson Red Energy Aura
           ctx.beginPath();
           ctx.moveTo(p1.x, p1.y);
           ctx.lineTo(p2.x, p2.y);
-          ctx.strokeStyle = `rgba(56, 189, 248, ${alpha})`;
-          ctx.lineWidth = lineWidth;
+          ctx.strokeStyle = `rgba(239, 68, 68, ${alpha * 0.75})`;
+          ctx.lineWidth = outerWidth;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          ctx.shadowBlur = 18 * life;
+          ctx.shadowColor = '#EF4444';
+          ctx.stroke();
+
+          // Layer 2: Electric Cobalt Blue Energy Beam
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.strokeStyle = `rgba(59, 130, 246, ${alpha * 0.9})`;
+          ctx.lineWidth = midWidth;
           ctx.lineCap = 'round';
           ctx.lineJoin = 'round';
           ctx.shadowBlur = 10 * life;
-          ctx.shadowColor = 'rgba(56, 189, 248, 0.7)';
+          ctx.shadowColor = '#3B82F6';
           ctx.stroke();
 
-          // Inner Bright White Core Beam (freshest head of the trail)
-          if (life > 0.45) {
+          // Layer 3: Pure White Web-Shooter Silk Core
+          if (life > 0.25) {
             ctx.beginPath();
             ctx.moveTo(p1.x, p1.y);
             ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(255, 255, 255, ${(life - 0.45) * 1.6})`;
-            ctx.lineWidth = Math.max(0.8, lineWidth * 0.35);
+            ctx.strokeStyle = `rgba(255, 255, 255, ${(life - 0.25) * 1.3})`;
+            ctx.lineWidth = coreWidth;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.shadowBlur = 6 * life;
+            ctx.shadowColor = '#FFFFFF';
             ctx.stroke();
           }
         }
+
+        // Web filament micro-strands connecting consecutive nodes (like organic spider webbing)
+        for (let i = 2; i < trailPoints.length; i += 2) {
+          const pPrev = trailPoints[i - 2];
+          const pCurr = trailPoints[i];
+          const age = (now - pCurr.time) / TRAIL_DURATION;
+          const life = Math.max(0, 1 - age);
+          if (life > 0.35) {
+            ctx.beginPath();
+            ctx.moveTo(pPrev.x, pPrev.y);
+            ctx.lineTo(pCurr.x, pCurr.y);
+            ctx.strokeStyle = `rgba(255, 255, 255, ${life * 0.3})`;
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+          }
+        }
+
         ctx.restore();
       }
 
-      // 6. Render Floating Luminous Micro-Sparks (Disperse & dissolve over 1s)
+      // 6. Render Floating Spider-Man Micro-Sparks (Red, Blue, White)
       if (trailSparks.length > 0) {
         ctx.save();
         for (let i = 0; i < trailSparks.length; i++) {
@@ -219,16 +266,15 @@ export default function MathCanvasBackground() {
           // Physical gentle dispersion
           s.x += s.vx;
           s.y += s.vy;
-          s.vx *= 0.98;
-          s.vy *= 0.98;
+          s.vx *= 0.97;
+          s.vy *= 0.97;
 
           ctx.beginPath();
-          ctx.arc(s.x, s.y, s.size * (0.4 + 0.6 * life), 0, Math.PI * 2);
-          ctx.fillStyle = s.isWhite
-            ? `rgba(255, 255, 255, ${life * 0.95})`
-            : `rgba(56, 189, 248, ${life * 0.9})`;
-          ctx.shadowBlur = 6 * life;
-          ctx.shadowColor = s.isWhite ? '#FFFFFF' : '#38BDF8';
+          ctx.arc(s.x, s.y, s.size * (0.3 + 0.7 * life), 0, Math.PI * 2);
+          ctx.fillStyle = s.color;
+          ctx.globalAlpha = life * 0.95;
+          ctx.shadowBlur = 8 * life;
+          ctx.shadowColor = s.color;
           ctx.fill();
         }
         ctx.restore();
@@ -271,7 +317,7 @@ export default function MathCanvasBackground() {
         }}
       />
 
-      {/* Smooth Canvas Rendering Layer with 1s Luminous Trail */}
+      {/* Smooth Canvas Rendering Layer with Spider-Man 1s Luminous Trail */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full pointer-events-none"
