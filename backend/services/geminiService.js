@@ -70,7 +70,13 @@ export async function diagnoseDoubtWithGemini({
     exam: existingSession ? existingSession.exam : exam
   });
 
-  const rawModels = ['gemini-3.8-flash', 'gemini-flash-latest', 'gemini-3.1-pro-preview'];
+  const rawModels = [
+    'gemini-3.8-flash',
+    'gemini-2.5-flash',
+    'gemini-flash-latest',
+    'gemini-2.0-flash',
+    'gemini-1.5-flash'
+  ];
   if (process.env.GEMINI_MODEL && process.env.GEMINI_MODEL.trim()) {
     rawModels.unshift(process.env.GEMINI_MODEL.trim());
   }
@@ -87,8 +93,8 @@ export async function diagnoseDoubtWithGemini({
 
           if (imageBuffer) {
             parts.push({
-              inline_data: {
-                mime_type: imageMimeType || 'image/jpeg',
+              inlineData: {
+                mimeType: imageMimeType || 'image/jpeg',
                 data: imageBuffer.toString('base64')
               }
             });
@@ -107,7 +113,7 @@ export async function diagnoseDoubtWithGemini({
           const response = await fetch(endpoint, {
             method: 'POST',
             headers: reqHeaders,
-            signal: AbortSignal.timeout(20000),
+            signal: AbortSignal.timeout(15000),
             body: JSON.stringify({
               system_instruction: {
                 parts: [{ text: systemInstruction }]
@@ -121,10 +127,7 @@ export async function diagnoseDoubtWithGemini({
               generation_config: {
                 response_mime_type: 'application/json',
                 temperature: 0.2,
-                max_output_tokens: 1024,
-                thinking_config: {
-                  thinking_budget: 0
-                }
+                max_output_tokens: 1024
               }
             })
           });
@@ -551,7 +554,13 @@ Analyze the image and return a strict JSON object with this schema:
 }`;
 
   if (isKeyConfigured && imageBuffer) {
-    const candidateModels = ['gemini-3.8-flash', 'gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.5-pro'];
+    const candidateModels = [
+      'gemini-3.8-flash',
+      'gemini-2.5-flash',
+      'gemini-flash-latest',
+      'gemini-2.0-flash',
+      'gemini-1.5-flash'
+    ];
     if (process.env.GEMINI_MODEL && process.env.GEMINI_MODEL.trim()) {
       candidateModels.unshift(process.env.GEMINI_MODEL.trim());
     }
@@ -560,8 +569,8 @@ Analyze the image and return a strict JSON object with this schema:
       try {
         const parts = [
           {
-            inline_data: {
-              mime_type: imageMimeType || 'image/jpeg',
+            inlineData: {
+              mimeType: imageMimeType || 'image/jpeg',
               data: imageBuffer.toString('base64')
             }
           },
@@ -577,17 +586,14 @@ Analyze the image and return a strict JSON object with this schema:
             'Content-Type': 'application/json',
             'x-goog-api-key': apiKey
           },
-          signal: AbortSignal.timeout(20000),
+          signal: AbortSignal.timeout(15000),
           body: JSON.stringify({
             system_instruction: { parts: [{ text: systemInstruction }] },
             contents: [{ role: 'user', parts }],
             generation_config: {
               response_mime_type: 'application/json',
               temperature: 0.1,
-              max_output_tokens: 1024,
-              thinking_config: {
-                thinking_budget: 0
-              }
+              max_output_tokens: 1024
             }
           })
         });
