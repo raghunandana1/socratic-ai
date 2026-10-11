@@ -46,7 +46,7 @@ export default function Navbar() {
   const exams = ['JEE Main', 'JEE Advanced', 'NEET UG'];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 px-3 md:px-6 py-2.5 transition-all duration-300">
+    <header data-mist-source="true" className="fixed top-0 left-0 right-0 z-40 px-3 md:px-6 py-2.5 transition-all duration-300">
       <div
         className="max-w-7xl mx-auto rounded-none transition-all duration-300 px-4 py-2 flex items-center justify-between relative"
       >

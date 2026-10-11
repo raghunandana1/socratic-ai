@@ -2,8 +2,7 @@ import React, { useEffect } from 'react';
 import Lenis from 'lenis';
 import { ExamProvider } from './context/ExamContext';
 import OnboardingModal from './components/OnboardingModal';
-import CustomCursor from './components/CustomCursor';
-import MathCanvasBackground from './components/MathCanvasBackground';
+import MistBackground3D from './components/MistBackground3D';
 import ScrollProgress from './components/ScrollProgress';
 import Navbar from './components/Navbar';
 import HeroSection from './sections/HeroSection';
@@ -15,10 +14,9 @@ import FinalCTASection from './sections/FinalCTASection';
 import Footer from './components/Footer';
 
 import { useExam } from './context/ExamContext';
-import { motion, AnimatePresence } from 'framer-motion';
 
 function MainAppContent() {
-  const { targetExam, trackSwitchNotice } = useExam();
+  const { targetExam } = useExam();
 
   useEffect(() => {
     if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
@@ -54,15 +52,12 @@ function MainAppContent() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-[#070A12] bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,_rgba(30,58,138,0.22)_0%,_rgba(15,23,42,0.7)_50%,_#070A12_100%)] text-[#F8FAFC] font-sans selection:bg-white selection:text-black overflow-x-hidden bg-noise">
+    <div className="relative min-h-screen bg-[#06080D] text-[#F8FAFC] font-sans selection:bg-white selection:text-black overflow-x-hidden">
       {/* Onboarding Target Exam Selection Modal */}
       <OnboardingModal />
 
-      {/* Background ambient canvas particle field */}
-      <MathCanvasBackground />
-
-      {/* Mouse radial glow spotlight */}
-      <CustomCursor />
+      {/* Interactive 3D Pixel-Art Mist Background */}
+      <MistBackground3D />
 
       {/* Top scroll progress indicator */}
       <ScrollProgress />
@@ -70,7 +65,7 @@ function MainAppContent() {
       {/* Navigation Header */}
       <Navbar />
 
-      {/* Main Landing Page Sections — Keyed to targetExam for clean re-mount from beginning */}
+      {/* Main Landing Page Sections — Rendered over the 3D Pixel Mist background */}
       <main key={targetExam} className="relative z-10">
         <HeroSection />
         <ProblemSection />

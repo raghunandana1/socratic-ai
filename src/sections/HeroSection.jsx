@@ -99,6 +99,7 @@ export default function HeroSection() {
 
           {/* CTA Buttons */}
           <motion.div
+            data-mist-source="true"
             variants={itemVariants}
             className="flex flex-wrap items-center gap-4 w-full sm:w-auto"
           >
@@ -149,7 +150,7 @@ export default function HeroSection() {
         >
           <motion.div style={{ y: cardParallaxY }}>
               {/* Outer Retro Red Console Chassis Bezel with Stepped Pixel Cutouts */}
-            <div className="w-full bg-[#DC2626] border-4 border-black p-4 sm:p-5 shadow-[6px_6px_0px_#000] relative rounded-none pixel-cut-corners">
+            <div data-mist-source="true" className="w-full bg-[#DC2626] border-4 border-black p-4 sm:p-5 shadow-[6px_6px_0px_#000] relative rounded-none pixel-cut-corners">
               
               {/* Chassis Top Header Bar */}
               <div className="flex items-center justify-between pb-3 mb-3 border-b-3 border-black">

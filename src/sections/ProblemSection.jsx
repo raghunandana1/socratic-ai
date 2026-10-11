@@ -68,7 +68,7 @@ export default function ProblemSection() {
               animate={{ opacity: 1, y: 0 }}
               className="h-full"
             >
-              <div className="h-full bg-[#DC2626] border-4 border-black p-0 shadow-[5px_5px_0px_#000] flex flex-col justify-between overflow-hidden pixel-cut-corners">
+              <div data-mist-source="true" className="h-full bg-[#DC2626] border-4 border-black p-0 shadow-[5px_5px_0px_#000] flex flex-col justify-between overflow-hidden pixel-cut-corners">
                 {/* Console Bezel Header Bar */}
                 <div className="p-3.5 sm:p-4 flex items-center justify-between border-b-3 border-black bg-[#DC2626]">
                   <span className="bg-white text-black px-2.5 py-1 border-2 border-black font-pixel text-[10px] font-bold shadow-[2px_2px_0px_#000]">
