@@ -347,15 +347,58 @@ export default function DoubtPortalSection() {
     };
   }, []);
 
-  const handleImageUpload = (e) => {
+  const compressImage = (file, maxDimension = 1280, quality = 0.85) => {
+    return new Promise((resolve) => {
+      if (!file || !file.type.startsWith('image/')) return resolve(file);
+      const img = new Image();
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        img.onload = () => {
+          let { width, height } = img;
+          if (width > maxDimension || height > maxDimension) {
+            if (width > height) {
+              height = Math.round((height * maxDimension) / width);
+              width = maxDimension;
+            } else {
+              width = Math.round((width * maxDimension) / height);
+              height = maxDimension;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const compressedFile = new File([blob], file.name || 'doubt.jpg', {
+                type: 'image/jpeg',
+                lastModified: Date.now()
+              });
+              resolve(compressedFile);
+            } else {
+              resolve(file);
+            }
+          }, 'image/jpeg', quality);
+        };
+        img.onerror = () => resolve(file);
+        img.src = e.target.result;
+      };
+      reader.onerror = () => resolve(file);
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImageFile(file);
       const reader = new FileReader();
       reader.onload = (event) => {
         setImagePreview(event.target.result);
       };
       reader.readAsDataURL(file);
+      const optimized = await compressImage(file);
+      setImageFile(optimized);
     }
   };
 
@@ -598,15 +641,16 @@ export default function DoubtPortalSection() {
     };
   };
 
-  const handleRetryImageUpload = (e) => {
+  const handleRetryImageUpload = async (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      setRetryImageFile(file);
       const reader = new FileReader();
       reader.onload = (event) => {
         setRetryImagePreview(event.target.result);
       };
       reader.readAsDataURL(file);
+      const optimized = await compressImage(file);
+      setRetryImageFile(optimized);
     }
   };
 
@@ -954,7 +998,7 @@ export default function DoubtPortalSection() {
 
         {/* Main Portal Console Chassis */}
         <div className="max-w-4xl mx-auto">
-          <div className="w-full bg-[#DC2626] border-4 border-black p-4 sm:p-6 shadow-[6px_6px_0px_#000] relative rounded-none">
+          <div className="w-full bg-[#059669] border-4 border-black p-4 sm:p-6 shadow-[6px_6px_0px_#000] relative rounded-none">
             
             {/* Chassis Top Bar */}
             <div className="flex flex-wrap items-center justify-between pb-3 mb-4 border-b-3 border-black gap-2">

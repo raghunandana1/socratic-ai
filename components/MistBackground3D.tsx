@@ -215,41 +215,41 @@ const PostShader = {
       float vig = clamp(1.0 - dot(uvC, uvC) * uVignette, 0.0, 1.0);
       col *= vig;
 
-      // Vertical void background gradient: #070b16 (top) to #0a1226 (bottom)
-      vec3 bgVoid = mix(vec3(0.027, 0.043, 0.086), vec3(0.039, 0.070, 0.149), clamp(1.0 - vUv.y, 0.0, 1.0));
+      // Vertical void background gradient: #060809 (top) to #091410 (bottom) - Emerald Matrix
+      vec3 bgVoid = mix(vec3(0.024, 0.031, 0.035), vec3(0.035, 0.078, 0.063), clamp(1.0 - vUv.y, 0.0, 1.0));
 
       // Bayer dither offset: -0.06 to +0.06 to create authentic 8-bit crosshatch transitions
       float dither = (bayer4(gl_FragCoord.xy) - 0.5) * 0.12;
 
-      // Detect red-accent objects vs cool navy/steel objects
-      bool isAccentRed = (col.r > col.b * 1.25 && col.r > 0.10);
+      // Detect accent objects vs cool teal/mint objects
+      bool isAccent = (col.r > col.b * 1.25 && col.r > 0.10) || (col.g > 0.4 && col.b < 0.3);
 
       vec3 outCol;
-      if (isAccentRed) {
-        // Red ramp for accent objects
-        float lum = dot(col, vec3(0.5, 0.3, 0.2)) + dither * 0.5;
+      if (isAccent) {
+        // Emerald Matrix accent ramp (vivid jade to electric mint)
+        float lum = dot(col, vec3(0.3, 0.5, 0.2)) + dither * 0.5;
         if (lum < 0.052) {
           outCol = bgVoid;
         } else if (lum < 0.18) {
-          outCol = vec3(0.24, 0.07, 0.10);      // #3d121a
+          outCol = vec3(0.016, 0.149, 0.122);    // #04261f dark pine
         } else if (lum < 0.34) {
-          outCol = vec3(0.55, 0.14, 0.18);      // #8c242e
+          outCol = vec3(0.020, 0.588, 0.412);    // #059669 vibrant jade
         } else {
-          outCol = vec3(0.84, 0.23, 0.18);      // #d63a2f (vivid accent red)
+          outCol = vec3(0.204, 0.827, 0.600);    // #34d399 electric mint
         }
       } else {
-        // Cool ramp for floating math/science shapes
+        // Emerald Matrix mathematical voxels ramp (deep forest teal to luminous mint)
         float lum = dot(col, vec3(0.2126, 0.7152, 0.0722)) + dither * 0.5;
         if (lum < 0.052) {
-          outCol = bgVoid;                         // deep dark background void
+          outCol = bgVoid;                         // #060809 obsidian void
         } else if (lum < 0.15) {
-          outCol = vec3(0.08, 0.16, 0.32);      // #142952 deep navy facet
+          outCol = vec3(0.024, 0.169, 0.137);    // #062b23 deep forest teal
         } else if (lum < 0.28) {
-          outCol = vec3(0.14, 0.33, 0.59);      // #245496 vibrant steel blue
+          outCol = vec3(0.051, 0.329, 0.259);    // #0d5442 emerald depth
         } else if (lum < 0.42) {
-          outCol = vec3(0.24, 0.56, 0.77);      // #3d8fc4 bright cyan lit face
+          outCol = vec3(0.063, 0.725, 0.506);    // #10b981 vivid emerald
         } else {
-          outCol = vec3(0.36, 0.73, 0.90);      // #5cbbe6 luminous cyan highlight
+          outCol = vec3(0.431, 0.906, 0.718);    // #6ee7b7 luminous mint highlight
         }
       }
 
@@ -404,9 +404,9 @@ export default function MistBackground3D({
     const postQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), postMaterial);
     postScene.add(postQuad);
 
-    // 3. Shading & Materials (4-step MeshToonMaterial gradient maps)
-    const coolToonTex = createToonGradientTexture([0x122244, 0x1f4682, 0x367bb8, 0x54b4e3]);
-    const redToonTex = createToonGradientTexture([0x330c14, 0x6e1925, 0xba2b39, 0xf24438]);
+    // 3. Shading & Materials (4-step MeshToonMaterial gradient maps) - Emerald Matrix
+    const coolToonTex = createToonGradientTexture([0x062b23, 0x0d5442, 0x10b981, 0x6ee7b7]);
+    const redToonTex = createToonGradientTexture([0x04261f, 0x059669, 0x10b981, 0x34d399]);
 
     const coolMaterial = new THREE.MeshToonMaterial({
       color: 0xffffff,
@@ -419,33 +419,33 @@ export default function MistBackground3D({
     });
 
     const cyanEdgeMaterial = new THREE.LineBasicMaterial({
-      color: 0x5ecdf2,
+      color: 0x6ee7b7,
       transparent: true,
-      opacity: 0.60
+      opacity: 0.65
     });
 
-    // 4. Lighting Environment
-    // Cold cyan key light from upper right
-    const keyLight = new THREE.DirectionalLight(0x5ecdf2, 3.4);
+    // 4. Lighting Environment - Emerald Matrix
+    // Neon mint key light from upper right
+    const keyLight = new THREE.DirectionalLight(0x34d399, 3.4);
     keyLight.position.set(18, 22, 14);
     scene.add(keyLight);
 
-    // Dim blue fill light from lower left
-    const fillLight = new THREE.DirectionalLight(0x3066ab, 2.0);
+    // Deep jade fill light from lower left
+    const fillLight = new THREE.DirectionalLight(0x0d5442, 2.0);
     fillLight.position.set(-16, -14, -8);
     scene.add(fillLight);
 
-    // Ambient cold void light
-    const ambientLight = new THREE.AmbientLight(0x1a2e5c, 1.6);
+    // Ambient dark emerald void light
+    const ambientLight = new THREE.AmbientLight(0x08201a, 1.6);
     scene.add(ambientLight);
 
-    // Faint red point light near projected hero cards
-    const redPointLight = new THREE.PointLight(0xf24438, 2.5, 32);
+    // Warm jade point light near projected hero cards
+    const redPointLight = new THREE.PointLight(0x10b981, 2.5, 32);
     redPointLight.position.set(6, 2, -4);
     scene.add(redPointLight);
 
-    // Dynamic cursor spotlight: casts brilliant cyan illumination as mouse approaches shapes
-    const cursorLight = new THREE.PointLight(0x4dc5eb, 3.5, 22);
+    // Dynamic cursor spotlight: casts electric mint glow (#5eead4) as mouse approaches shapes
+    const cursorLight = new THREE.PointLight(0x5eead4, 3.8, 22);
     cursorLight.position.set(0, 0, 5);
     scene.add(cursorLight);
 

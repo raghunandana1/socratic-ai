@@ -56,7 +56,7 @@ export default function OnboardingModal() {
             className="max-w-3xl w-full bg-[#0D1117] border-4 border-black shadow-[10px_10px_0px_#000] relative rounded-none my-auto overflow-hidden"
           >
             {/* Arcade Chassis Header Bezel */}
-            <div className="bg-[#DC2626] border-b-4 border-black px-4 py-3 flex items-center justify-between">
+            <div className="bg-[#059669] border-b-4 border-black px-4 py-3 flex items-center justify-between">
               <div className="flex items-center gap-1.5">
                 <span className="w-3 h-3 bg-white border-2 border-black shadow-[1px_1px_0px_#000]" />
                 <span className="w-3 h-3 bg-black border-2 border-black shadow-[1px_1px_0px_#000]" />
@@ -82,7 +82,7 @@ export default function OnboardingModal() {
               {/* Header */}
               <div className="text-center mb-6">
                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-white text-black border-2 border-black text-[9px] font-pixel font-bold uppercase mb-2 shadow-[2px_2px_0px_#000] rounded-none">
-                  <span className="w-1.5 h-1.5 bg-[#DC2626] animate-pulse" />
+                  <span className="w-1.5 h-1.5 bg-[#059669] animate-pulse" />
                   <span>SELECT TARGET TRACK</span>
                 </div>
                 
