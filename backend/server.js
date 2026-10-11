@@ -88,6 +88,27 @@ app.get('/api/v1/models', async (req, res) => {
   }
 });
 
+// 1c. Test Model Quota Route
+app.get('/api/v1/test-model', async (req, res) => {
+  try {
+    const model = req.query.m || 'gemini-3.7-flash';
+    const apiKey = getApiKey();
+    if (!apiKey) return res.status(400).json({ error: 'No API key configured' });
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    const resp = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: 'Hello' }] }]
+      })
+    });
+    const text = await resp.text();
+    res.json({ model, status: resp.status, response: text.substring(0, 500) });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // 2. Syllabus Taxonomy Route
 app.get('/api/v1/taxonomy', (req, res) => {
   if (!taxonomyData) {

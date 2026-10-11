@@ -71,13 +71,15 @@ export async function diagnoseDoubtWithGemini({
   });
 
   const rawModels = [
+    'gemini-3.7-flash',
+    'gemini-3.6-flash',
+    'gemini-3.5-flash',
+    'gemini-3.1-flash-lite',
+    'gemini-flash-lite-latest',
     'gemini-3.8-flash',
-    'gemini-2.5-flash',
-    'gemini-flash-latest',
-    'gemini-2.0-flash',
-    'gemini-1.5-flash'
+    'gemini-flash-latest'
   ];
-  if (process.env.GEMINI_MODEL && process.env.GEMINI_MODEL.trim()) {
+  if (process.env.GEMINI_MODEL && process.env.GEMINI_MODEL.trim() && process.env.GEMINI_MODEL.trim() !== 'gemini-3.8-flash') {
     rawModels.unshift(process.env.GEMINI_MODEL.trim());
   }
   const candidateModels = [...new Set(rawModels)];
@@ -558,13 +560,15 @@ Analyze the image and return a strict JSON object with this schema:
 
   if (isKeyConfigured && imageBuffer) {
     const candidateModels = [
+      'gemini-3.7-flash',
+      'gemini-3.6-flash',
+      'gemini-3.5-flash',
+      'gemini-3.1-flash-lite',
+      'gemini-flash-lite-latest',
       'gemini-3.8-flash',
-      'gemini-2.5-flash',
-      'gemini-flash-latest',
-      'gemini-2.0-flash',
-      'gemini-1.5-flash'
+      'gemini-flash-latest'
     ];
-    if (process.env.GEMINI_MODEL && process.env.GEMINI_MODEL.trim()) {
+    if (process.env.GEMINI_MODEL && process.env.GEMINI_MODEL.trim() && process.env.GEMINI_MODEL.trim() !== 'gemini-3.8-flash') {
       candidateModels.unshift(process.env.GEMINI_MODEL.trim());
     }
 
